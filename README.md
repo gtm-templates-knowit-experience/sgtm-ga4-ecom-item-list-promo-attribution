@@ -1,4 +1,4 @@
-# GA4 Ecommerce - Item List & Promotion Attribution
+# GA4 Ecommerce - Item List & Promotion Attribution - SGTM Variable
 **Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this solution).
 
 This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item List & Promotion to revenue or ecommerce Event's (ex. purchase):
@@ -106,6 +106,9 @@ This variable will do both Firestore Read and Write.
 * Attribution
   * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
   * **Attribution Type:** Select Last or First Click Attribution
+* Other Settings
+  * **Handle data as string:** This will save attribution data as a string. Not relevant when using Firestore.
+  * **Limit Items:** This will limit number of Items stored. Not relevant when using Firestore.
 
 ![ecom - item_list & promotion - extract – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-extract-CT.png)
 
@@ -155,7 +158,7 @@ In addition, you should create **Promotion Variables** using the same Variable T
 ### ecom - items - item_list & promotion - merge – LT
 This Lookup Table controls when to use merged (attributed) items data, and when to use implemented data.
 
-*	I**nput Variable:** {{ ecom - items - item_list & promotion - Lookup - Events – LT}}
+*	**Input Variable:** {{ ecom - items - item_list & promotion - Lookup - Events – LT}}
 *	**Input:** true
 *	**Output:** {{ecom - items - item_list & promotion - merge - CT}}
 *	**Default Value:** {{ecom - items - ED}}
@@ -174,7 +177,6 @@ In addition, you should create **Promotion Variables** using the same Variable:
 | ecom - promo - promotion_id – merge - LT | {{ecom - promo - promotion_id - merge - CT}} |	{{ecom - promo - promotion_id - ED}} |
 | ecom - promo - promotion_name – merge - LT | {{ecom - promo - promotion_name - merge - CT}} |	{{ecom - promo - promotion_name - ED}} |
 
-
 ## Trigger
 ### ecom - select_item, select_promotion & add_to_cart
 
@@ -192,19 +194,46 @@ Create a Custom Trigger Type with the following settings:
 ## Tags
 
 ### Ecom - Item List & Promotion Attribution – Firestore
+Select the **Firestore Writer** Tag, and add the following settings:
+
+* **Firebase Path:** ecommerce/{{GA(4) - client_id - sha256 – hex}}
+* Override Firebase Project ID
+  * **Firebase Project ID:** your-project-id
+* Add Timestamp
+  * **Timestamp field name:** timestamp
+* Custom Data
+  * **Field Name:** int_attribution
+  * **Field Value:** {{ecom - item_list & promotion - extract - CT}}
+  * **Field Name:** id
+  * **Field Value:** {{GA(4) - client_id - sha256 - hex}}
 
 ![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-Ecom-Item-List-and-Promotion-Attribution-Firestore.png)
 
+* Add **ecom - select_item, select_promotion & add_to_cart** as a Trigger to the Tag.
+
 ### GA4 Tag – Parameters to Add/Edit
+Edit **Parameters to Add / Edit** in your GA4 Tag:
+
+| Name  | Value |
+| ------------- | ------------- |
+| items | {{ecom - items - item_list & promotion - merge - LT}} |
+| promotion_name | {{ecom - promo - promotion_name - merge - LT}} |
+| promotion_id | {{ecom - promo - promotion_id - merge - LT}} |
+| creative_name | {{ecom - promo - creative_name - merge - LT}} |	
+| creative_slot | {{ecom - promo - creative_slot - merge - LT}} |
+| location_id | {{ecom - location_id - merge - LT}} |	
+
 ![GA4 Tag – Parameters to Add/Edit](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-GA4-Parameters-to-Add-or-Edit.png)
+
+* **Your Server-side GTM setup is now complete!**
 
 ## Web implementation
 To make the attribution work, also the implementation on the website must be correct. It’s especially implementation of Item List that can be incorrect.
 
-All attribution in this solution is tied back to the following Events:
+**All attribution in this solution is tied back to the following Events:**
 *	select_item, add_to_cart (from a list) or select_promotion
 
-When it comes to filling out the location_id parameter, if you don’t have Place ID as Google suggest using, fill this parameter with Page Path instead. Then you will get Page Path attributed as well.
+When it comes to filling out the **location_id** parameter, if you don’t have **Place ID** as Google suggest using, fill this parameter with **Page Path** instead. Then you will get Page Path attributed as well.
 
 The GA4 Event documentation allows for implementation of Item List and Promotion on both the Event-level and Item-level. This Template supports both implementations.
 
@@ -213,14 +242,14 @@ It’s recommended to implement all promotion parameters, but as a minimum for t
 
 ### Item List Implementation
 
-The following Events should have Item Lists implemented. The rest of the ecommerce Events will read the Item List data from this Template.
+The following Events should have Item List implemented. The rest of the ecommerce Events will read the Item List data from this Template.
 *	[view_item_list](https://developers.google.com/analytics/devguides/collection/ga4/reference/events#view_item_list)
 * [select_item](https://developers.google.com/analytics/devguides/collection/ga4/reference/events#select_item)
 * [add_to_cart](https://developers.google.com/analytics/devguides/collection/ga4/reference/events#add_to_cart)
 
 Implementing Item List for the **add_to_cart** Event has though an exception. Item Lists should only be implemented if the Item is added to cart directly from an Item List. 
 
-You should never implement an Item List if the Item is added to cart from the product page itself, ie. using “Product Page” as in Item List. The reason for this is that this will overwrite the Item List the user arrived from (ex. a “Related Product” list), and you will not be able to tell how well the “Related Product” list is working in terms of sales.
+You should never implement a **Product Page Item List**. The reason for this is that this will overwrite the Item List the user arrived from (ex. a “Related Products” list), and you will not be able to tell how well the “Related Products” list is working in terms of sales.
 
 ## Attribution explained
 
@@ -230,20 +259,20 @@ Attribution happens on 2 levels: Promotion without Items (Event-level), and the 
 
 ### Last Click Attribution
 With a Last Click Attribution model, this user journey illustrates the attribution:
-1. User lands on frontpage and clicks on a “Free freight” promotion without any Items attached to the promotion. This is an Event-level promotion, and “Free freight” is the attributed Event-level promotion.
-    - On the “Free Freight” page, there is a “Price Match” promotion, and the user clicks on the promotion. This promotion is also an Event-level promotion. “Price Match” is now attributed to the Event-level promotion.
-2. The user clicks next on a promotion for a bundled phone with earbuds package. This promotion has 2 items attached, the phone and the earbuds. This is promotion is attached to the 2 different Item Id’s (phone Item Id phone1 and earbud Item Id ear2) and is therefore an Item-level promotion. 
+1. User clicks on “**Promotion 1 without Items**” (promotion without any Items attached to the promotion). This is an Event-level promotion, and “Promotion 1 without Items” is the attributed Event-level promotion.
+    - On the “Promotion 1 without Items” page, there is a “**Promotion 2 without Items**” promotion, and the user clicks on the promotion. This promotion is also an Event-level promotion. “Promotion 2 without Items” is now attributed to the Event-level promotion.
+2. The user clicks next on a promotion for a bundled phone with earbuds package (“**Promotion 3 with Items**”). This promotion has 2 items attached, the phone and the earbuds. This promotion is attached to the 2 different Item Id’s (**item_id = phone1** and **item_id = earbud2**) and is therefore an Item-level promotion. 
    -	User adds this bundle with 2 items to cart. The add_to_cart Event is attributed to the promotion.
-      - User clicks after that on the “Users Also Looked At” Item List with other earbuds that it’s also possible to choose. The earbud (item Id 3) the user clicked on is attributed to the “Users Also Looked At” item list. 
-        - On this page, there is also an “Users Also Looked At” item list. User clicks on the first selected earbud (Item Id ear2). The earbud is now attributed to the “Users Also Looked At” item list and is no longer attributed to the initial promotion.
+      - User clicks after that on the “**Users Also Looked At**” Item List with other earbuds that it’s also possible to choose. The earbud (item_id = earbud3) the user clicked on is attributed to the “Users Also Looked At” item list. 
+        - On this page, there is also an “Users Also Looked At” item list. User clicks on the first selected earbud (**item_id = earbud2**). The earbud is now attributed to the “Users Also Looked At” item list and is no longer attributed to the initial Item-level promotion.
 3. User completes the purchase, and GA4 adds some logic to the result, namely that Item-level trumps the Event-level.
-    - The phone (Item Id phone1) is attributed to the “bundle promotion”. The promotion didn’t have any Item List, so no Item Lists are attributed. If the promotion also had an Item List, this list would have been attributed.
-    - The earbud (Item Id ear2) is attributed to the “Users Also Looked At” item list, but in addition, since this item doesn’t have any Item-level promotion, the Event-level promotion “Price Match” is also attributed to the earbud. 
-      - Since Item-level trumps Event-level, “Price Match” is not attributed to the phone, since this has an Item-level promotion attributed.
+    - The phone (**item_id = phone1**) is attributed to the “**Promotion 3 with Items**” promotion. The promotion didn’t have any Item List, so no Item Lists are attributed. If the promotion also had an Item List, this list would have been attributed.
+    - The earbud (**item_id = earbud2**) is attributed to the “**Users Also Looked At**” item list, but in addition, since this item doesn’t have any Item-level promotion, the Event-level promotion “**Promotion 2 without Items**” is also attributed to the earbud. 
+      - Since Item-level trumps Event-level, “**Promotion 2 without Items**” is not attributed to the phone, since this has an Item-level promotion attributed.
 
 ### First Click Attribution
 In the same scenario, but using First Click Attribution, this would be the result:
 
-1.	Both the phone (Item Id phone1) and the earbud (Item Id ear2) would both be attributed to the Item-level “bundle promotion”.
-    - “Users Also Looked At” item list would not be attributed to the sale.
-    - None of the Event-level promotions (“Free freight” or “Price Match” would be credited since Item-level trumps Event-level.
+1.	Both the phone (**item_id = phone1**) and the earbud (**item_id = earbud2**) would both be attributed to the Item-level “**Promotion 3 with Items**” bundle promotion.
+    - “**Users Also Looked At**” item list would not be attributed to the sale.
+    - None of the Event-level promotions “**Promotion 1 without Items**” or “**Promotion 2 without Items**” would be attributed since Item-level trumps Event-level.
