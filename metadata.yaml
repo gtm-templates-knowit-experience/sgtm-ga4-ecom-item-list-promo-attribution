@@ -1,0 +1,6 @@
+homepage: "https://github.com/gtm-templates-knowit-experience/"
+documentation: "https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution"
+versions:
+  # Latest version
+  - sha: 5ef144c8556d6c64b918bc7c1c61aa850871122a
+    changeNotes: Initial release.
