@@ -276,3 +276,8 @@ In the same scenario, but using First Click Attribution, this would be the resul
 1.	Both the phone (**item_id = phone1**) and the earbud (**item_id = earbud2**) would both be attributed to the Item-level “**Promotion 3 with Items**” bundle promotion.
     - “**Users Also Looked At**” item list would not be attributed to the sale.
     - None of the Event-level promotions “**Promotion 1 without Items**” or “**Promotion 2 without Items**” would be attributed since Item-level trumps Event-level.
+ 
+To get a better understanding of the attribution, it's recommended to run some test scenarios where you inspect your own data:
+* Run **Server-side GTM** in **Preview Mode**
+* Look at the **Firestore** data being built or rewritten
+* Inspect especially **Items** in **GA4 DebugView**
