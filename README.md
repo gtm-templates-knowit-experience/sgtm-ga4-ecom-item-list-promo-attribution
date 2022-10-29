@@ -133,7 +133,7 @@ In addition, you should create **Promotion Variables** from Event Data:
 
 ### ecom - items - item_list & promotion - merge – CT
 
-Select the GA4 Ecommerce – Item List & Promotion Attribution Variable (this Template). This Variable merges Implemented data & data from Second Data Source (ex. Firestore).
+Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (this Template). This Variable merges Implemented data & data from Second Data Source (ex. Firestore).
 
 * **Variable Type:** Return Attributed Output
 * **Output:** Items
