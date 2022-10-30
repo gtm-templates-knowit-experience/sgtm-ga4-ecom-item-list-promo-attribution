@@ -198,7 +198,7 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "GROUP",
-    "name": "otherSettingSgroup",
+    "name": "otherSettingsGroup",
     "displayName": "Other Settings",
     "groupStyle": "ZIPPY_OPEN_ON_PARAM",
     "subParams": [
@@ -241,7 +241,8 @@ ___TEMPLATE_PARAMETERS___
                 "type": "EQUALS"
               }
             ],
-            "valueHint": "2"
+            "valueHint": "2",
+            "valueUnit": "item(s)"
           }
         ]
       }
@@ -265,7 +266,7 @@ const makeInteger = require('makeInteger');
 const JSON = require('JSON');
 
 const jsonData = data.jsonData;
-const secondDataSource = jsonData && data.secondDataSource && typeof data.secondDataSource === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource || undefined;
+const secondDataSource = data.secondDataSource && typeof data.secondDataSource === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource || undefined;
 let items2 = secondDataSource ? secondDataSource.items : [{item_id:"helper_id"}];
 let promo2 = secondDataSource ? secondDataSource.promotion : undefined;
 let items = getEventData('items');
@@ -355,7 +356,7 @@ else if (data.variableType === 'output') {
     case 'location_id':
       output = promo2 ? promo2.location_id : undefined;
       break;
-    default:
+    case 'items':
     for (let i = 0; i < items.length; i++) {
       for (let j = 0; j < items2.length; j++) {
         if (items[i].item_id == items2[j].item_id) {
@@ -371,6 +372,7 @@ else if (data.variableType === 'output') {
       }
     }
   output = items ? items : undefined;
+  break;
   }
   return output;
 }
@@ -455,6 +457,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 10/27/2022, 9:29:29 PM
+Created on 10/30/2022, 8:35:00 PM
 
 
