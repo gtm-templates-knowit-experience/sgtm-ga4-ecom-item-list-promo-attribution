@@ -7,6 +7,8 @@ This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item L
 * Attribution Time (for how long should Item List or Promotion be attributed)
 * Can handle attributed data as both array & string
 
+A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). This variable is recommended before that one, since everything is handled outside the users browser, and works across (sub)domains.
+
 In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution, but you can also handle the attribution using ex. a cookie. However, using a cookie has some limitations since you can't store very much data in a cookie, and it will not work across domains.
 
 **Reasons for using Firestore are:**
