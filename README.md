@@ -9,7 +9,7 @@ This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item L
 
 A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). The Server-side GTM Variable is recommended before the Web Variable, since everything is handled outside the users browser (browser doesn't have to do writing and reading), and works across (sub)domains. However, costs may occur with this Server-side Variable.
 
-In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution, but you can also handle the attribution using ex. a cookie. However, using a cookie has some limitations since you can't store very much data in a cookie, and it will not work across domains.
+In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution.
 
 **Reasons for using Firestore are:**
 *	Firestore is well suited for real-time data.
