@@ -7,7 +7,7 @@ This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item L
 * Attribution Time (for how long should Item List or Promotion be attributed)
 * Can handle attributed data as both array & string
 
-A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). This variable is recommended before that one, since everything is handled outside the users browser, and works across (sub)domains.
+A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). The Server-side GTM Variable is recommended before the Web Variable, since everything is handled outside the users browser (browser doesn't have to do writing and reading), and works across (sub)domains. However, costs may occur with this Server-side Variable.
 
 In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution, but you can also handle the attribution using ex. a cookie. However, using a cookie has some limitations since you can't store very much data in a cookie, and it will not work across domains.
 
@@ -227,7 +227,7 @@ Edit **Parameters to Add / Edit** in your GA4 Tag:
 
 ![GA4 Tag – Parameters to Add/Edit](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-GA4-Parameters-to-Add-or-Edit.png)
 
-* **Your Server-side GTM setup is now complete!**
+Your Server-side GTM setup is now complete, but you can do even more to control attribution. If the case is that customers usually do several purchases within a session, then you maybe want to delete attribution data after each purchase.
 
 ## Web implementation
 To make the attribution work, also the implementation on the website must be correct. It’s especially implementation of Item List that can be incorrect.
