@@ -16,7 +16,7 @@ In the following documentation, **[Firestore](https://cloud.google.com/firestore
 *	Number of Items stored in Firestore is unlimited (compared to storing the attribution logic in a cookie or other browser storage).
 *	Attribution works across (sub)domains.
 *	There is no point storing the attribution data for long, and Firestore makes it easy to automatically delete outdated documents.
-*	Firestore has a [free quota per day](https://cloud.google.com/firestore/pricing), but costs may occur.
+*	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but costs may occur.
 
 ## Google Cloud & Firestore Setup
 It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup.
@@ -28,7 +28,7 @@ It’s recommended to create a [new Google Cloud Project](https://console.cloud.
   * Create Database
 
 ### Delete outdated documents in Firestore
-* Use [time-to-live (TTL) policies](https://cloud.google.com/firestore/docs/ttl) to automatically delete outdated documents.
+* Use **[time-to-live (TTL) policies](https://cloud.google.com/firestore/docs/ttl)** to automatically delete outdated documents.
 
 ## Server-side GTM Setup
 Install the following Server-side GTM Templates:
