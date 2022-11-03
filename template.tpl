@@ -13,7 +13,7 @@ ___INFO___
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "GA4 Ecommerce - Item List \u0026 Promotion Attribution",
+  "displayName": "GA4 - Item List \u0026 Promotion Attribution",
   "description": "GA4 doesn\u0027t Attribute Item List and Promotion to revenue or ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last Click \u0026 First Click Attribution supported.",
   "categories": [
   "ANALYTICS",
