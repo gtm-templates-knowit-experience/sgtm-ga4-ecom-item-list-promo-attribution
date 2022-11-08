@@ -360,19 +360,19 @@ else if (data.variableType === 'output') {
     for (let i = 0; i < items.length; i++) {
       for (let j = 0; j < items2.length; j++) {
         if (items[i].item_id == items2[j].item_id) {
-        items[i].item_list_id = items[i].item_list_id ? items[i].item_list_id : items2[j].item_list_id || undefined;
-        items[i].item_list_name = items[i].item_list_name ? items[i].item_list_name : items2[j].item_list_name || undefined;
-        items[i].creative_name = items[i].creative_name ? items[i].creative_name : items2[j].creative_name || undefined;
-        items[i].creative_slot = items[i].creative_slot ? items[i].creative_slot : items2[j].creative_slot || undefined;
-        items[i].promotion_id = items[i].promotion_id ? items[i].promotion_id : items2[j].promotion_id || undefined;
-        items[i].promotion_name = items[i].promotion_name ? items[i].promotion_name : items2[j].promotion_name || undefined;
-        items[i].location_id = items[i].location_id ? items[i].location_id : items2[j].location_id || undefined;
-        items[i].index = items[i].index ? items[i].index : items2[j].index || undefined;
+          items[i].item_list_id = items[i].item_list_id ? items[i].item_list_id : items2[j].item_list_id || undefined;
+          items[i].item_list_name = items[i].item_list_name ? items[i].item_list_name : items2[j].item_list_name || undefined;
+          items[i].creative_name = items[i].creative_name ? items[i].creative_name : items2[j].creative_name || undefined;
+          items[i].creative_slot = items[i].creative_slot ? items[i].creative_slot : items2[j].creative_slot || undefined;
+          items[i].promotion_id = items[i].promotion_id ? items[i].promotion_id : items2[j].promotion_id || undefined;
+          items[i].promotion_name = items[i].promotion_name ? items[i].promotion_name : items2[j].promotion_name || undefined;
+          items[i].location_id = items[i].location_id ? items[i].location_id : items2[j].location_id || undefined;
+          items[i].index = items[i].index ? items[i].index : items2[j].index || undefined;
+          break;
         }
       }
     }
   output = items ? items : undefined;
-  break;
   }
   return output;
 }
@@ -457,6 +457,4 @@ scenarios: []
 
 ___NOTES___
 
-Created on 10/30/2022, 8:35:00 PM
-
-
+Created on 11/8/2022, 9:35:23 PM
