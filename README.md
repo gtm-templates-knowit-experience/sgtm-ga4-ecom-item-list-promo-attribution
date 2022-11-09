@@ -208,6 +208,8 @@ Select the **Firestore Writer** Tag, and add the following settings:
   * **Field Value:** {{ecom - item_list & promotion - extract - CT}}
   * **Field Name:** id
   * **Field Value:** {{GA(4) - client_id - sha256 - hex}}
+  
+  (Not sure why the Template is referencing **Firebase** in the settings, since it's a **Firestore** Tag).
 
 ![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-Ecom-Item-List-and-Promotion-Attribution-Firestore.png)
 
