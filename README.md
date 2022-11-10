@@ -16,7 +16,7 @@ In the following documentation, **[Firestore](https://cloud.google.com/firestore
 *	Number of Items stored in Firestore is unlimited (compared to storing the attribution logic in a cookie or other browser storage).
 *	Attribution works across (sub)domains.
 *	There is no point storing the attribution data for long, and Firestore makes it easy to automatically delete outdated documents.
-*	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but costs may occur.
+*	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimate-firestore-cost)**.
 
 ## Google Cloud & Firestore Setup
 It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup.
@@ -285,3 +285,29 @@ In the same scenario, but using First Click Attribution, this would be the resul
 1.	Both the phone (**item_id = phone1**) and the earbud (**item_id = earbud2**) would both be attributed to the Item-level “**Promotion 3 with Items**” bundle promotion.
     - “**Users Also Looked At**” item list would not be attributed to the sale.
     - None of the Event-level promotions “**Promotion 1 without Items**” or “**Promotion 2 without Items**” would be attributed since Item-level trumps Event-level.
+
+## Estimate Firestore cost
+At the time of creating this solution, **50,000 Document Reads** and **20,000 Document Writes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
+
+To estimate your potential cost, see number of Reads/Writes per Event below. Event Names in **bold** represents what should be a minimum setup.
+
+| Event Name  | Firestore Reads per Event | Firestore Writes per Event |
+| ------------- | ------------- | ------------- |
+| **purchase** | 6 | 0 |
+| add_payment_info | 6 | 0 |
+| add_shipping_info | 6 | 0 |
+| **begin_checkout** | 6 |	0 |
+| view_cart | 6 |	0 |
+| **add_to_cart** | 6 |	1 |
+| add_to_wishlist | 6 |	0 |
+| **select_item** | 3 |	1 |
+| **select_promotion** | 6 |	1 |
+| view_item | 6 |	0 |
+
+Number of Reads are based on how many parameters that have to be looked up from Firestore. The parameters are:
+* items
+* creative_name
+* creative_slot
+* promotion_id
+* promotion_name
+* location_id
