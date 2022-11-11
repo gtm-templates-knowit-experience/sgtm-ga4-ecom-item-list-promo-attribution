@@ -289,7 +289,7 @@ In the same scenario, but using First Click Attribution, this would be the resul
 ## Estimate Firestore cost
 At the time of creating this solution, **50,000 Document Reads** and **20,000 Document Writes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
 
-To estimate your potential cost, see number of Reads/Writes per Event below. Event Names in **bold** represents what should be a minimum setup.
+To estimate your potential cost, see number of max Reads/Writes per Event below. Event Names in **bold** represents what should be a minimum setup.
 
 | Event Name  | Firestore Reads per Event | Firestore Writes per Event |
 | ------------- | ------------- | ------------- |
@@ -311,3 +311,5 @@ Number of Reads are based on how many parameters that have to be looked up from 
 * promotion_id
 * promotion_name
 * location_id
+
+This means that if you for example doesn't have **promotion** implemented on the site, you can remove promotion parameters from the setup, which will lower number of Reads.
