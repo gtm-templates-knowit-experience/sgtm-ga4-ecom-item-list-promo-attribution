@@ -260,6 +260,8 @@ To make the attribution work, the **GTM (Web)** setup must also be correct.
 
 In the examples below, the setup handles implementation both on the Event-level and Item-level.
 
+In the setup you will see that Data Layer is mostly Version 1. The **[GA4 Ecom Items - DLV Version 1](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-items-dlv-version-1-variable)** Variable Template is used for achieving that.
+
 ### select_promotion & view_promotion
 This setup handles both **select_promotion** & **view_promotion**, where promotion also has **Event-level Item Lists**. **location_id** is set to **Page Path**.
 
