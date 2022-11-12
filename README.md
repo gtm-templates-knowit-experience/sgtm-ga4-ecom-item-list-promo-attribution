@@ -261,17 +261,17 @@ To make the attribution work, the **GTM (Web)** setup must also be correct.
 In the examples below, the setup handles implementation both on the Event-level and Item-level.
 
 ### select_promotion & view_promotion
-This setups handles both **select_promotion** & **view_promotion**, where promotion also has **Event-level Item Lists**. **location_id** is set to **Page Path**.
+This setup handles both **select_promotion** & **view_promotion**, where promotion also has **Event-level Item Lists**. **location_id** is set to **Page Path**.
 
 ![select_promotion & view_promotion](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/gtm-ga4-tag-select_promotion.png)
 
 ### select_item & view_item_list
-This setups handles both **select_item** & **view_item_list**, with **Event-level Item Lists**. **location_id** is set to **Page Path**.
+This setup handles both **select_item** & **view_item_list**, with **Event-level Item Lists**. **location_id** is set to **Page Path**.
 
 ![select_promotion & view_promotion](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/gtm-ga4-tag-select_item.png)
 
 ### add_to_cart & view_item
-This setups handles **add_to_cart** & **view_item**. **location_id** in this setups is also **Page Path**, but Page Path will only be returned if **item_list_name** or **item_list_id** exist. Otherwise **location_id** will be **undefined**.
+This setup handles **add_to_cart** & **view_item**. **location_id** in this setups is also **Page Path**, but Page Path will only be returned if **item_list_name** or **item_list_id** exist. Otherwise **location_id** will be **undefined**.
 
 ![select_promotion & view_promotion](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/gtm-ga4-tag-add_to_cart-view_item.png)
 
