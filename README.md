@@ -7,15 +7,26 @@ This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item L
 * Attribution Time (for how long should Item List or Promotion be attributed)
 * Can handle attributed data as both array & string
 
-A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). The Server-side GTM Variable is recommended before the Web Variable, since everything is handled outside the users browser (browser doesn't have to do writing and reading), and works across (sub)domains. However, costs may occur with this Server-side Variable.
+![GA4 Item List Attribution example](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ga4-item-list-attribution.png)
+
+A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution).  Differences between doing the attribution with GTM (Web) vs. Server-side GTM are listed below.
+
+| Functionality  | GTM (Web) | Server-side GTM |
+| ------------- | ------------- | ------------- |
+| Cross (Sub) Domain Tracking | No | Yes |
+| Browser Incognito Mode | May not work | Yes |
+| Works with Measurement Protocol | No | Yes |
+| May affect website speed | Yes, since everything happens in the users browser | No |
+| Storage Limitation | Yes | No |
+| Costs Money | No | Yes |
 
 In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution.
 
 **Reasons for using Firestore are:**
 *	Firestore is well suited for real-time data.
-*	Number of Items stored in Firestore is unlimited (compared to storing the attribution logic in a cookie or other browser storage).
+*	Number of Items stored in Firestore is unlimited (compared to browser storage).
 *	Attribution works across (sub)domains.
-*	There is no point storing the attribution data for long, and Firestore makes it easy to automatically delete outdated documents.
+*	There is no point storing the attribution data for long, and Firestore can automatically delete outdated documents.
 *	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimate-firestore-cost)**.
 
 ## Google Cloud & Firestore Setup
@@ -32,7 +43,7 @@ It’s recommended to create a [new Google Cloud Project](https://console.cloud.
 
 ## Server-side GTM Setup
 Install the following Server-side GTM Templates:
-* GA4 Ecommerce - Item List & Promotion Attribution (this Variable Template)
+* GA4 - Item List & Promotion Attribution (this Variable Template)
 *	[Firestore Writer](https://tagmanager.google.com/gallery/#/owners/stape-io/templates/firestore-writer-tag) Tag
 * [sha256 Hasher](https://tagmanager.google.com/gallery/#/owners/gtm-templates-simo-ahava/templates/sha256-hasher) Variable
 
@@ -60,7 +71,9 @@ How long the attribution time should be is up to you. Time is counted from the l
 ### ecom - item_list & promotion - Lookup - Events - LT
 The purpose of this Variable is to give you full control over when to read data from your Secondary Data Source (ex. Firestore), and when to use data from your GA4 Ecommerce implementation.
 
-Ideally your setup should be as shown in the image below. But, if you are using Firestore and want to limit number of Firestore Reads to save some money, you can remove some of the Events from this Lookup Table. Data from the implementation will be used for all Ecommerce Events that isn’t listed in this Lookup Table.
+Ideally your setup should be as shown in the image below. But, if you are using Firestore and want to limit number of Firestore Reads to save some money, you can remove some of the Events from this Lookup Table.Data from the implementation will be used for all Ecommerce Events that isn’t listed in this Lookup Table.
+
+**The following Events are necessary:** purchase, begin_checkout & add_to_cart.
 
 ![ecom - item_list & promotion - Lookup - Events - LT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-Lookup-Events-LT.png)
 
@@ -123,7 +136,7 @@ Create an **Event Data** Variable and add **items** as **Key Path**.
 
 *	Name the Variable **ecom - items – ED**.
 
-In addition, you should create **Promotion Variables** from Event Data:
+In addition, you should create **Promotion Variables** from Event Data if you have implemented **Promotion without Items**:
 
 | Variable Name  | Key Path |
 | ------------- | ------------- |
@@ -143,11 +156,11 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (thi
 * Attribution
   * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
 
-![ecom - items - item_list & promotion - merge – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-items-item_list-and-promotion-merge-CT.png)
+![ecom - items - item_list & promotion - merge – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/sgtm-ga4-items-item_list-and-promotion-merge-CT.png)
 
 *	Name the Variable **ecom - items - item_list & promotion - merge – CT**.
 
-In addition, you should create **Promotion Variables** using the same Variable Type:
+In addition, you should create **Promotion Variables** using the same Variable Type if you have implemented **Promotion without Items**:
 
 | Variable Name  | Output |
 | ------------- | ------------- |
@@ -169,7 +182,7 @@ This Lookup Table controls when to use merged (attributed) items data, and when 
 
 * Name the Variable **ecom - items - item_list & promotion - merge – LT**.
 
-In addition, you should create **Promotion Variables** using the same Variable:
+In addition, you should create **Promotion Variables** using the same Variable if you have implemented **Promotion without Items**:
 
 | Variable Name  | Output | Default Value |
 | ------------- | ------------- | ------------- |
@@ -202,30 +215,28 @@ Select the **Firestore Writer** Tag, and add the following settings:
 * Override Firebase Project ID
   * **Firebase Project ID:** your-project-id
 * Add Timestamp
-  * **Timestamp field name:** timestamp
+  * **Timestamp field name:** expire_at
 * Custom Data
   * **Field Name:** int_attribution
   * **Field Value:** {{ecom - item_list & promotion - extract - CT}}
   * **Field Name:** id
   * **Field Value:** {{GA(4) - client_id - sha256 - hex}}
-  
-  (Not sure why the Template is referencing **Firebase** in the settings, since it's a **Firestore** Tag).
 
-![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-Ecom-Item-List-and-Promotion-Attribution-Firestore.png)
+![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA4-Item-List-and-Promotion-Attribution-Firestore.png)
 
 * Add **ecom - select_item, select_promotion & add_to_cart** as a Trigger to the Tag.
 
 ### GA4 Tag – Parameters to Add/Edit
 Edit **Parameters to Add / Edit** in your GA4 Tag:
 
-| Name  | Value |
-| ------------- | ------------- |
-| items | {{ecom - items - item_list & promotion - merge - LT}} |
-| promotion_name | {{ecom - promo - promotion_name - merge - LT}} |
-| promotion_id | {{ecom - promo - promotion_id - merge - LT}} |
-| creative_name | {{ecom - promo - creative_name - merge - LT}} |	
-| creative_slot | {{ecom - promo - creative_slot - merge - LT}} |
-| location_id | {{ecom - location_id - merge - LT}} |	
+| Name  | Value | Note |
+| ------------- | ------------- | ------------- |
+| items | {{ecom - items - item_list & promotion - merge - LT}} |  |
+| promotion_name | {{ecom - promo - promotion_name - merge - LT}} | If Promotion without Items is implemented |
+| promotion_id | {{ecom - promo - promotion_id - merge - LT}} | If Promotion without Items is implemented |
+| creative_name | {{ecom - promo - creative_name - merge - LT}} | If Promotion without Items is implemented |	
+| creative_slot | {{ecom - promo - creative_slot - merge - LT}} | If Promotion without Items is implemented |
+| location_id | {{ecom - location_id - merge - LT}} | If Promotion without Items is implemented |
 
 ![GA4 Tag – Parameters to Add/Edit](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-GA4-Parameters-to-Add-or-Edit.png)
 
