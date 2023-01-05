@@ -93,7 +93,7 @@ exports.makeDateTime = event => {
     const affectedDoc = firestore.doc(event.value.name.split('/documents/')[1]);
 
     let newValue = new Date(curValue);
-    newValue = new Date(newValue.setDate(newValue.getDate() + 7)); // Set TTL to 7 days from now. You may select less/more days.
+    newValue = new Date(newValue.setDate(newValue.getDate() + 7)); // Set TTL to 7 days from now.
 
     return affectedDoc.update({
       expire_at: newValue,
@@ -101,6 +101,8 @@ exports.makeDateTime = event => {
   }
 };
 ```
+The reason for setting TTL to 7 days from now is to reduce TTL deletes. If we set TTL today, and the user comes back in a couple of days, TTL deletes will be done twice for this user.
+
 ###### package.json
 
 ```json
@@ -399,30 +401,15 @@ In the same scenario, but using First Click Attribution, this would be the resul
     - “**Users Also Looked At**” item list would not be attributed to the sale.
     - None of the Event-level promotions “**Promotion 1 without Items**” or “**Promotion 2 without Items**” would be attributed since Item-level trumps Event-level.
 
-## Estimate Firestore cost
-At the time of creating this solution, **50,000 Document Reads** and **20,000 Document Writes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
+## Estimating cost
+### Firestore
+At the time of creating this solution, **50,000 Document Reads**, **20,000 Document Writes** and **20,000 Document Deletes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
 
-To estimate your potential cost, see number of max Reads/Writes per Event below. Event Names in **bold** represents what should be a minimum setup.
+Estimating potential cost is difficult. It's especially number of Reads that is difficult to estimate. Writes are easier to estimate. Deletes are also difficult to estimate since it's combination of number of users creating data in Firestore, and how often they returns.
 
-| Event Name  | Firestore Reads per Event | Firestore Writes per Event |
-| ------------- | ------------- | ------------- |
-| **purchase** | 6 | 0 |
-| add_payment_info | 6 | 0 |
-| add_shipping_info | 6 | 0 |
-| **begin_checkout** | 6 |	0 |
-| view_cart | 6 |	0 |
-| **add_to_cart** | 6 |	1 |
-| add_to_wishlist | 6 |	0 |
-| **select_item** | 3 |	1 |
-| **select_promotion** | 6 |	1 |
-| view_item | 6 |	0 |
-
-Number of Reads are based on how many parameters that have to be looked up from Firestore. The parameters are:
-* items
-* creative_name
-* creative_slot
-* promotion_id
-* promotion_name
-* location_id
+More info to follow...
 
 This means that if you for example doesn't have **promotion** implemented on the site, you can remove promotion parameters from the setup, which will lower number of Reads.
+
+### Server-side GTM
+Server-side GTM cost will also be affected, more text here.
