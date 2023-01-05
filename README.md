@@ -50,12 +50,76 @@ Grant the service account a **Cloud Datastore User role** to give SGTM access to
 In Firestore, go to **[Time to live (TTL)](https://console.cloud.google.com/firestore/ttl)**.
 * Click **Create Policy**
 * **Collection group**: ecommerce
-* **Timestamp field **: expire_at
+* **Timestamp field**: expire_at
 * Click **Create** button
 
 ### Cloud Functions
 To be able to use **TTL**, the TTL field must be of type **Date and time**. At the time of writing, SGTM can't store data in this format to Firestore.
-To get around this we use **[Cloud Functions](https://cloud.google.com/functions)** to write **Date and time** to Firestore.
+To get around this we use **[Cloud Functions](https://cloud.google.com/functions)** to write **Date and time** to Firestore. Note: This increases Firestore reads & writes.
+
+#### Create function
+We need to create 2 functions; **create** & **update**.
+These functions will listen to changes in Firestore, and will take a **Timestamp** set by SGTM in a **number format**, and rewrite that number to **Date and time**.
+
+##### Configuration
+* Basics
+  * **Environment**: 1st gen
+  * **Function name**: ga4-int_attribution-date-time_create
+  * **Region**: choose a region close to or the same as Firestore
+  * **Trigger type**: create
+  * **Document path**: ecommerce/{docId}
+* Runtime
+  * **Memory allocated**: 256 MB (128 MB may also work)
+  * Other settings as is
+* Connections
+  * Allow internal traffic only
+
+##### Code
+* **Runtime**: Node.js 16
+* **Source code**: Inline Editor
+* **Entry point**: makeDateTime
+
+###### index.js
+
+```javascript
+const Firestore = require('@google-cloud/firestore');
+const firestore = new Firestore({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT
+});
+
+exports.makeDateTime = event => {
+  const curValue = event.value.fields.expire_at.doubleValue;
+  if (curValue && typeof curValue === 'number') {
+    const affectedDoc = firestore.doc(event.value.name.split('/documents/')[1]);
+
+    let newValue = new Date(curValue);
+    newValue = new Date(newValue.setDate(newValue.getDate() + 7)); // Set TTL to 7 days from now. You may select less/more days.
+
+    return affectedDoc.update({
+      expire_at: newValue,
+    });
+  }
+};
+```
+###### package.json
+
+```json
+{
+  "name": "sample-firestore",
+  "version": "0.0.1",
+  "dependencies":{
+   "firebase-admin": "11.3.0",
+   "firebase-functions": "4.1.0"
+}
+}
+```
+
+**Deploy function**.
+
+* Now create a identical function, but select **Trigger type** *update* instead.
+* Name this function **ga4-int_attribution-date-time_update**
+
+Cloud Functions setup is now completed.
 
 ## Server-side GTM Setup
 Install the following Server-side GTM Templates:
