@@ -9,14 +9,14 @@ This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item L
 
 ![GA4 Item List Attribution example](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ga4-item-list-attribution.png)
 
-A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution).  Differences between doing the attribution with GTM (Web) vs. Server-side GTM are listed below.
+A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). Differences between doing the attribution with GTM (Web) vs. Server-side GTM (SGTM) are listed below.
 
 | Functionality  | GTM (Web) | Server-side GTM |
 | ------------- | ------------- | ------------- |
-| Cross (Sub) Domain Tracking | No | Yes |
-| Browser Incognito Mode | May not work | Yes |
-| Works with Measurement Protocol | No | Yes |
-| May affect website speed | Yes, since everything happens in the users browser | No |
+| Cross (sub)domain tracking | No | Yes |
+| Storage in Incognito Mode | Depends on browser | Yes |
+| Server to Server-side (Measurement Protocol) | No | Yes |
+| May affect website speed | Everything happens in the users browser | No |
 | Storage Limitation | Yes | No |
 | Costs Money | No | Yes |
 
@@ -25,11 +25,10 @@ In the following documentation, **[Firestore](https://cloud.google.com/firestore
 **Reasons for using Firestore are:**
 *	Firestore is well suited for real-time data.
 *	Number of Items stored in Firestore is unlimited (compared to browser storage).
-*	Attribution works across (sub)domains.
 *	There is no point storing the attribution data for long, and Firestore can automatically delete outdated documents.
 *	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimate-firestore-cost)**.
 
-## Google Cloud & Firestore Setup
+## Google Cloud, Firestore & Cloud Functions Setup
 It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup.
 
 ###  Firestore Setup  
@@ -38,8 +37,25 @@ It’s recommended to create a [new Google Cloud Project](https://console.cloud.
 * Choose where to store your data
   * Create Database
 
-### Delete outdated documents in Firestore
+If you are running Firestore in a different Google Cloud Project than Server-side GTM, you must add the **[SGTM service account](https://console.cloud.google.com/iam-admin/serviceaccounts)** to the **[Firestore project via IAM](https://console.cloud.google.com/iam-admin/iam)**.
+
+Grant the service account a **Cloud Datastore User role** to give SGTM access to the Firestore project.
+
+* If Server-side GTM is running on App Engine, add the Server-side GTM **App Engine default service account** to the Firestore project.
+* If Server-side GTM is running on Cloud Run, add the Server-side GTM **Compute Engine default service account** to the Firestore project.
+
+#### Delete outdated documents in Firestore
 * Use **[time-to-live (TTL) policies](https://cloud.google.com/firestore/docs/ttl)** to automatically delete outdated documents.
+
+In Firestore, go to **[Time to live (TTL)](https://console.cloud.google.com/firestore/ttl)**.
+* Click **Create Policy**
+* **Collection group**: ecommerce
+* **Timestamp field **: expire_at
+* Click **Create** button
+
+### Cloud Functions
+To be able to use **TTL**, the TTL field must be of type **Date and time**. At the time of writing, SGTM can't store data in this format to Firestore.
+To get around this we use **[Cloud Functions](https://cloud.google.com/functions)** to write **Date and time** to Firestore.
 
 ## Server-side GTM Setup
 Install the following Server-side GTM Templates:
