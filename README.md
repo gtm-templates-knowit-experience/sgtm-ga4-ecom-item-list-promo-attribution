@@ -1,4 +1,4 @@
-# GA4 - Item List & Promotion Attribution - SGTM Variable
+# GA4 - Item List & Promotion Attribution - SGTM Variable (Server)
 **Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this solution).
 
 This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item List & Promotion to revenue or ecommerce Events (ex. purchase):
@@ -9,7 +9,7 @@ This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item L
 
 ![GA4 Item List Attribution example](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ga4-item-list-attribution.png)
 
-A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). Differences between doing the attribution with GTM (Web) vs. Server-side GTM (SGTM) are listed below.
+A similar [Variable Template do also exist for **GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). Differences between doing the attribution with GTM (Web) vs. Server-side GTM (SGTM) are listed below.
 
 | Functionality  | GTM (Web) | Server-side GTM |
 | ------------- | ------------- | ------------- |
@@ -27,6 +27,9 @@ In the following documentation, **[Firestore](https://cloud.google.com/firestore
 *	Number of Items stored in Firestore is unlimited (compared to browser storage).
 *	There is no point storing the attribution data for long, and Firestore can automatically delete outdated documents.
 *	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimate-firestore-cost)**.
+
+Firestore data example below.
+![Firestore storage example](https://raw.githubusercontent.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/main/images/firestore-storage-example.png)
 
 ## Google Cloud, Firestore & Cloud Functions Setup
 It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup.
@@ -96,7 +99,7 @@ exports.makeDateTime = event => {
     newValue = new Date(newValue.setDate(newValue.getDate() + 7)); // Set TTL to 7 days from now.
 
     return affectedDoc.update({
-      expire_at: newValue,
+      expire_at: newValue
     });
   }
 };
