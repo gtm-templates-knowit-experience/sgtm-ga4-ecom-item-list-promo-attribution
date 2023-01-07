@@ -14,7 +14,7 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "GA4 - Item List \u0026 Promotion Attribution",
-  "description": "GA4 doesn\u0027t Attribute Item List and Promotion to revenue or ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last Click \u0026 First Click Attribution supported.",
+  "description": "Attribute GA4 Item List and Promotion data to revenue \u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last \u0026 First Click Attribution supported.",
   "categories": [
   "ANALYTICS",
   "UTILITY",
@@ -32,7 +32,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "LABEL",
     "name": "introLabel",
-    "displayName": "Extract GA4 Item List \u0026 Promotion data for Attribution, or merge Item List \u0026 Promotion from Second Data Source."
+    "displayName": "Extract \u0026 Attribute GA4 Item List \u0026 Promotion data, or merge Item List \u0026 Promotion Data from Second Data Source."
   },
   {
     "type": "GROUP",
@@ -262,8 +262,8 @@ ___SANDBOXED_JS_FOR_SERVER___
 
 const getEventData = require('getEventData');
 const getTimestampMillis = require('getTimestampMillis');
-const makeInteger = require('makeInteger');
 const JSON = require('JSON');
+const makeInteger = require('makeInteger');
 
 const jsonData = data.jsonData;
 const secondDataSource = data.secondDataSource && typeof data.secondDataSource === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource || undefined;
@@ -294,38 +294,49 @@ if(data.variableType === 'attribution') {
     const mapItemsData = i => {
       const itemObj = {
         item_id: i.item_id,
-        item_list_id: i.item_list_id ? i.item_list_id : item_list_id,
-        item_list_name: i.item_list_name ? i.item_list_name : item_list_name,
-        creative_name: i.creative_name ? i.creative_name : creative_name,
-        creative_slot: i.creative_slot ? i.creative_slot : creative_slot,
-        promotion_id: i.promotion_id ? i.promotion_id : promotion_id,
-        promotion_name: i.promotion_name ? i.promotion_name : promotion_name,
-        location_id: i.location_id ? i.location_id : location_id,
-        index: i.index ? i.index: index
+        item_list_id: i.item_list_id || item_list_id,
+        item_list_name: i.item_list_name || item_list_name,
+        creative_name: i.creative_name || creative_name,
+        creative_slot: i.creative_slot || creative_slot,
+        promotion_id: i.promotion_id || promotion_id,
+        promotion_name: i.promotion_name || promotion_name,
+        location_id: i.location_id || location_id,
+        index: i.index || index
       };
       return itemObj;
     };
     
-    let items1 = items ? items.map(mapItemsData) : {}; 
+    const items1 = items.map(mapItemsData); 
     const item_id = items1[0].item_id ? items1[0].item_id : undefined;
     item_list_id = items1[0].item_list_id ? items1[0].item_list_id : undefined;
     item_list_name = items1[0].item_list_name ? items1[0].item_list_name : undefined;
+    promotion_id = items1[0].promotion_id ? items1[0].promotion_id : promotion_id;
+    promotion_name = items1[0].promotion_name ? items1[0].promotion_name : promotion_name;
+    creative_name = items1[0].creative_name ? items1[0].creative_name : creative_name;
+    creative_slot = items1[0].creative_slot ? items1[0].creative_slot : creative_slot;
+    location_id = items1[0].location_id ? items1[0].location_id : location_id;
 
-    if(items1 && item_id && (item_list_id||item_list_name||promotion_id||promotion_name)) {
+    if(items1 && item_id && (item_list_id || item_list_name || promotion_id || promotion_name)) {
       const itemAttribution = attributionType === 'firstClickAttribution' && items2 ? items2.concat(items1) : items1.concat(items2);
-      let uniqueItems = [];
-      itemAttribution.map(x => uniqueItems.filter(a => a.item_id == x.item_id).length > 0 ? null : uniqueItems.push(x));    
-      uniqueItems = limitItemsNumber ? uniqueItems.splice(0, limitItemsNumber) : uniqueItems;
-      
+    let uniqueItems = [];
+    itemAttribution.forEach(x => {
+    let exists = false;
+    for (let i = 0; i < uniqueItems.length; i++) {
+      if (uniqueItems[i].item_id === x.item_id) {
+        exists = true;
+        break;
+      }
+    }
+    if (!exists) {
+      uniqueItems.push(x);
+    }
+  });
+      if (limitItemsNumber) {
+        uniqueItems = uniqueItems.slice(0, limitItemsNumber);
+      }      
       let extract = {promotion:promo2,items:uniqueItems,timestamp:getTimestampMillis()}; 
         extract = jsonData && extract ? JSON.stringify(extract) : extract;
           return extract ;    
-    } else {
-      if (items1[0].creative_name) creative_name = items1[0].creative_name;
-      if (items1[0].creative_slot) creative_slot = items1[0].creative_slot;
-      if (items1[0].promotion_id) promotion_id = items1[0].promotion_id;
-      if (items1[0].promotion_name) promotion_name = items1[0].promotion_name;
-      if (items1[0].location_id) location_id = items1[0].location_id;
     }
   }
   
@@ -340,43 +351,36 @@ if(data.variableType === 'attribution') {
 }
 else if (data.variableType === 'output') {
   let output;
-  switch(data.outputDropDown) {
-    case 'promotion_id':
-      output = promo2 ? promo2.promotion_id : undefined;
-      break;
-    case 'promotion_name':
-      output = promo2 ? promo2.promotion_name : undefined;
-      break;
-    case 'creative_name':
-      output = promo2 ? promo2.creative_name : undefined;
-      break;
-    case 'creative_slot':
-      output = promo2 ? promo2.creative_slot : undefined;
-      break;
-    case 'location_id':
-      output = promo2 ? promo2.location_id : undefined;
-      break;
-    case 'items':
-    for (let i = 0; i < items.length; i++) {
-      for (let j = 0; j < items2.length; j++) {
-        if (items[i].item_id == items2[j].item_id) {
-          items[i].item_list_id = items[i].item_list_id ? items[i].item_list_id : items2[j].item_list_id || undefined;
-          items[i].item_list_name = items[i].item_list_name ? items[i].item_list_name : items2[j].item_list_name || undefined;
-          items[i].creative_name = items[i].creative_name ? items[i].creative_name : items2[j].creative_name || undefined;
-          items[i].creative_slot = items[i].creative_slot ? items[i].creative_slot : items2[j].creative_slot || undefined;
-          items[i].promotion_id = items[i].promotion_id ? items[i].promotion_id : items2[j].promotion_id || undefined;
-          items[i].promotion_name = items[i].promotion_name ? items[i].promotion_name : items2[j].promotion_name || undefined;
-          items[i].location_id = items[i].location_id ? items[i].location_id : items2[j].location_id || undefined;
-          items[i].index = items[i].index ? items[i].index : items2[j].index || undefined;
-          break;
+  const param = data.outputDropDown;
+  if (param === 'promotion_id') {
+    output = promo2 ? promo2.promotion_id : undefined;
+  } else if (param === 'promotion_name') {
+    output = promo2 ? promo2.promotion_name : undefined;
+  } else if (param === 'creative_name') {
+    output = promo2 ? promo2.creative_name : undefined;
+  } else if (param === 'creative_slot') {
+    output = promo2 ? promo2.creative_slot : undefined;
+  } else if (param === 'location_id') {
+    output = promo2 ? promo2.location_id : undefined;
+  } else if (param === 'items' && items) {
+    items.forEach(item => {
+      items2.forEach(item2 => {
+        if (item.item_id === item2.item_id) {
+          item.item_list_id = item.item_list_id || item2.item_list_id || undefined;
+          item.item_list_name = item.item_list_name || item2.item_list_name || undefined;
+          item.creative_name = item.creative_name || item2.creative_name || undefined;
+          item.creative_slot = item.creative_slot || item2.creative_slot || undefined;
+          item.promotion_id = item.promotion_id || item2.promotion_id || undefined;
+          item.promotion_name = item.promotion_name || item2.promotion_name || undefined;
+          item.location_id = item.location_id || item2.location_id || undefined;
+          item.index = item.index || item2.index || undefined;
         }
-      }
-    }
-  output = items ? items : undefined;
+    });
+  });
+    output = items ? items : undefined;
   }
   return output;
 }
-return undefined;
 
 
 ___SERVER_PERMISSIONS___
@@ -457,4 +461,4 @@ scenarios: []
 
 ___NOTES___
 
-Created on 11/8/2022, 9:35:23 PM
+Created on 1/7/2023, 9:34:16 PM
