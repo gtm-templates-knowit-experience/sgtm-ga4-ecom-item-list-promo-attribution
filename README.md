@@ -16,7 +16,7 @@ A similar [Variable Template do also exist for **GTM (Web)**](https://github.com
 | Cross (sub)domain tracking | No | Yes |
 | Storage in Incognito Mode | Depends on browser | Yes |
 | Server to Server-side (Measurement Protocol) | No | Yes |
-| May affect website speed | Everything happens in the users browser | No |
+| Attribution/processing | Users browser | Server-side |
 | Storage Limitation | Yes | No |
 | Costs Money | No | Yes |
 
@@ -408,11 +408,16 @@ In the same scenario, but using First Click Attribution, this would be the resul
 ### Firestore
 At the time of creating this solution, **50,000 Document Reads**, **20,000 Document Writes** and **20,000 Document Deletes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
 
-Estimating potential cost is difficult. It's especially number of Reads that is difficult to estimate. Writes are easier to estimate. Deletes are also difficult to estimate since it's combination of number of users creating data in Firestore, and how often they returns.
+Estimating potential cost is difficult, so use these numbers just as rough guidance.
 
-More info to follow...
+#### Firestore Write
+Number of writes would be around the same count of select_item, select_promotion and add_to_cart. If you use Cloud Functions to rewrite **expire_at**, estimate the count to be almost doubled.
 
-This means that if you for example doesn't have **promotion** implemented on the site, you can remove promotion parameters from the setup, which will lower number of Reads.
+#### Firestore Read
+Number of Reads is difficult to estimate. Sum all GA4 Events that Reads from Firestore, and multiply that with 5. If you use Cloud Functions to rewrite **expire_at**, estimate the count to be almost doubled.
+
+#### Firestore Delete
+This depends on how miuch traffic you have (more users equals more data stored), how often users return, and how many days you store the data in Firestore. Expect this cost to low
 
 ### Server-side GTM
-Server-side GTM cost will also be affected, more text here.
+Server-side GTM cost will also be affected since attribution requires SGTM to do the processing.
