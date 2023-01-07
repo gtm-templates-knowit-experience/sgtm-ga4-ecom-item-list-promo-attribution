@@ -1,4 +1,4 @@
-# GA4 - Item List & Promotion Attribution - SGTM Variable
+# GA4 - Item List & Promotion Attribution - SGTM Variable (Server)
 **Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this solution).
 
 This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item List & Promotion to revenue or ecommerce Events (ex. purchase):
@@ -7,18 +7,31 @@ This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item L
 * Attribution Time (for how long should Item List or Promotion be attributed)
 * Can handle attributed data as both array & string
 
-A similar Variable do also exist for [**GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). The Server-side GTM Variable is recommended before the Web Variable, since everything is handled outside the users browser (browser doesn't have to do writing and reading), and works across (sub)domains. However, costs may occur with this Server-side Variable.
+![GA4 Item List Attribution example](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ga4-item-list-attribution-animation.gif)
+
+A similar [Variable Template do also exist for **GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). Differences between doing the attribution with GTM (Web) vs. Server-side GTM (SGTM) are listed below.
+
+| Functionality  | GTM (Web) | Server-side GTM |
+| ------------- | ------------- | ------------- |
+| Cross (sub)domain tracking | No | Yes |
+| Storage in Incognito Mode | Depends on browser | Yes |
+| Server to Server-side (Measurement Protocol) | No | Yes |
+| Attribution/processing | Users browser | Server-side |
+| Storage Limitation | Yes | No |
+| Costs Money | No | Yes |
 
 In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution.
 
 **Reasons for using Firestore are:**
 *	Firestore is well suited for real-time data.
-*	Number of Items stored in Firestore is unlimited (compared to storing the attribution logic in a cookie or other browser storage).
-*	Attribution works across (sub)domains.
-*	There is no point storing the attribution data for long, and Firestore makes it easy to automatically delete outdated documents.
+*	Number of Items stored in Firestore is unlimited (compared to browser storage).
+*	There is no point storing the attribution data for long, and Firestore can automatically delete outdated documents.
 *	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimate-firestore-cost)**.
 
-## Google Cloud & Firestore Setup
+Firestore data example below.
+![Firestore storage example](https://raw.githubusercontent.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/main/images/firestore-storage-example.png)
+
+## Google Cloud, Firestore & Cloud Functions Setup
 It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup.
 
 ###  Firestore Setup  
@@ -27,12 +40,95 @@ It’s recommended to create a [new Google Cloud Project](https://console.cloud.
 * Choose where to store your data
   * Create Database
 
-### Delete outdated documents in Firestore
+If you are running Firestore in a different Google Cloud Project than Server-side GTM, you must add the **[SGTM service account](https://console.cloud.google.com/iam-admin/serviceaccounts)** to the **[Firestore project via IAM](https://console.cloud.google.com/iam-admin/iam)**.
+
+Grant the service account a **Cloud Datastore User role** to give SGTM access to the Firestore project.
+
+* If Server-side GTM is running on App Engine, add the Server-side GTM **App Engine default service account** to the Firestore project.
+* If Server-side GTM is running on Cloud Run, add the Server-side GTM **Compute Engine default service account** to the Firestore project.
+
+#### Delete outdated documents in Firestore
 * Use **[time-to-live (TTL) policies](https://cloud.google.com/firestore/docs/ttl)** to automatically delete outdated documents.
+
+In Firestore, go to **[Time to live (TTL)](https://console.cloud.google.com/firestore/ttl)**.
+* Click **Create Policy**
+* **Collection group**: ecommerce
+* **Timestamp field**: expire_at
+* Click **Create** button
+
+### Cloud Functions
+To be able to use **TTL**, the TTL field must be of type **Date and time**. At the time of writing, SGTM can't store data in this format to Firestore.
+To get around this we use **[Cloud Functions](https://cloud.google.com/functions)** to write **Date and time** to Firestore. Note: This increases Firestore reads & writes.
+
+#### Create function
+We need to create 2 functions; **create** & **update**.
+These functions will listen to changes in Firestore, and will take a **Timestamp** set by SGTM in a **number format**, and rewrite that number to **Date and time**.
+
+##### Configuration
+* Basics
+  * **Environment**: 1st gen
+  * **Function name**: ga4-int_attribution-date-time_create
+  * **Region**: choose a region close to or the same as Firestore
+  * **Trigger type**: create
+  * **Document path**: ecommerce/{docId}
+* Runtime
+  * **Memory allocated**: 256 MB (128 MB may also work)
+  * Other settings as is
+* Connections
+  * Allow internal traffic only
+
+##### Code
+* **Runtime**: Node.js 16
+* **Source code**: Inline Editor
+* **Entry point**: makeDateTime
+
+###### index.js
+
+```javascript
+const Firestore = require('@google-cloud/firestore');
+const firestore = new Firestore({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT
+});
+
+exports.makeDateTime = event => {
+  const curValue = event.value.fields.expire_at.doubleValue;
+  if (curValue && typeof curValue === 'number') {
+    const affectedDoc = firestore.doc(event.value.name.split('/documents/')[1]);
+
+    let newValue = new Date(curValue);
+    newValue = new Date(newValue.setDate(newValue.getDate() + 7)); // Set TTL to 7 days from now.
+
+    return affectedDoc.update({
+      expire_at: newValue
+    });
+  }
+};
+```
+The reason for setting TTL to 7 days from now is to reduce TTL deletes. If we set TTL today, and the user comes back in a couple of days, TTL deletes will be done twice for this user.
+
+###### package.json
+
+```json
+{
+  "name": "sample-firestore",
+  "version": "0.0.1",
+  "dependencies":{
+   "firebase-admin": "11.3.0",
+   "firebase-functions": "4.1.0"
+}
+}
+```
+
+**Deploy function**.
+
+* Now create a identical function, but select **Trigger type** *update* instead.
+* Name this function **ga4-int_attribution-date-time_update**
+
+Cloud Functions setup is now completed.
 
 ## Server-side GTM Setup
 Install the following Server-side GTM Templates:
-* GA4 Ecommerce - Item List & Promotion Attribution (this Variable Template)
+* GA4 - Item List & Promotion Attribution (this Variable Template)
 *	[Firestore Writer](https://tagmanager.google.com/gallery/#/owners/stape-io/templates/firestore-writer-tag) Tag
 * [sha256 Hasher](https://tagmanager.google.com/gallery/#/owners/gtm-templates-simo-ahava/templates/sha256-hasher) Variable
 
@@ -60,7 +156,9 @@ How long the attribution time should be is up to you. Time is counted from the l
 ### ecom - item_list & promotion - Lookup - Events - LT
 The purpose of this Variable is to give you full control over when to read data from your Secondary Data Source (ex. Firestore), and when to use data from your GA4 Ecommerce implementation.
 
-Ideally your setup should be as shown in the image below. But, if you are using Firestore and want to limit number of Firestore Reads to save some money, you can remove some of the Events from this Lookup Table. Data from the implementation will be used for all Ecommerce Events that isn’t listed in this Lookup Table.
+Ideally your setup should be as shown in the image below. But, if you are using Firestore and want to limit number of Firestore Reads to save some money, you can remove some of the Events from this Lookup Table.Data from the implementation will be used for all Ecommerce Events that isn’t listed in this Lookup Table.
+
+**The following Events are necessary:** purchase, begin_checkout & add_to_cart.
 
 ![ecom - item_list & promotion - Lookup - Events - LT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-Lookup-Events-LT.png)
 
@@ -123,7 +221,7 @@ Create an **Event Data** Variable and add **items** as **Key Path**.
 
 *	Name the Variable **ecom - items – ED**.
 
-In addition, you should create **Promotion Variables** from Event Data:
+In addition, you should create **Promotion Variables** from Event Data if you have implemented **Promotion without Items**:
 
 | Variable Name  | Key Path |
 | ------------- | ------------- |
@@ -143,11 +241,11 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (thi
 * Attribution
   * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
 
-![ecom - items - item_list & promotion - merge – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-items-item_list-and-promotion-merge-CT.png)
+![ecom - items - item_list & promotion - merge – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/sgtm-ga4-items-item_list-and-promotion-merge-CT.png)
 
 *	Name the Variable **ecom - items - item_list & promotion - merge – CT**.
 
-In addition, you should create **Promotion Variables** using the same Variable Type:
+In addition, you should create **Promotion Variables** using the same Variable Type if you have implemented **Promotion without Items**:
 
 | Variable Name  | Output |
 | ------------- | ------------- |
@@ -169,7 +267,7 @@ This Lookup Table controls when to use merged (attributed) items data, and when 
 
 * Name the Variable **ecom - items - item_list & promotion - merge – LT**.
 
-In addition, you should create **Promotion Variables** using the same Variable:
+In addition, you should create **Promotion Variables** using the same Variable if you have implemented **Promotion without Items**:
 
 | Variable Name  | Output | Default Value |
 | ------------- | ------------- | ------------- |
@@ -202,30 +300,28 @@ Select the **Firestore Writer** Tag, and add the following settings:
 * Override Firebase Project ID
   * **Firebase Project ID:** your-project-id
 * Add Timestamp
-  * **Timestamp field name:** timestamp
+  * **Timestamp field name:** expire_at
 * Custom Data
   * **Field Name:** int_attribution
   * **Field Value:** {{ecom - item_list & promotion - extract - CT}}
   * **Field Name:** id
   * **Field Value:** {{GA(4) - client_id - sha256 - hex}}
-  
-  (Not sure why the Template is referencing **Firebase** in the settings, since it's a **Firestore** Tag).
 
-![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-Ecom-Item-List-and-Promotion-Attribution-Firestore.png)
+![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA4-Item-List-and-Promotion-Attribution-Firestore.png)
 
 * Add **ecom - select_item, select_promotion & add_to_cart** as a Trigger to the Tag.
 
 ### GA4 Tag – Parameters to Add/Edit
 Edit **Parameters to Add / Edit** in your GA4 Tag:
 
-| Name  | Value |
-| ------------- | ------------- |
-| items | {{ecom - items - item_list & promotion - merge - LT}} |
-| promotion_name | {{ecom - promo - promotion_name - merge - LT}} |
-| promotion_id | {{ecom - promo - promotion_id - merge - LT}} |
-| creative_name | {{ecom - promo - creative_name - merge - LT}} |	
-| creative_slot | {{ecom - promo - creative_slot - merge - LT}} |
-| location_id | {{ecom - location_id - merge - LT}} |	
+| Name  | Value | Note |
+| ------------- | ------------- | ------------- |
+| items | {{ecom - items - item_list & promotion - merge - LT}} |  |
+| promotion_name | {{ecom - promo - promotion_name - merge - LT}} | If Promotion without Items is implemented |
+| promotion_id | {{ecom - promo - promotion_id - merge - LT}} | If Promotion without Items is implemented |
+| creative_name | {{ecom - promo - creative_name - merge - LT}} | If Promotion without Items is implemented |	
+| creative_slot | {{ecom - promo - creative_slot - merge - LT}} | If Promotion without Items is implemented |
+| location_id | {{ecom - location_id - merge - LT}} | If Promotion without Items is implemented |
 
 ![GA4 Tag – Parameters to Add/Edit](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-GA4-Parameters-to-Add-or-Edit.png)
 
@@ -308,30 +404,20 @@ In the same scenario, but using First Click Attribution, this would be the resul
     - “**Users Also Looked At**” item list would not be attributed to the sale.
     - None of the Event-level promotions “**Promotion 1 without Items**” or “**Promotion 2 without Items**” would be attributed since Item-level trumps Event-level.
 
-## Estimate Firestore cost
-At the time of creating this solution, **50,000 Document Reads** and **20,000 Document Writes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
+## Estimating cost
+### Firestore
+At the time of creating this solution, **50,000 Document Reads**, **20,000 Document Writes** and **20,000 Document Deletes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
 
-To estimate your potential cost, see number of max Reads/Writes per Event below. Event Names in **bold** represents what should be a minimum setup.
+Estimating potential cost is difficult, so use these numbers just as rough guidance.
 
-| Event Name  | Firestore Reads per Event | Firestore Writes per Event |
-| ------------- | ------------- | ------------- |
-| **purchase** | 6 | 0 |
-| add_payment_info | 6 | 0 |
-| add_shipping_info | 6 | 0 |
-| **begin_checkout** | 6 |	0 |
-| view_cart | 6 |	0 |
-| **add_to_cart** | 6 |	1 |
-| add_to_wishlist | 6 |	0 |
-| **select_item** | 3 |	1 |
-| **select_promotion** | 6 |	1 |
-| view_item | 6 |	0 |
+#### Firestore Write
+Number of writes would be around the same count of select_item, select_promotion and add_to_cart. If you use Cloud Functions to rewrite **expire_at**, estimate the count to be almost doubled.
 
-Number of Reads are based on how many parameters that have to be looked up from Firestore. The parameters are:
-* items
-* creative_name
-* creative_slot
-* promotion_id
-* promotion_name
-* location_id
+#### Firestore Read
+Number of Reads is difficult to estimate. Sum all GA4 Events that Reads from Firestore, and multiply that with 5. If you use Cloud Functions to rewrite **expire_at**, estimate the count to be almost doubled.
 
-This means that if you for example doesn't have **promotion** implemented on the site, you can remove promotion parameters from the setup, which will lower number of Reads.
+#### Firestore Delete
+This depends on how miuch traffic you have (more users equals more data stored), how often users return, and how many days you store the data in Firestore. Expect this cost to low
+
+### Server-side GTM
+Server-side GTM cost will also be affected since attribution requires SGTM to do the processing.
