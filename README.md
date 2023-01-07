@@ -26,7 +26,7 @@ In the following documentation, **[Firestore](https://cloud.google.com/firestore
 *	Firestore is well suited for real-time data.
 *	Number of Items stored in Firestore is unlimited (compared to browser storage).
 *	There is no point storing the attribution data for long, and Firestore can automatically delete outdated documents.
-*	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimate-firestore-cost)**.
+*	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimating-cost)**.
 
 Firestore data example below.
 ![Firestore storage example](https://raw.githubusercontent.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/main/images/firestore-storage-example.png)
