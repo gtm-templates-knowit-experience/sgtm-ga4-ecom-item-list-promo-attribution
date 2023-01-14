@@ -1,7 +1,8 @@
 # GA4 - Item List & Promotion Attribution - SGTM Variable (Server)
 **Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this solution).
 
-This Variable for  **Server-side GTM** makes it possible to attribute GA4 Item List & Promotion to revenue or ecommerce Events (ex. purchase):
+This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List, Promotion or 
+** to revenue or ecommerce Events (ex. purchase):
 * Last Click Attribution
 * First Click Attribution
 * Attribution Time (for how long should Item List or Promotion be attributed)
@@ -21,12 +22,6 @@ A similar [Variable Template do also exist for **GTM (Web)**](https://github.com
 | Costs Money | No | Yes |
 
 In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution.
-
-**Reasons for using Firestore are:**
-*	Firestore is well suited for real-time data.
-*	Number of Items stored in Firestore is unlimited (compared to browser storage).
-*	There is no point storing the attribution data for long, and Firestore can automatically delete outdated documents.
-*	Firestore has a **[free quota per day](https://cloud.google.com/firestore/pricing)**, but **[costs may occur](#estimating-cost)**.
 
 Firestore data example below.
 ![Firestore storage example](https://raw.githubusercontent.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/main/images/firestore-storage-example.png)
@@ -158,7 +153,7 @@ The purpose of this Variable is to give you full control over when to read data 
 
 Ideally your setup should be as shown in the image below. But, if you are using Firestore and want to limit number of Firestore Reads to save some money, you can remove some of the Events from this Lookup Table.Data from the implementation will be used for all Ecommerce Events that isn’t listed in this Lookup Table.
 
-**The following Events are necessary:** purchase, begin_checkout & add_to_cart.
+The following Events are necessary: **purchase, begin_checkout & add_to_cart** for a complete **GA4 Item lists: Item list** name report
 
 ![ecom - item_list & promotion - Lookup - Events - LT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-Lookup-Events-LT.png)
 
@@ -221,7 +216,7 @@ Create an **Event Data** Variable and add **items** as **Key Path**.
 
 *	Name the Variable **ecom - items – ED**.
 
-In addition, you should create **Promotion Variables** from Event Data if you have implemented **Promotion without Items**:
+In addition, you must create **Promotion & Search Term Variables** using the same Variable Type if you have implemented **Promotion without Items**, or if you want to attribute **Search Term**:
 
 | Variable Name  | Key Path |
 | ------------- | ------------- |
@@ -230,6 +225,7 @@ In addition, you should create **Promotion Variables** from Event Data if you ha
 | ecom - promo - creative_slot - ED | creative_slot |
 | ecom - promo - promotion_id - ED | promotion_id |	
 | ecom - promo - promotion_name - ED | promotion_name |	
+| search_term - ED | search_term |	
 
 ### ecom - items - item_list & promotion - merge – CT
 
@@ -245,7 +241,7 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (thi
 
 *	Name the Variable **ecom - items - item_list & promotion - merge – CT**.
 
-In addition, you should create **Promotion Variables** using the same Variable Type if you have implemented **Promotion without Items**:
+In addition, you must create **Promotion & Search Term Variables** using the same Variable Type if you have implemented **Promotion without Items**, or if you want to attribute **Search Term**:
 
 | Variable Name  | Output |
 | ------------- | ------------- |
@@ -254,6 +250,7 @@ In addition, you should create **Promotion Variables** using the same Variable T
 | ecom - promo - creative_slot - merge - CT | Creative Slot |
 | ecom - promo - promotion_id – merge - CT | Promotion ID |	
 | ecom - promo - promotion_name – merge - CT | Promotion Name |	
+| ecom - search_term - merge - CT | Search Term |	
 
 ### ecom - items - item_list & promotion - merge – LT
 This Lookup Table controls when to use merged (attributed) items data, and when to use implemented data.
@@ -267,7 +264,7 @@ This Lookup Table controls when to use merged (attributed) items data, and when 
 
 * Name the Variable **ecom - items - item_list & promotion - merge – LT**.
 
-In addition, you should create **Promotion Variables** using the same Variable if you have implemented **Promotion without Items**:
+In addition, you must create **Promotion & Search Term Variables** using the same Variable Type if you have implemented **Promotion without Items**, or if you want to attribute **Search Term**:
 
 | Variable Name  | Output | Default Value |
 | ------------- | ------------- | ------------- |
@@ -276,20 +273,21 @@ In addition, you should create **Promotion Variables** using the same Variable i
 | ecom - promo - creative_slot - merge - LT | {{ecom - promo - creative_slot - merge - CT}} | {{ecom - promo - creative_slot - ED}} |
 | ecom - promo - promotion_id – merge - LT | {{ecom - promo - promotion_id - merge - CT}} |	{{ecom - promo - promotion_id - ED}} |
 | ecom - promo - promotion_name – merge - LT | {{ecom - promo - promotion_name - merge - CT}} |	{{ecom - promo - promotion_name - ED}} |
+| ecom - search_term - merge - LT | {{ecom - search_term - merge - CT}} |	{{search_term - ED}} |
 
 ## Trigger
-### ecom - select_item, select_promotion & add_to_cart
+### ecom - attribute Events
 
-Create a Custom Trigger Type with the following settings:
-
-*	**This trigger fires on:** Some Events
-*	**Client Name** _equals_ GA4 (the name you have given your GA4 Client)
-*	**Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart)$
-*	**ecom – item_list & promotion – extract – CT** _does not equal_ undefined
+Create a Custom Trigger Type with the following settings:  
+* **This trigger fires on:** Some Events
+* **Client Name** _equals_ GA4 (the name you have given your GA4 Client)
+* **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart)$
+  * If you are going to attribute **search_term** as well, RegEx should be **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart|view_search_results)$
+* **ecom – item_list & promotion – extract – CT** _does not equal_ undefined
 
 ![ecom - select_item, select_promotion & add_to_cart](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Trigger-ecom-select_item-select_promotion-add_to_cart.png)
 
-*	Name the Trigger **ecom - select_item, select_promotion & add_to_cart**.
+*	Name the Trigger **ecom - attribute Events**.
 
 ## Tags
 
@@ -309,7 +307,7 @@ Select the **Firestore Writer** Tag, and add the following settings:
 
 ![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA4-Item-List-and-Promotion-Attribution-Firestore.png)
 
-* Add **ecom - select_item, select_promotion & add_to_cart** as a Trigger to the Tag.
+* Add **ecom - attribute Events** as a Trigger to the Tag.
 
 ### GA4 Tag – Parameters to Add/Edit
 Edit **Parameters to Add / Edit** in your GA4 Tag:
@@ -322,6 +320,7 @@ Edit **Parameters to Add / Edit** in your GA4 Tag:
 | creative_name | {{ecom - promo - creative_name - merge - LT}} | If Promotion without Items is implemented |	
 | creative_slot | {{ecom - promo - creative_slot - merge - LT}} | If Promotion without Items is implemented |
 | location_id | {{ecom - location_id - merge - LT}} | If Promotion without Items is implemented |
+| search_term | {{ecom - search_term - merge - LT}} | If you want to attribute search_term |
 
 ![GA4 Tag – Parameters to Add/Edit](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-GA4-Parameters-to-Add-or-Edit.png)
 
@@ -408,16 +407,16 @@ In the same scenario, but using First Click Attribution, this would be the resul
 ### Firestore
 At the time of creating this solution, **50,000 Document Reads**, **20,000 Document Writes** and **20,000 Document Deletes** are free per day. See **[Firestore pricing](https://cloud.google.com/firestore/pricing)** for complete information.
 
-Estimating potential cost is difficult, so use these numbers just as rough guidance.
+Estimating potential cost is difficult, so use these numbers as a rough guidance.
 
 #### Firestore Write
 Number of writes would be around the same count of select_item, select_promotion and add_to_cart. If you use Cloud Functions to rewrite **expire_at**, estimate the count to be almost doubled.
 
 #### Firestore Read
-Number of Reads is difficult to estimate. Sum all GA4 Events that Reads from Firestore, and multiply that with 5. If you use Cloud Functions to rewrite **expire_at**, estimate the count to be almost doubled.
+Number of Reads is difficult to estimate. Sum all GA4 Events that Reads from Firestore, and multiply that with 5-8. If you use Cloud Functions to rewrite **expire_at**, the coundt can be more than doubled.
 
 #### Firestore Delete
-This depends on how miuch traffic you have (more users equals more data stored), how often users return, and how many days you store the data in Firestore. Expect this cost to low
+This depends on how miuch traffic you have (more users equals more data stored), how often users return, and how many days you store the data in Firestore. Expect this to be the lowest Firestore cost.
 
 ### Server-side GTM
 Server-side GTM cost will also be affected since attribution requires SGTM to do the processing.
