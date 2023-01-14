@@ -57,7 +57,7 @@ To get around this we use **[Cloud Functions](https://cloud.google.com/functions
 
 #### Create function
 We need to create 2 functions; **create** & **update**.
-These functions will listen to changes in Firestore, and will take a **Timestamp** set by SGTM in a **number format**, and rewrite that number to **Date and time**.
+These functions will listen to changes in Firestore, and will take a **Timestamp** set by SGTM in a **unix format (number)**, and rewrite that number to **Date and time**.
 
 ##### Configuration
 * Basics
