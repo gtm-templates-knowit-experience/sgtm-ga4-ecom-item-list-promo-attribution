@@ -27,7 +27,7 @@ Firestore data example below.
 ![Firestore storage example](https://raw.githubusercontent.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/main/images/firestore-storage-example.png)
 
 ## Google Cloud, Firestore & Cloud Functions Setup
-It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup.
+It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup if you want an easier understanding of cost.
 
 ###  Firestore Setup  
 * Select a [Cloud Firestore mode](https://console.cloud.google.com/firestore/welcome)
