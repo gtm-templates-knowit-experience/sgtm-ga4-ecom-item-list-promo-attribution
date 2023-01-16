@@ -14,7 +14,7 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "GA4 - Item List \u0026 Promotion Attribution",
-  "description": "Attribute GA4 Item List and Promotion data to revenue \u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last \u0026 First Click Attribution supported.",
+  "description": "Attribute GA4 Item List, Promotion or Search Term to revenue \u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last \u0026 First Click Attribution supported.",
   "categories": [
   "ANALYTICS",
   "UTILITY",
@@ -92,6 +92,10 @@ ___TEMPLATE_PARAMETERS___
               {
                 "value": "location_id",
                 "displayValue": "Location ID"
+              },
+              {
+                "value": "search_term",
+                "displayValue": "Search Term"
               }
             ],
             "simpleValueType": true,
@@ -193,6 +197,29 @@ ___TEMPLATE_PARAMETERS___
             "type": "EQUALS"
           }
         ]
+      },
+      {
+        "type": "GROUP",
+        "name": "siteSearchGroup",
+        "displayName": "Site Search",
+        "groupStyle": "NO_ZIPPY",
+        "subParams": [
+          {
+            "type": "CHECKBOX",
+            "name": "siteSearchChecbox",
+            "checkboxText": "Attribute Site Search",
+            "simpleValueType": true,
+            "help": "Attribute the \u003cstrong\u003esearch_term\u003c/strong\u003e parameter.",
+            "alwaysInSummary": true
+          }
+        ],
+        "enablingConditions": [
+          {
+            "paramName": "variableType",
+            "paramValue": "attribution",
+            "type": "EQUALS"
+          }
+        ]
       }
     ]
   },
@@ -267,9 +294,10 @@ const makeInteger = require('makeInteger');
 
 const jsonData = data.jsonData;
 const secondDataSource = data.secondDataSource && typeof data.secondDataSource === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource || undefined;
+const items = getEventData('items');
 let items2 = secondDataSource ? secondDataSource.items : [{item_id:"helper_id"}];
 let promo2 = secondDataSource ? secondDataSource.promotion : undefined;
-let items = getEventData('items');
+let searchTerm2 = secondDataSource ? secondDataSource.search_term : undefined;
 const timestampDiff = secondDataSource ? getTimestampMillis()-secondDataSource.timestamp : 0;
 const attributionTime = makeInteger(data.attributionTime)*60000;
 const attributionType = data.attributionType;
@@ -278,6 +306,7 @@ const limitItemsNumber = data.limitItemsNumber;
 if(timestampDiff > attributionTime) {
   items2 = [{item_id:"helper_id"}];
   promo2 = undefined;
+  searchTerm2 = undefined;
 }
 
 if(data.variableType === 'attribution') { 
@@ -334,7 +363,7 @@ if(data.variableType === 'attribution') {
       if (limitItemsNumber) {
         uniqueItems = uniqueItems.slice(0, limitItemsNumber);
       }      
-      let extract = {promotion:promo2,items:uniqueItems,timestamp:getTimestampMillis()}; 
+      let extract = {items:uniqueItems,promotion:promo2,search_term:searchTerm2,timestamp:getTimestampMillis()}; 
         extract = jsonData && extract ? JSON.stringify(extract) : extract;
           return extract ;    
     }
@@ -344,7 +373,14 @@ if(data.variableType === 'attribution') {
     const promo = {creative_name:creative_name, creative_slot:creative_slot, promotion_id:promotion_id, promotion_name:promotion_name, location_id:location_id};
     
     const promoAttribution = attributionType === 'firstClickAttribution' && promo2 ? promo2 : promo;
-    let extract = {items:items2,promotion:promoAttribution,timestamp:getTimestampMillis()};
+    let extract = {items:items2,promotion:promoAttribution,search_term:searchTerm2,timestamp:getTimestampMillis()};
+      extract = jsonData && extract ? JSON.stringify(extract) : extract;
+        return extract;
+  }
+  const searchTerm = data.siteSearchChecbox ? getEventData('search_term') : undefined;
+  if (searchTerm) {
+    const siteSearchttribution = attributionType === 'firstClickAttribution' && searchTerm2 ? searchTerm2: searchTerm;
+    let extract = {search_term:searchTerm,items:items2,promotion:promo2,timestamp:getTimestampMillis()};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
   }
@@ -362,6 +398,8 @@ else if (data.variableType === 'output') {
     output = promo2 ? promo2.creative_slot : undefined;
   } else if (param === 'location_id') {
     output = promo2 ? promo2.location_id : undefined;
+  } else if (param === 'search_term') {
+    output = searchTerm2 ? searchTerm2 : undefined;
   } else if (param === 'items' && items) {
     items.forEach(item => {
       items2.forEach(item2 => {
@@ -433,6 +471,10 @@ ___SERVER_PERMISSIONS___
               {
                 "type": 1,
                 "string": "index"
+              },
+              {
+                "type": 1,
+                "string": "search_term"
               }
             ]
           }
@@ -461,4 +503,4 @@ scenarios: []
 
 ___NOTES___
 
-Created on 1/7/2023, 9:34:16 PM
+Created on 1/16/2023, 8:49:27 PM
