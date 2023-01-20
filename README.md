@@ -13,12 +13,14 @@ A similar [Variable Template do also exist for **GTM (Web)**](https://github.com
 
 | Functionality  | GTM (Web) | Server-side GTM |
 | ------------- | ------------- | ------------- |
-| Cross (sub)domain tracking | No | Yes |
+| Cross (sub)domain tracking | No * | Yes |
 | Server to Server-side (Measurement Protocol) | No | Yes |
 | Attribution/processing | Users browser | Server-side |
 | Attribution time | Custom Time | GA4 Session or Custom Time |
 | Storage Limitation | Yes | No |
 | Costs Money | No | Yes |
+
+\* Cookies can do cross subdomain tracking, but are not very suitable due to very low storage capasity.
 
 In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution.
 
