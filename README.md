@@ -14,7 +14,6 @@ A similar [Variable Template do also exist for **GTM (Web)**](https://github.com
 | Functionality  | GTM (Web) | Server-side GTM |
 | ------------- | ------------- | ------------- |
 | Cross (sub)domain tracking | No | Yes |
-| Storage in Incognito Mode | Depends on browser | Yes |
 | Server to Server-side (Measurement Protocol) | No | Yes |
 | Attribution/processing | Users browser | Server-side |
 | Attribution time | Custom Time | GA4 Session or Custom Time |
