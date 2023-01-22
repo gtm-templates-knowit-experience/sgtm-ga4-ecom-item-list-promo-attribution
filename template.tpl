@@ -156,6 +156,14 @@ ___TEMPLATE_PARAMETERS___
     "groupStyle": "NO_ZIPPY",
     "subParams": [
       {
+        "type": "CHECKBOX",
+        "name": "customAttributionTime",
+        "checkboxText": "Custom Attribution Time",
+        "simpleValueType": true,
+        "help": "As standard, attribution time is the same as a \u003cstrong\u003e\u003ca href\u003d\"https://support.google.com/analytics/answer/9191807\" target\u003d\"_blank\"\u003eGA4 Session\u003c/a\u003e\u003c/strong\u003e, but you can choose a \u003cstrong\u003ecustom attribution time\u003c/strong\u003e if that better fits your users behaviour.",
+        "alwaysInSummary": true
+      },
+      {
         "type": "TEXT",
         "name": "attributionTime",
         "displayName": "Attribution Time in Minutes",
@@ -172,7 +180,14 @@ ___TEMPLATE_PARAMETERS___
             "type": "POSITIVE_NUMBER"
           }
         ],
-        "valueHint": "30"
+        "valueHint": "30",
+        "enablingConditions": [
+          {
+            "paramName": "customAttributionTime",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ]
       },
       {
         "type": "RADIO",
@@ -298,8 +313,11 @@ const items = getEventData('items');
 let items2 = secondDataSource ? secondDataSource.items : [{item_id:"helper_id"}];
 let promo2 = secondDataSource ? secondDataSource.promotion : undefined;
 let searchTerm2 = secondDataSource ? secondDataSource.search_term : undefined;
-const timestampDiff = secondDataSource ? getTimestampMillis()-secondDataSource.timestamp : 0;
-const attributionTime = makeInteger(data.attributionTime)*60000;
+
+const timestamp = data.attributionTime ? getTimestampMillis() : getEventData('ga_session_id');
+const timestamp2 = secondDataSource ? secondDataSource.timestamp : timestamp;
+const timestampDiff = secondDataSource && data.attributionTime ? timestamp-secondDataSource.timestamp : timestamp;
+const attributionTime = data.attributionTime ? makeInteger(data.attributionTime)*60000 : timestamp2;
 const attributionType = data.attributionType;
 const limitItemsNumber = data.limitItemsNumber;
 
@@ -363,7 +381,7 @@ if(data.variableType === 'attribution') {
       if (limitItemsNumber) {
         uniqueItems = uniqueItems.slice(0, limitItemsNumber);
       }      
-      let extract = {items:uniqueItems,promotion:promo2,search_term:searchTerm2,timestamp:getTimestampMillis()}; 
+      let extract = {items:uniqueItems,promotion:promo2,search_term:searchTerm2,timestamp:timestamp}; 
         extract = jsonData && extract ? JSON.stringify(extract) : extract;
           return extract ;    
     }
@@ -373,14 +391,14 @@ if(data.variableType === 'attribution') {
     const promo = {creative_name:creative_name, creative_slot:creative_slot, promotion_id:promotion_id, promotion_name:promotion_name, location_id:location_id};
     
     const promoAttribution = attributionType === 'firstClickAttribution' && promo2 ? promo2 : promo;
-    let extract = {items:items2,promotion:promoAttribution,search_term:searchTerm2,timestamp:getTimestampMillis()};
+    let extract = {items:items2,promotion:promoAttribution,search_term:searchTerm2,timestamp:timestamp};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
   }
   const searchTerm = data.siteSearchChecbox ? getEventData('search_term') : undefined;
   if (searchTerm) {
     const siteSearchttribution = attributionType === 'firstClickAttribution' && searchTerm2 ? searchTerm2: searchTerm;
-    let extract = {search_term:searchTerm,items:items2,promotion:promo2,timestamp:getTimestampMillis()};
+    let extract = {search_term:searchTerm,items:items2,promotion:promo2,timestamp:timestamp};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
   }
@@ -436,6 +454,10 @@ ___SERVER_PERMISSIONS___
           "value": {
             "type": 2,
             "listItem": [
+              {
+                "type": 1,
+                "string": "ga_session_id"
+              },
               {
                 "type": 1,
                 "string": "items"
@@ -503,4 +525,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 1/16/2023, 8:49:27 PM
+Created on 1/22/2023, 9:51:14 PM
+
+
