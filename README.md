@@ -1,11 +1,11 @@
 # GA4 - Item List & Promotion Attribution - SGTM Variable (Server)
 **Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this solution).
 
-This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List, Promotion or 
-** to revenue or ecommerce Events (ex. purchase):
+This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List**, **Promotion** & **Search Term** to revenue or ecommerce Events (ex. purchase):
 * Last Click Attribution
 * First Click Attribution
 * Attribution Time (for how long should Item List or Promotion be attributed)
+  * Attribution Time can be either **GA4 Session** or **Custom Attribution Time**
 
 ![GA4 Item List Attribution example](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ga4-item-list-attribution-animation.gif)
 
@@ -142,8 +142,12 @@ We must create a decent number of Variables. Suggested Variable names are listed
 *	++
 
 ### ecom - attribution time - minutes – C
+As standard, attribution time is the same as a **[GA4 Session](https://support.google.com/analytics/answer/9191807)**, but you can choose a **Custom Attribution Time** if that better fits your users behaviour.
+
+Create this variable if you are going to use **Custom Attribution Time**.
+
 Since attribution time is referenced in several variables, it’s recommended to create a Constant Variable with the attribution time in minutes.
-How long the attribution time should be is up to you. Time is counted from the last **select_promotion**, **select_item** or **add_to_cart** Event. 
+How long the custom attribution time should be is up to you. Time is counted from the last **select_promotion**, **select_item** or **add_to_cart** Event. 
 
 ![ecom - attribution time - minutes – C](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-attribution%20time-minutes-C.png)
 
@@ -200,7 +204,8 @@ This variable will do both Firestore Read and Write.
 *	**Variable Type:** Extract Item Lists & Promotion for Attribution
 *	**Second Data Source:** {{ecom - item_list & promotion - Firestore – FL}}
 * Attribution
-  * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
+  * **Custom Attribution Time:** Tick this box if you are using **Custom Attribution Time**
+    * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
   * **Attribution Type:** Select Last or First Click Attribution
 * Other Settings
   * **Handle data as string:** This will save attribution data as a string. Not relevant when using Firestore.
@@ -236,7 +241,8 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (thi
 * **Output:** Items
 * **Second Data Source:** {{ecom – item_list & promotion – Firestore – FL}}
 * Attribution
-  * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
+  * **Custom Attribution Time** Tick this box if you are using **Custom Attribution Time**
+    * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
 
 ![ecom - items - item_list & promotion - merge – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/sgtm-ga4-items-item_list-and-promotion-merge-CT.png)
 
