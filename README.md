@@ -130,18 +130,18 @@ Install the following Server-side GTM Templates:
 
 ### Create Variables
 We must create a decent number of Variables. Suggested Variable names are listed below, and are also used throughout the documentation.
-*	ecom - attribution time - minutes – C
-*	ecom - item_list & promotion - Lookup - Events – LT
-*	GA(4) - client_id – ED
-*	GA(4) - client_id - sha256 – hex
-*	ecom - item_list & promotion - Firestore – FL
-*	ecom - item_list & promotion - extract – CT
+*	ecom - attribution time - minutes - C
+*	ecom - item_list & promotion - Lookup - Events - LT
+*	GA(4) - client_id - ED
+*	GA(4) - client_id - sha256 - hex
+*	ecom - item_list & promotion - Firestore - FL
+*	ecom - item_list & promotion - extract - CT
 *	ecom - items - ED
-*	ecom - items - item_list & promotion - merge – CT
-*	ecom - items - item_list & promotion - merge – LT
+*	ecom - items - item_list & promotion - merge - CT
+*	ecom - items - item_list & promotion - merge - LT
 *	++
 
-### ecom - attribution time - minutes – C
+### ecom - attribution time - minutes - C
 As standard, attribution time is the same as a **[GA4 Session](https://support.google.com/analytics/answer/9191807)**, but you can choose a **Custom Attribution Time** if that better fits your users behaviour.
 
 Create this variable if you are going to use **Custom Attribution Time**.
@@ -162,50 +162,50 @@ The following Events are necessary: **purchase, begin_checkout & add_to_cart** f
 
 ![ecom - item_list & promotion - Lookup - Events - LT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-Lookup-Events-LT.png)
 
-* Name the Variable **ecom - items - item_list & promotion - Lookup - Events – LT**.
+* Name the Variable **ecom - items - item_list & promotion - Lookup - Events - LT**.
 
-### GA(4) - client_id – ED
+### GA(4) - client_id - ED
 The Client Id is going to be used as an identifier in this solution.
 Create an **Event Data** Variable and add **client_id** as **Key Path**.
 
 ![GA(4) - client_id – ED](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA(4)-client_id-ED.png)
 
-*	Name the Variable **GA(4) - client_id – ED**.
+*	Name the Variable **GA(4) - client_id - ED**.
 
-### GA(4) - client_id - sha256 – hex
+### GA(4) - client_id - sha256 - hex
 With Server-side GTM, the **Client ID** can sometimes come from the **_ga** cookie, and other times from the **FPID** cookie if you have chosen **Migrate from JavaScript Managed Client ID** in SGTM. Client ID from the FPID cookie can sometimes contain / (slash). An id with a slash can’t be a document in Firestore (the document would be broken).
 
-To get around this potential issue, we **hash the Client ID encoded as hex**. Create a **sha256 Hasher** Variable, and **Value to hash** should be **{{GA(4) – client_id – ED}}**.
+To get around this potential issue, we **hash the Client ID encoded as hex**. Create a **sha256 Hasher** Variable, and **Value to hash** should be **{{GA(4) – client_id - ED}}**.
 
 In addition, using data pseudonymization or anonymization when you can is always a good thing.
 
 ![GA(4) - client_id - sha256 – hex](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA(4)-client_id-sha256-hex.png)
 
-* Name the Variable **GA(4) - client_id - sha256 – hex**.
+* Name the Variable **GA(4) - client_id - sha256 - hex**.
 
-### ecom - item_list & promotion - Firestore – FL
+### ecom - item_list & promotion - Firestore - FL
 We are using the **Firestore Lookup** to read data from Firestore. You can query Firestore using either **Document Path**, or **Collection & query**. We are using Collection & query simply because this will not throw any warnings in Server-side GTM Preview if you query an id that doesn’t exist (yet).
 How to name and organize your Firestore document is up to you, but these are the settings used in this example:
 
 *	**Document Path:** ecommerce
-*	**Field:** _id ==_ {{GA(4) - client_id - sha256 – hex}}
+*	**Field:** _id ==_ {{GA(4) - client_id - sha256 - hex}}
 *	**Key Path:** int_attribution
 *	**Project ID:** _Your GCP Project ID_
 
 ![ecom - item_list & promotion - Firestore – FL](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-Firestore-FL.png)
 
-* Name the Variable **ecom - item_list & promotion - Firestore – FL**.
+* Name the Variable **ecom - item_list & promotion - Firestore - FL**.
 
-### ecom - item_list & promotion - extract – CT
+### ecom - item_list & promotion - extract - CT
 Select the **GA4 Ecommerce – Item List & Promotion Attribution** Variable (this Template). This variable will **extract Item List & Promotion dat**a from GA4 Ecommerce and create the attribution. With other words, attribution happens at collection time.
 
 This variable will do both Firestore Read and Write.
 
 *	**Variable Type:** Extract Item Lists & Promotion for Attribution
-*	**Second Data Source:** {{ecom - item_list & promotion - Firestore – FL}}
+*	**Second Data Source:** {{ecom - item_list & promotion - Firestore - FL}}
 * Attribution
   * **Custom Attribution Time:** Tick this box if you are using **Custom Attribution Time**
-    * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
+    * **Attribution Time in Minutes:** {{ecom - attribution time - minutes - C}}
   * **Attribution Type:** Select Last or First Click Attribution
 * Other Settings
   * **Handle data as string:** This will save attribution data as a string. Not relevant when using Firestore.
@@ -213,14 +213,14 @@ This variable will do both Firestore Read and Write.
 
 ![ecom - item_list & promotion - extract – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-extract-CT.png)
 
-* Name the Variable **ecom - item_list & promotion - extract – CT**.
+* Name the Variable **ecom - item_list & promotion - extract - CT**.
 
-### ecom - items – ED
+### ecom - items - ED
 Create an **Event Data** Variable and add **items** as **Key Path**.
 
 ![ecom - items – ED](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-items-ED.png)
 
-*	Name the Variable **ecom - items – ED**.
+*	Name the Variable **ecom - items - ED**.
 
 In addition, you must create **Promotion & Search Term Variables** using the same Variable Type if you have implemented **Promotion without Items**, or if you want to attribute **Search Term**:
 
@@ -233,7 +233,7 @@ In addition, you must create **Promotion & Search Term Variables** using the sam
 | ecom - promo - promotion_name - ED | promotion_name |	
 | search_term - ED | search_term |	
 
-### ecom - items - item_list & promotion - merge – CT
+### ecom - items - item_list & promotion - merge - CT
 
 Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (this Template). This Variable merges Implemented data & data from Second Data Source (ex. Firestore).
 
@@ -242,11 +242,11 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (thi
 * **Second Data Source:** {{ecom – item_list & promotion – Firestore – FL}}
 * Attribution
   * **Custom Attribution Time** Tick this box if you are using **Custom Attribution Time**
-    * **Attribution Time in Minutes:** {{ecom - attribution time - minutes – C}}
+    * **Attribution Time in Minutes:** {{ecom - attribution time - minutes - C}}
 
 ![ecom - items - item_list & promotion - merge – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/sgtm-ga4-items-item_list-and-promotion-merge-CT.png)
 
-*	Name the Variable **ecom - items - item_list & promotion - merge – CT**.
+*	Name the Variable **ecom - items - item_list & promotion - merge - CT**.
 
 In addition, you must create **Promotion & Search Term Variables** using the same Variable Type if you have implemented **Promotion without Items**, or if you want to attribute **Search Term**:
 
@@ -255,21 +255,21 @@ In addition, you must create **Promotion & Search Term Variables** using the sam
 | ecom - location_id - merge - CT | Location ID |
 | ecom - promo - creative_name - merge - CT | Creative Name |
 | ecom - promo - creative_slot - merge - CT | Creative Slot |
-| ecom - promo - promotion_id – merge - CT | Promotion ID |	
-| ecom - promo - promotion_name – merge - CT | Promotion Name |	
+| ecom - promo - promotion_id - merge - CT | Promotion ID |	
+| ecom - promo - promotion_name - merge - CT | Promotion Name |	
 | ecom - search_term - merge - CT | Search Term |	
 
-### ecom - items - item_list & promotion - merge – LT
+### ecom - items - item_list & promotion - merge - LT
 This Lookup Table controls when to use merged (attributed) items data, and when to use implemented data.
 
-*	**Input Variable:** {{ ecom - items - item_list & promotion - Lookup - Events – LT}}
+*	**Input Variable:** {{ ecom - items - item_list & promotion - Lookup - Events - LT}}
 *	**Input:** true
 *	**Output:** {{ecom - items - item_list & promotion - merge - CT}}
 *	**Default Value:** {{ecom - items - ED}}
 
 ![ecom - items - item_list & promotion - merge – LT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-items-item_list-and-promotion-merge-LT.png)
 
-* Name the Variable **ecom - items - item_list & promotion - merge – LT**.
+* Name the Variable **ecom - items - item_list & promotion - merge - LT**.
 
 In addition, you must create **Promotion & Search Term Variables** using the same Variable Type if you have implemented **Promotion without Items**, or if you want to attribute **Search Term**:
 
@@ -278,8 +278,8 @@ In addition, you must create **Promotion & Search Term Variables** using the sam
 | ecom - location_id - merge - LT | {{ecom - location_id - merge - CT}} | {{ecom - location_id - ED}} |
 | ecom - promo - creative_name - merge - LT | {{ecom - promo - creative_name - merge - CT}} | {{ecom - promo - creative_name - ED}} |
 | ecom - promo - creative_slot - merge - LT | {{ecom - promo - creative_slot - merge - CT}} | {{ecom - promo - creative_slot - ED}} |
-| ecom - promo - promotion_id – merge - LT | {{ecom - promo - promotion_id - merge - CT}} |	{{ecom - promo - promotion_id - ED}} |
-| ecom - promo - promotion_name – merge - LT | {{ecom - promo - promotion_name - merge - CT}} |	{{ecom - promo - promotion_name - ED}} |
+| ecom - promo - promotion_id - merge - LT | {{ecom - promo - promotion_id - merge - CT}} |	{{ecom - promo - promotion_id - ED}} |
+| ecom - promo - promotion_name - merge - LT | {{ecom - promo - promotion_name - merge - CT}} |	{{ecom - promo - promotion_name - ED}} |
 | ecom - search_term - merge - LT | {{ecom - search_term - merge - CT}} |	{{search_term - ED}} |
 
 ## Trigger
@@ -301,7 +301,7 @@ Create a Custom Trigger Type with the following settings:
 ### Ecom - Item List & Promotion Attribution – Firestore
 Select the **Firestore Writer** Tag, and add the following settings:
 
-* **Firebase Path:** ecommerce/{{GA(4) - client_id - sha256 – hex}}
+* **Firebase Path:** ecommerce/{{GA(4) - client_id - sha256 - hex}}
 * Override Firebase Project ID
   * **Firebase Project ID:** your-project-id
 * Add Timestamp
