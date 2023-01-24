@@ -1,5 +1,5 @@
 # GA4 - Item List & Promotion Attribution - SGTM Variable (Server)
-**Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this solution).
+**Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this Template solution).
 
 This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List**, **Promotion** & **Search Term** to revenue or ecommerce Events (ex. purchase):
 * Last Click Attribution
@@ -28,7 +28,7 @@ Firestore data example below.
 ![Firestore storage example](https://raw.githubusercontent.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/main/images/firestore-storage-example.png)
 
 ## Google Cloud, Firestore & Cloud Functions Setup
-It’s recommended to create a [new Google Cloud Project](https://console.cloud.google.com/projectcreate) for the Firestore setup if you want an easier understanding of cost.
+If you want an easier understanding of cost, it’s recommended to create a **[new Google Cloud Project](https://console.cloud.google.com/projectcreate)** for the Firestore setup.
 
 ###  Firestore Setup  
 * Select a [Cloud Firestore mode](https://console.cloud.google.com/firestore/welcome)
