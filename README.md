@@ -65,7 +65,8 @@ These functions will listen to changes in Firestore, and will take a **Timestamp
   * **Environment**: 1st gen
   * **Function name**: ga4-int_attribution-date-time_create
   * **Region**: choose a region close to or the same as Firestore
-  * **Trigger type**: create
+  * **Trigger type**: Cloud Firestore
+  * **Event type**: create
   * **Document path**: ecommerce/{docId}
 * Runtime
   * **Memory allocated**: 256 MB (128 MB may also work)
