@@ -314,7 +314,7 @@ let items2 = secondDataSource ? secondDataSource.items : [{item_id:"helper_id"}]
 let promo2 = secondDataSource ? secondDataSource.promotion : undefined;
 let searchTerm2 = secondDataSource ? secondDataSource.search_term : undefined;
 
-const timestamp = data.attributionTime ? getTimestampMillis() : getEventData('ga_session_id');
+const timestamp = data.attributionTime ? getTimestampMillis() : makeInteger(getEventData('ga_session_id'));
 const timestamp2 = secondDataSource ? secondDataSource.timestamp : timestamp;
 const timestampDiff = secondDataSource && data.attributionTime ? timestamp-secondDataSource.timestamp : timestamp;
 const attributionTime = data.attributionTime ? makeInteger(data.attributionTime)*60000 : timestamp2;
@@ -525,6 +525,6 @@ scenarios: []
 
 ___NOTES___
 
-Created on 1/22/2023, 9:51:14 PM
+Created on 1/28/2023, 9:03:30 PM
 
 
