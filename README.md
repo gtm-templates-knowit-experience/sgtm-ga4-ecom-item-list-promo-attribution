@@ -4,6 +4,7 @@
 This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List**, **Promotion** & **Search Term** to revenue or ecommerce Events (ex. purchase):
 * Last Click Attribution
 * First Click Attribution
+* Reset/delete Attribution Data after Purchase
 * Attribution Time (for how long should Item List or Promotion be attributed)
   * Attribution Time can be either **GA4 Session** or **Custom Attribution Time**
 
@@ -204,6 +205,8 @@ This variable will do both Firestore Read and Write.
 *	**Variable Type:** Extract Item Lists & Promotion for Attribution
 *	**Second Data Source:** {{ecom - item_list & promotion - Firestore - FL}}
 * Attribution
+  * **Delete Attribution Data after Purchase:** Tick this box to delete/reset attribution data after a purchase has happened.
+    * You only need this setting for the Variable that attribute Items. Not necessary for Event-level attribution Variables.
   * **Custom Attribution Time:** Tick this box if you are using **Custom Attribution Time**
     * **Attribution Time in Minutes:** {{ecom - attribution time - minutes - C}}
   * **Attribution Type:** Select Last or First Click Attribution
@@ -288,8 +291,9 @@ In addition, you must create **Promotion & Search Term Variables** using the sam
 Create a Custom Trigger Type with the following settings:  
 * **This trigger fires on:** Some Events
 * **Client Name** _equals_ GA4 (the name you have given your GA4 Client)
-* **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart)$
-  * If you are going to attribute **search_term** as well, RegEx should be **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart|view_search_results)$
+* **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart|purchase)$
+  * **purchase** Event in RegEx is only needed if you want to delete/reset attribution data after purchase
+  *  If you are going to attribute **search_term** as well, RegEx should be **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart|purchase|view_search_results)$
 * **ecom – item_list & promotion – extract – CT** _does not equal_ undefined
 
 ![ecom - select_item, select_promotion & add_to_cart](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Trigger-ecom-select_item-select_promotion-add_to_cart.png)
@@ -331,7 +335,7 @@ Edit **Parameters to Add / Edit** in your GA4 Tag:
 
 ![GA4 Tag – Parameters to Add/Edit](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-GA4-Parameters-to-Add-or-Edit.png)
 
-Your Server-side GTM setup is now complete, but you can do even more to control attribution. If the case is that customers usually do several purchases within a session, then you maybe want to delete attribution data after each purchase.
+Your Server-side GTM setup is now complete.
 
 ## Web implementation
 To make the attribution work, also the implementation on the website must be correct. It’s especially implementation of Item List that can be incorrect.

@@ -157,6 +157,21 @@ ___TEMPLATE_PARAMETERS___
     "subParams": [
       {
         "type": "CHECKBOX",
+        "name": "deleteAttribution",
+        "checkboxText": "Delete Attribution Data after Purchase",
+        "simpleValueType": true,
+        "alwaysInSummary": true,
+        "help": "Tick this box if you want attribution data to be deleted/reset after \u003cstrong\u003epurchase\u003c/strong\u003e.",
+        "enablingConditions": [
+          {
+            "paramName": "variableType",
+            "paramValue": "attribution",
+            "type": "EQUALS"
+          }
+        ]
+      },
+      {
+        "type": "CHECKBOX",
         "name": "customAttributionTime",
         "checkboxText": "Custom Attribution Time",
         "simpleValueType": true,
@@ -309,6 +324,7 @@ const makeInteger = require('makeInteger');
 
 const jsonData = data.jsonData;
 const secondDataSource = data.secondDataSource && typeof data.secondDataSource === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource || undefined;
+const event_name = getEventData('event_name');
 const items = getEventData('items');
 let items2 = secondDataSource ? secondDataSource.items : [{item_id:"helper_id"}];
 let promo2 = secondDataSource ? secondDataSource.promotion : undefined;
@@ -438,6 +454,12 @@ else if (data.variableType === 'output') {
   return output;
 }
 
+if(data.deleteAttribution === true && event_name === 'purchase') {
+  let extract = {search_term:undefined,items:[{item_id:"helper_id"}],promotion:undefined,timestamp:timestamp};
+      extract = jsonData && extract ? JSON.stringify(extract) : extract;
+        return extract;
+}
+
 
 ___SERVER_PERMISSIONS___
 
@@ -497,6 +519,10 @@ ___SERVER_PERMISSIONS___
               {
                 "type": 1,
                 "string": "search_term"
+              },
+              {
+                "type": 1,
+                "string": "event_name"
               }
             ]
           }
@@ -525,6 +551,5 @@ scenarios: []
 
 ___NOTES___
 
-Created on 1/28/2023, 9:03:30 PM
-
+Created on 2/7/2023, 8:20:44 PM
 
