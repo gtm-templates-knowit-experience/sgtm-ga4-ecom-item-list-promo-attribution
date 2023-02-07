@@ -2,9 +2,11 @@ homepage: "https://github.com/gtm-templates-knowit-experience/"
 documentation: "https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution"
 versions:
   # Latest version
+  - sha: 7bd466f774966ed828c99438ca20641450e27785
+    changeNotes: Added support for deleting/resetting attribution after purchase
+  # Older versions
   - sha: ac0fc4ec605415fae9ebe05f6752085802dd783f
     changeNotes: Timestamp fix
-  # Older versions
   - sha: b0953e9b4e12e5311dc14b8c6a14b953e59caf97
     changeNotes: Added functionality and rewrote some code
   - sha: af10185a856ee62776fdd9c9209e9ae04be5a6ce
