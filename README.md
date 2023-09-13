@@ -10,6 +10,8 @@ This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item
 
 ![GA4 Item List Attribution example](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ga4-item-list-attribution-animation.gif)
 
+This Template is available in the **[Google Tag Manager Template Gallery](https://tagmanager.google.com/gallery/#/owners/gtm-templates-knowit-experience/templates/sgtm-ga4-ecom-item-list-promo-attribution)**.
+
 A similar [Variable Template do also exist for **GTM (Web)**](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution). Differences between doing the attribution with GTM (Web) vs. Server-side GTM (SGTM) are listed below.
 
 | Functionality  | GTM (Web) | Server-side GTM |
