@@ -77,7 +77,7 @@ These functions will listen to changes in Firestore, and will take a **Timestamp
   * Allow internal traffic only
 
 ##### Code
-* **Runtime**: Node.js 16
+* **Runtime**: Node.js (latest version)
 * **Source code**: Inline Editor
 * **Entry point**: makeDateTime
 
