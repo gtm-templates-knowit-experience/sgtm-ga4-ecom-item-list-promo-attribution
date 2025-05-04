@@ -306,7 +306,11 @@ Create a Custom Trigger Type with the following settings:
 
 ### Ecom - Item List & Promotion Attribution – Firestore
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 Select the **Firestore Writer** Tag, and add the following settings:
+=======
+Select the [**Firestore Writer with TTL** Tag](https://github.com/gtm-templates-knowit-experience/sgtm-firestore-writer-with-ttl-tag), and add the following settings:
+>>>>>>> Stashed changes
 =======
 Select the [**Firestore Writer with TTL** Tag](https://github.com/gtm-templates-knowit-experience/sgtm-firestore-writer-with-ttl-tag), and add the following settings:
 >>>>>>> Stashed changes
