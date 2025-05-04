@@ -1,14 +1,14 @@
 # GA4 - Item List & Promotion Attribution - SGTM Variable (Server)
-**Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But, unlike **Enhanced Ecommerce**, no revenue or conversions are attributed back to Promotion or Item Lists (at the time of creating this Template solution).
+**Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But - no revenue or conversions are attributed back to Promotion or Item Lists. You have to do this attribution yourself.
 
-This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List**, **Promotion** & **Search Term** to revenue or ecommerce Events (ex. purchase):
+This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List**, **Promotion** & **Search Term** to revenue or ecommerce Events (ex. purchase) & Items:
 * Last Click Attribution
 * First Click Attribution
 * Reset/delete Attribution Data after Purchase
 * Attribution Time (for how long should Item List or Promotion be attributed)
   * Attribution Time can be either **GA4 Session** or **Custom Attribution Time**
 
-![GA4 Item List Attribution example](https://github.com/gtm-templates-knowit-experience/gtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ga4-item-list-attribution-animation.gif)
+![GA4 Item List Attribution example](images/ga4-item-list-attribution-animation.gif)
 
 This Template is available in the **[Google Tag Manager Template Gallery](https://tagmanager.google.com/gallery/#/owners/gtm-templates-knowit-experience/templates/sgtm-ga4-ecom-item-list-promo-attribution)**.
 
@@ -27,9 +27,9 @@ A similar [Variable Template do also exist for **GTM (Web)**](https://github.com
 In the following documentation, **[Firestore](https://cloud.google.com/firestore/)** will be used to handle the attribution.
 
 Firestore data example below.
-![Firestore storage example](https://raw.githubusercontent.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/main/images/firestore-storage-example.png)
+![Firestore storage example](images/firestore-storage-example.png)
 
-## Google Cloud, Firestore & Cloud Functions Setup
+## Google Cloud & Firestore Setup
 If you want an easier understanding of cost, it’s recommended to create a **[new Google Cloud Project](https://console.cloud.google.com/projectcreate)** for the Firestore setup.
 
 ###  Firestore Setup  
@@ -54,84 +54,16 @@ In Firestore, go to **[Time to live (TTL)](https://console.cloud.google.com/fire
 * **Timestamp field**: expire_at
 * Click **Create** button
 
-### Cloud Functions
-To be able to use **TTL**, the TTL field must be of type **Date and time**. At the time of writing, SGTM can't store data in this format to Firestore.
-To get around this we use **[Cloud Functions](https://cloud.google.com/functions)** to write **Date and time** to Firestore. Note: This increases Firestore reads & writes.
-
-#### Create function
-We need to create 2 functions; **create** & **update**.
-These functions will listen to changes in Firestore, and will take a **Timestamp** set by SGTM in a **unix format (number)**, and rewrite that number to **Date and time**.
-
-##### Configuration
-* Basics
-  * **Environment**: 1st gen
-  * **Function name**: ga4-int_attribution-date-time_create
-  * **Region**: choose a region close to or the same as Firestore
-  * **Trigger type**: Cloud Firestore
-  * **Event type**: create
-  * **Document path**: ecommerce/{docId}
-* Runtime
-  * **Memory allocated**: 256 MB (128 MB may also work)
-  * Other settings as is
-* Connections
-  * Allow internal traffic only
-
-##### Code
-* **Runtime**: Node.js (latest version)
-* **Source code**: Inline Editor
-* **Entry point**: makeDateTime
-
-###### index.js
-
-```javascript
-const Firestore = require('@google-cloud/firestore');
-const firestore = new Firestore({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT
-});
-
-exports.makeDateTime = event => {
-  const curValue = event.value.fields.expire_at.doubleValue;
-  if (curValue && typeof curValue === 'number') {
-    const affectedDoc = firestore.doc(event.value.name.split('/documents/')[1]);
-
-    let newValue = new Date(curValue);
-    newValue = new Date(newValue.setDate(newValue.getDate() + 7)); // Set TTL to 7 days from now.
-
-    return affectedDoc.update({
-      expire_at: newValue
-    });
-  }
-};
-```
-The reason for setting TTL to 7 days from now is to reduce TTL deletes. If we set TTL today, and the user comes back in a couple of days, TTL deletes will be done twice for this user.
-
-###### package.json
-
-```json
-{
-  "name": "sample-firestore",
-  "version": "0.0.1",
-  "dependencies":{
-   "firebase-admin": "11.3.0",
-   "firebase-functions": "4.1.0"
-}
-}
-```
-
-**Deploy function**.
-
-* Now create a identical function, but select **Trigger type** *update* instead.
-* Name this function **ga4-int_attribution-date-time_update**
-
-Cloud Functions setup is now completed.
-
 ## Server-side GTM Setup
-Install the following Server-side GTM Templates:
-* GA4 - Item List & Promotion Attribution (this Variable Template)
-*	[Firestore Writer](https://tagmanager.google.com/gallery/#/owners/stape-io/templates/firestore-writer-tag) Tag
-* [sha256 Hasher](https://tagmanager.google.com/gallery/#/owners/gtm-templates-simo-ahava/templates/sha256-hasher) Variable
 
-### Create Variables
+### Manual Setup
+Install the following Server-side GTM Templates:
+* **GA4 - Item List & Promotion Attribution** (this Variable Template)
+* [**Firestore Writer with TTL Tag**](https://github.com/gtm-templates-knowit-experience/sgtm-firestore-writer-with-ttl-tag)
+    * At the time of writing, this Tag is not vailable in Google Tag Manager Template Gallery.
+* [**sha256 Hasher**](https://tagmanager.google.com/gallery/#/owners/gtm-templates-simo-ahava/templates/sha256-hasher) Variable
+
+#### Create Variables
 We must create a decent number of Variables. Suggested Variable names are listed below, and are also used throughout the documentation.
 *	ecom - attribution time - minutes - C
 *	ecom - item_list & promotion - Lookup - Events - LT
@@ -152,7 +84,7 @@ Create this variable if you are going to use **Custom Attribution Time**.
 Since attribution time is referenced in several variables, it’s recommended to create a Constant Variable with the attribution time in minutes.
 How long the custom attribution time should be is up to you. Time is counted from the last **select_promotion**, **select_item** or **add_to_cart** Event. 
 
-![ecom - attribution time - minutes – C](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-attribution%20time-minutes-C.png)
+![ecom - attribution time - minutes – C](images/ecom-attribution%20time-minutes-C.png)
 
 * Name the Variable **ecom - attribution time - minutes - C**.
 
@@ -163,7 +95,7 @@ Ideally your setup should be as shown in the image below. But, if you are using 
 
 The following Events are necessary: **purchase, begin_checkout & add_to_cart** for a complete **GA4 Item lists: Item list** name report
 
-![ecom - item_list & promotion - Lookup - Events - LT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-Lookup-Events-LT.png)
+![ecom - item_list & promotion - Lookup - Events - LT](images/ecom-item_list-and-promotion-Lookup-Events-LT.png)
 
 * Name the Variable **ecom - items - item_list & promotion - Lookup - Events - LT**.
 
@@ -171,7 +103,7 @@ The following Events are necessary: **purchase, begin_checkout & add_to_cart** f
 The Client Id is going to be used as an identifier in this solution.
 Create an **Event Data** Variable and add **client_id** as **Key Path**.
 
-![GA(4) - client_id – ED](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA(4)-client_id-ED.png)
+![GA(4) - client_id – ED](images/GA(4)-client_id-ED.png)
 
 *	Name the Variable **GA(4) - client_id - ED**.
 
@@ -182,7 +114,7 @@ To get around this potential issue, we **hash the Client ID encoded as hex**. Cr
 
 In addition, using data pseudonymization or anonymization when you can is always a good thing.
 
-![GA(4) - client_id - sha256 – hex](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA(4)-client_id-sha256-hex.png)
+![GA(4) - client_id - sha256 – hex](images/GA(4)-client_id-sha256-hex.png)
 
 * Name the Variable **GA(4) - client_id - sha256 - hex**.
 
@@ -195,7 +127,7 @@ How to name and organize your Firestore document is up to you, but these are the
 *	**Key Path:** int_attribution
 *	**Project ID:** _Your GCP Project ID_
 
-![ecom - item_list & promotion - Firestore – FL](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-Firestore-FL.png)
+![ecom - item_list & promotion - Firestore – FL](images/ecom-item_list-and-promotion-Firestore-FL.png)
 
 * Name the Variable **ecom - item_list & promotion - Firestore - FL**.
 
@@ -216,14 +148,14 @@ This variable will do both Firestore Read and Write.
   * **Handle data as string:** This will save attribution data as a string. Not relevant when using Firestore.
   * **Limit Items:** This will limit number of Items stored. Not relevant when using Firestore.
 
-![ecom - item_list & promotion - extract – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-item_list-and-promotion-extract-CT.png)
+![ecom - item_list & promotion - extract – CT](images/ecom-item_list-and-promotion-extract-CT.png)
 
 * Name the Variable **ecom - item_list & promotion - extract - CT**.
 
 ### ecom - items - ED
 Create an **Event Data** Variable and add **items** as **Key Path**.
 
-![ecom - items – ED](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-items-ED.png)
+![ecom - items – ED](images/ecom-items-ED.png)
 
 *	Name the Variable **ecom - items - ED**.
 
@@ -244,12 +176,14 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (thi
 
 * **Variable Type:** Return Attributed Output
 * **Output:** Items
+* **Add Search Terms To Items:** If you tick this checkbox, **search_term** will be added to **items**. This makes it easier to report search_term related to items. You must create an **Item scoped Dimension** in GA4.
+  * This selection is only available for **Items**
 * **Second Data Source:** {{ecom – item_list & promotion – Firestore – FL}}
 * Attribution
   * **Custom Attribution Time** Tick this box if you are using **Custom Attribution Time**
     * **Attribution Time in Minutes:** {{ecom - attribution time - minutes - C}}
 
-![ecom - items - item_list & promotion - merge – CT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-items-item_list-and-promotion-merge-CT.png)
+![ecom - items - item_list & promotion - merge – CT](images/ecom-items-item_list-and-promotion-merge-CT.png)
 
 *	Name the Variable **ecom - items - item_list & promotion - merge - CT**.
 
@@ -272,7 +206,7 @@ This Lookup Table controls when to use merged (attributed) items data, and when 
 *	**Output:** {{ecom - items - item_list & promotion - merge - CT}}
 *	**Default Value:** {{ecom - items - ED}}
 
-![ecom - items - item_list & promotion - merge – LT](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/ecom-items-item_list-and-promotion-merge-LT.png)
+![ecom - items - item_list & promotion - merge – LT](images/ecom-items-item_list-and-promotion-merge-LT.png)
 
 * Name the Variable **ecom - items - item_list & promotion - merge - LT**.
 
@@ -298,28 +232,28 @@ Create a Custom Trigger Type with the following settings:
   *  If you are going to attribute **search_term** as well, RegEx should be **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart|purchase|view_search_results)$
 * **ecom – item_list & promotion – extract – CT** _does not equal_ undefined
 
-![ecom - select_item, select_promotion & add_to_cart](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Trigger-ecom-select_item-select_promotion-add_to_cart.png)
+![ecom - select_item, select_promotion & add_to_cart](images/Trigger-ecom-select_item-select_promotion-add_to_cart.png)
 
 *	Name the Trigger **ecom - attribute Events**.
 
 ## Tags
 
 ### Ecom - Item List & Promotion Attribution – Firestore
-
-Select the [**Firestore Writer with TTL** Tag](https://github.com/gtm-templates-knowit-experience/sgtm-firestore-writer-with-ttl-tag), and add the following settings:
+Select the **Firestore Writer with TTL** Tag, and add the following settings:
 
 * **Firebase Path:** ecommerce/{{GA(4) - client_id - sha256 - hex}}
 * Override Firebase Project ID
   * **Firebase Project ID:** your-project-id
-* Add Timestamp
-  * **Timestamp field name:** expire_at
+* Add Time to Live
+  * **Time to Live field name:** expire_at
+  * **Time To Live:** 7
 * Custom Data
   * **Field Name:** int_attribution
   * **Field Value:** {{ecom - item_list & promotion - extract - CT}}
   * **Field Name:** id
   * **Field Value:** {{GA(4) - client_id - sha256 - hex}}
 
-![Ecom - Item List & Promotion Attribution – Firestore](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/GA4-Item-List-and-Promotion-Attribution-Firestore.png)
+![Ecom - Item List & Promotion Attribution – Firestore](images/GA4-Item-List-and-Promotion-Attribution-Firestore-TTL.png)
 
 * Add **ecom - attribute Events** as a Trigger to the Tag.
 
@@ -336,7 +270,7 @@ Edit **Parameters to Add / Edit** in your GA4 Tag:
 | location_id | {{ecom - location_id - merge - LT}} | If Promotion without Items is implemented |
 | search_term | {{ecom - search_term - merge - LT}} | If you want to attribute search_term |
 
-![GA4 Tag – Parameters to Add/Edit](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/Tag-GA4-Parameters-to-Add-or-Edit.png)
+![GA4 Tag – Parameters to Add/Edit](images/Tag-GA4-Parameters-to-Add-or-Edit.png)
 
 Your Server-side GTM setup is now complete.
 
@@ -374,17 +308,17 @@ In the setup you will see that Data Layer is mostly Version 1. The **[GA4 Ecom I
 ### select_promotion & view_promotion
 This setup handles both **select_promotion** & **view_promotion**, where promotion also has **Event-level Item Lists**. **location_id** is set to **Page Path**.
 
-![select_promotion & view_promotion](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/gtm-ga4-tag-select_promotion.png)
+![select_promotion & view_promotion](images/gtm-ga4-tag-select_promotion.png)
 
 ### select_item & view_item_list
 This setup handles both **select_item** & **view_item_list**, with **Event-level Item Lists**. **location_id** is set to **Page Path**.
 
-![select_promotion & view_promotion](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/gtm-ga4-tag-select_item.png)
+![select_promotion & view_promotion](images/gtm-ga4-tag-select_item.png)
 
 ### add_to_cart & view_item
 This setup handles **add_to_cart** & **view_item**. **location_id** in this setups is also **Page Path**, but Page Path will only be returned if **item_list_name** or **item_list_id** exist. Otherwise **location_id** will be **undefined**.
 
-![select_promotion & view_promotion](https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution/blob/main/images/gtm-ga4-tag-add_to_cart-view_item.png)
+![select_promotion & view_promotion](images/gtm-ga4-tag-add_to_cart-view_item.png)
 
 ## Attribution explained
 
@@ -396,6 +330,7 @@ Attribution happens on 2 levels:
     - Search Term
 2. Item-level
     - Implemented Items data (ex. Item List name) trumps attributed Items data. Ex. if you are adding a Item to cart directly from a Item List, the implemented Item List Name will be used. If you are adding the Item to cart from a product page (where you shouldn't have a Item List implemented), the attributed Item List Name will be used.
+	- Item Scoped Item List & Promotion attribution are independent of each other. 
 
 * Item-level trumps the Event-level.
   * Promotion without Items will not be attributed to a Item when Promotion with Items are attributed 
@@ -412,7 +347,7 @@ With a Last Click Attribution model, this user journey illustrates the attributi
 2. The user clicks next on a promotion for a bundled phone with earbuds package (“**Promotion 3 with Items**”). This promotion has 2 items attached, the phone and the earbuds. This promotion is attached to the 2 different Item Id’s (**item_id = phone1** and **item_id = earbud2**) and is therefore an Item-level promotion. 
    -	User adds this bundle with 2 items to cart. The add_to_cart Event is attributed to the promotion.
       - User clicks after that on the “**Users Also Looked At**” Item List with other earbuds that it’s also possible to choose. The earbud (item_id = earbud3) the user clicked on is attributed to the “Users Also Looked At” item list. 
-        - On this page, there is also an “Users Also Looked At” item list. User clicks on the first selected earbud (**item_id = earbud2**). The earbud is now attributed to the “Users Also Looked At” item list and is no longer attributed to the initial Item-level promotion.
+        - On this page, there is also an “Users Also Looked At” item list. User clicks on the first selected earbud (**item_id = earbud2**). The earbud is now attributed to the “Users Also Looked At” item list, but is still attributed to the initial Item-level promotion. This because Item Lists and Promotion attribution are independent.
 3. User completes the purchase, and GA4 adds some logic to the result, namely that Item-level trumps the Event-level.
     - The phone (**item_id = phone1**) is attributed to the “**Promotion 3 with Items**” promotion. The promotion didn’t have any Item List, so no Item Lists are attributed. If the promotion also had an Item List, this list would have been attributed.
     - The earbud (**item_id = earbud2**) is attributed to the “**Users Also Looked At**” item list, but in addition, since this item doesn’t have any Item-level promotion, the Event-level promotion “**Promotion 2 without Items**” is also attributed to the earbud. 
@@ -422,7 +357,7 @@ With a Last Click Attribution model, this user journey illustrates the attributi
 In the same scenario, but using First Click Attribution, this would be the result:
 
 1.	Both the phone (**item_id = phone1**) and the earbud (**item_id = earbud2**) would both be attributed to the Item-level “**Promotion 3 with Items**” bundle promotion.
-    - “**Users Also Looked At**” item list would not be attributed to the sale.
+    - “**Users Also Looked At**” item list would also be attributed to the sale, since Item Scoped Item Lists & Promotion are independent.
     - None of the Event-level promotions “**Promotion 1 without Items**” or “**Promotion 2 without Items**” would be attributed since Item-level trumps Event-level.
 
 ## Estimating cost

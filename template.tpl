@@ -1,4 +1,4 @@
-___TERMS_OF_SERVICE___
+﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -10,19 +10,19 @@ ___INFO___
 
 {
   "type": "MACRO",
-  "id": "cvt_temp_public_id",
+  "id": "cvt_NGWF9",
   "version": 1,
-  "securityGroups": [],
   "displayName": "GA4 - Item List \u0026 Promotion Attribution",
   "description": "Attribute GA4 Item List, Promotion or Search Term to revenue \u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last \u0026 First Click Attribution supported.",
   "categories": [
-  "ANALYTICS",
-  "UTILITY",
-  "TAG_MANAGEMENT"
+    "ANALYTICS",
+    "UTILITY",
+    "TAG_MANAGEMENT"
   ],
   "containerContexts": [
     "SERVER"
-  ]
+  ],
+  "securityGroups": []
 }
 
 
@@ -112,6 +112,20 @@ ___TEMPLATE_PARAMETERS___
               }
             ],
             "alwaysInSummary": true
+          },
+          {
+            "type": "CHECKBOX",
+            "name": "itemSearchTerm",
+            "checkboxText": "Add Search Term To Items",
+            "simpleValueType": true,
+            "enablingConditions": [
+              {
+                "paramName": "outputDropDown",
+                "paramValue": "items",
+                "type": "EQUALS"
+              }
+            ],
+            "help": "If you tick this checkbox, \u003cstrong\u003esearch_term\u003c/strong\u003e will be added to \u003cstrong\u003eitems\u003c/strong\u003e. This makes it easier to report search_term related to items purchased.\n\u003cbr /\u003e\u003cbr /\u003e\n\u003cstrong\u003esearch_term\u003c/strong\u003e must be added in GA4 as an \u003cstrong\u003eitem scoped dimension\u003c/strong\u003e."
           }
         ],
         "enablingConditions": [
@@ -321,6 +335,7 @@ const getEventData = require('getEventData');
 const getTimestampMillis = require('getTimestampMillis');
 const JSON = require('JSON');
 const makeInteger = require('makeInteger');
+const Object = require('Object');
 
 const jsonData = data.jsonData;
 const secondDataSource = data.secondDataSource && typeof data.secondDataSource === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource || undefined;
@@ -379,42 +394,53 @@ if(data.variableType === 'attribution') {
     creative_slot = items1[0].creative_slot ? items1[0].creative_slot : creative_slot;
     location_id = items1[0].location_id ? items1[0].location_id : location_id;
 
-    if(items1 && item_id && (item_list_id || item_list_name || promotion_id || promotion_name)) {
-      const itemAttribution = attributionType === 'firstClickAttribution' && items2 ? items2.concat(items1) : items1.concat(items2);
-    let uniqueItems = [];
-    itemAttribution.forEach(x => {
-    let exists = false;
-    for (let i = 0; i < uniqueItems.length; i++) {
-      if (uniqueItems[i].item_id === x.item_id) {
-        exists = true;
-        break;
-      }
+  if (items1 && item_id && (item_list_id || item_list_name || promotion_id || promotion_name)) {
+    const firstClick = attributionType === 'firstClickAttribution';
+    const combined = firstClick ? items2.concat(items1) : items1.concat(items2);  // first vs. last click attribution
+
+    const mergedMap = {};
+    combined.forEach(x => {
+      const id = x.item_id;
+      if (!mergedMap[id]) mergedMap[id] = { item_id: id };
+      const tgt = mergedMap[id];
+
+      ['item_list_id','item_list_name',
+       'promotion_id','promotion_name','creative_name','creative_slot',
+       'location_id','index'
+      ].forEach(field => {
+        if (x[field] !== undefined && tgt[field] === undefined) {
+          tgt[field] = x[field];
+        }
+      });
+    });
+
+    let uniqueItems = Object.keys(mergedMap).map(k => mergedMap[k]);
+    if (limitItemsNumber) {
+      uniqueItems = uniqueItems.slice(0, makeInteger(limitItemsNumber));
     }
-    if (!exists) {
-      uniqueItems.push(x);
-    }
-  });
-      if (limitItemsNumber) {
-        uniqueItems = uniqueItems.slice(0, limitItemsNumber);
-      }      
-      let extract = {items:uniqueItems,promotion:promo2,search_term:searchTerm2,timestamp:timestamp}; 
-        extract = jsonData && extract ? JSON.stringify(extract) : extract;
-          return extract ;    
-    }
+
+    const extract = {
+      items: uniqueItems,
+      promotion: promo2,
+      search_term: searchTerm2,
+      timestamp:   timestamp
+    };
+    return jsonData ? JSON.stringify(extract) : extract;
   }
+}
   
   if (promotion_id||promotion_name) {
-    const promo = {creative_name:creative_name, creative_slot:creative_slot, promotion_id:promotion_id, promotion_name:promotion_name, location_id:location_id};
+    const promo = {creative_name: creative_name, creative_slot: creative_slot, promotion_id: promotion_id, promotion_name: promotion_name, location_id: location_id};
     
     const promoAttribution = attributionType === 'firstClickAttribution' && promo2 ? promo2 : promo;
-    let extract = {items:items2,promotion:promoAttribution,search_term:searchTerm2,timestamp:timestamp};
+    let extract = {items: items2, promotion: promoAttribution, search_term: searchTerm2, timestamp: timestamp};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
   }
-  const searchTerm = data.siteSearchChecbox ? getEventData('search_term') : undefined;
+  const searchTerm = data.siteSearchChecbox && getEventData('search_term') ? getEventData('search_term') : undefined;
   if (searchTerm) {
-    const siteSearchttribution = attributionType === 'firstClickAttribution' && searchTerm2 ? searchTerm2: searchTerm;
-    let extract = {search_term:searchTerm,items:items2,promotion:promo2,timestamp:timestamp};
+    const siteSearchttribution = attributionType === 'firstClickAttribution' && searchTerm2 ? searchTerm2 : searchTerm;
+    let extract = {search_term: siteSearchttribution, items: items2, promotion: promo2, timestamp: timestamp};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
   }
@@ -436,6 +462,9 @@ else if (data.variableType === 'output') {
     output = searchTerm2 ? searchTerm2 : undefined;
   } else if (param === 'items' && items) {
     items.forEach(item => {
+      if(data.itemSearchTerm && searchTerm2 ) {
+        item.search_term = searchTerm2;
+      }
       items2.forEach(item2 => {
         if (item.item_id === item2.item_id) {
           item.item_list_id = item.item_list_id || item2.item_list_id || undefined;
@@ -455,7 +484,7 @@ else if (data.variableType === 'output') {
 }
 
 if(data.deleteAttribution === true && event_name === 'purchase') {
-  let extract = {search_term:undefined,items:[{item_id:"helper_id"}],promotion:undefined,timestamp:timestamp};
+  let extract = {search_term: undefined, items:[{item_id:"helper_id"}], promotion: undefined, timestamp: timestamp};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
 }
@@ -552,4 +581,5 @@ scenarios: []
 ___NOTES___
 
 Created on 2/7/2023, 8:20:44 PM
+
 
