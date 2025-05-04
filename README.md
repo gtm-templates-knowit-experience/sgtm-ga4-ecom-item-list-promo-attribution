@@ -239,7 +239,7 @@ Create a Custom Trigger Type with the following settings:
 ## Tags
 
 ### Ecom - Item List & Promotion Attribution – Firestore
-Select the **Firestore Writer with TTL** Tag, and add the following settings:
+Select the [**Firestore Writer with TTL** Tag](https://github.com/gtm-templates-knowit-experience/sgtm-firestore-writer-with-ttl-tag), and add the following settings:
 
 * **Firebase Path:** ecommerce/{{GA(4) - client_id - sha256 - hex}}
 * Override Firebase Project ID
