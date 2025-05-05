@@ -399,22 +399,82 @@ if(data.variableType === 'attribution') {
     const combined = firstClick ? items2.concat(items1) : items1.concat(items2);  // first vs. last click attribution
 
     const mergedMap = {};
-    combined.forEach(x => {
-      const id = x.item_id;
-      if (!mergedMap[id]) mergedMap[id] = { item_id: id };
-      const tgt = mergedMap[id];
+    for (let i = 0; i < items2.length; i++) {
+      const oldRec = items2[i];
+      // shallow‐clone oldRec into a brand‐new object
+      const clone = {};
+      const flds  = Object.keys(oldRec);
+      for (let j = 0; j < flds.length; j++) {
+        const k = flds[j];
+        clone[k] = oldRec[k];
+      }
+      mergedMap[oldRec.item_id] = clone;
+    }
 
-      ['item_list_id','item_list_name',
-       'promotion_id','promotion_name','creative_name','creative_slot',
-       'location_id','index'
-      ].forEach(field => {
-        if (x[field] !== undefined && tgt[field] === undefined) {
-          tgt[field] = x[field];
+    // ================
+    // 2) MERGE ONLY the NEW `items1` records
+    // ================
+    items1.forEach(rec1 => {
+      const id = rec1.item_id;
+      let tgt   = mergedMap[id];
+      if (!tgt) {
+        // no seed existed, start fresh
+        tgt = { item_id: id };
+      }
+
+      const isListEvent  = rec1.item_list_id !== undefined || rec1.item_list_name !== undefined;
+      const isPromoEvent = rec1.promotion_id !== undefined || rec1.promotion_name  !== undefined;
+
+      // Item‐List group
+      if (isListEvent) {
+        if (attributionType === 'firstClickAttribution') {
+          if (tgt.item_list_id   === undefined) tgt.item_list_id   = rec1.item_list_id;
+          if (tgt.item_list_name === undefined) tgt.item_list_name = rec1.item_list_name;
+        } else {
+          tgt.item_list_id   = rec1.item_list_id;
+          tgt.item_list_name = rec1.item_list_name;
         }
-      });
+      }
+
+      // Promotion group
+      if (isPromoEvent) {
+        if (attributionType === 'firstClickAttribution') {
+          if (tgt.promotion_id   === undefined) tgt.promotion_id   = rec1.promotion_id;
+          if (tgt.promotion_name === undefined) tgt.promotion_name = rec1.promotion_name;
+          if (tgt.creative_name  === undefined) tgt.creative_name  = rec1.creative_name;
+          if (tgt.creative_slot  === undefined) tgt.creative_slot  = rec1.creative_slot;
+        } else {
+          tgt.promotion_id   = rec1.promotion_id;
+          tgt.promotion_name = rec1.promotion_name;
+          tgt.creative_name  = rec1.creative_name;
+          tgt.creative_slot  = rec1.creative_slot;
+        }
+      }
+
+      // Location & index
+      if (rec1.location_id !== undefined) {
+        if (attributionType === 'firstClickAttribution') {
+          if (tgt.location_id === undefined) tgt.location_id = rec1.location_id;
+        } else {
+          tgt.location_id = rec1.location_id;
+        }
+      }
+      
+      if (rec1.index !== undefined) {
+        if (attributionType === 'firstClickAttribution') {
+          if (tgt.index === undefined) tgt.index = rec1.index;
+          } else {
+          tgt.index = rec1.index;
+        }
+      }
+      
+     mergedMap[id] = tgt;
     });
 
-    let uniqueItems = Object.keys(mergedMap).map(k => mergedMap[k]);
+    // ================
+    // 3) EXTRACT & LIMIT
+    // ================
+    let uniqueItems = Object.keys(mergedMap).map(function(k){ return mergedMap[k]; });
     if (limitItemsNumber) {
       uniqueItems = uniqueItems.slice(0, makeInteger(limitItemsNumber));
     }
@@ -423,11 +483,11 @@ if(data.variableType === 'attribution') {
       items: uniqueItems,
       promotion: promo2,
       search_term: searchTerm2,
-      timestamp:   timestamp
+      timestamp: timestamp
     };
     return jsonData ? JSON.stringify(extract) : extract;
+    }
   }
-}
   
   if (promotion_id||promotion_name) {
     const promo = {creative_name: creative_name, creative_slot: creative_slot, promotion_id: promotion_id, promotion_name: promotion_name, location_id: location_id};
@@ -488,7 +548,6 @@ if(data.deleteAttribution === true && event_name === 'purchase') {
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
 }
-
 
 ___SERVER_PERMISSIONS___
 
