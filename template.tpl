@@ -12,17 +12,17 @@ ___INFO___
   "type": "MACRO",
   "id": "cvt_temp_public_id",
   "version": 1,
+  "securityGroups": [],
   "displayName": "GA4 - Item List \u0026 Promotion Attribution",
   "description": "Attribute GA4 Item List, Promotion or Search Term to revenue \u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last \u0026 First Click Attribution supported.",
   "categories": [
-    "ANALYTICS",
-    "UTILITY",
-    "TAG_MANAGEMENT"
+  "ANALYTICS",
+  "UTILITY",
+  "TAG_MANAGEMENT"
   ],
   "containerContexts": [
     "SERVER"
-  ],
-  "securityGroups": []
+  ]
 }
 
 
@@ -125,7 +125,7 @@ ___TEMPLATE_PARAMETERS___
                 "type": "EQUALS"
               }
             ],
-            "help": "If you tick this checkbox, \u003cstrong\u003esearch_term\u003c/strong\u003e will be added to \u003cstrong\u003eitems\u003c/strong\u003e. This makes it easier to report search_term related to items purchased.\n\u003cbr /\u003e\u003cbr /\u003e\n\u003cstrong\u003esearch_term\u003c/strong\u003e must be added in GA4 as an \u003cstrong\u003eitem scoped dimension\u003c/strong\u003e."
+            "help": "If you tick this checkbox, \u003cstrong\u003esearch_term\u003c/strong\u003e will be added to \u003cstrong\u003eitems\u003c/strong\u003e. This makes it easier to report search_term related to items purchased.\n\u003cbr /\u003e\u003cbr /\u003e\n\u003cstrong\u003esearch_term\u003c/strong\u003e should be added in GA4 as an \u003cstrong\u003eitem scoped dimension\u003c/strong\u003e."
           }
         ],
         "enablingConditions": [
@@ -233,7 +233,7 @@ ___TEMPLATE_PARAMETERS___
           }
         ],
         "simpleValueType": true,
-        "help": "\u003cstrong\u003eLast Click Attribution\u003c/strong\u003e \u003cbr /\u003e\nWith Last Click Attribution, the Last Click on an Item List or a Promotion will be attributed.\n\u003cbr /\u003e\u003cbr /\u003e\nSee \u003ca href\u003d\"https://github.com/gtm-templates-knowit-experience/sgtm-ga4-item-list-promo-attribution\" target\u003d\"_blank\"\u003e\u003cstrong\u003ethe documentation\u003c/strong\u003e\u003c/a\u003e for detailed explanation of attribution.\n\u003cbr /\u003e\u003cbr /\u003e\n\u003cstrong\u003eFirst Click Attribution\u003c/strong\u003e \u003cbr /\u003e\nWith First Click Attribution, the First Click on an Item List or a Promotion will be attributed.",
+        "help": "\u003cstrong\u003eLast Click Attribution\u003c/strong\u003e \u003cbr /\u003e\nWith Last Click Attribution, the Last Click on an Item List or a Promotion will be attributed.\n\u003cbr /\u003e\nItem List and Promotion attribution are independent of each other.\n\u003cbr /\u003e\u003cbr /\u003e\nSee \u003ca href\u003d\"https://github.com/gtm-templates-knowit-experience/sgtm-ga4-item-list-promo-attribution\" target\u003d\"_blank\"\u003e\u003cstrong\u003ethe documentation\u003c/strong\u003e\u003c/a\u003e for detailed explanation of attribution.\n\u003cbr /\u003e\u003cbr /\u003e\n\u003cstrong\u003eFirst Click Attribution\u003c/strong\u003e \u003cbr /\u003e\nWith First Click Attribution, the First Click on an Item List or a Promotion will be attributed.\n\u003cbr /\u003e\nItem List and Promotion attribution are independent of each other.",
         "enablingConditions": [
           {
             "paramName": "variableType",
