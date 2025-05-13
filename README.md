@@ -70,7 +70,7 @@ In Firestore, go to **[Time to live (TTL)](https://console.cloud.google.com/fire
 
 ### Manual Setup
 Install the following Server-side GTM Templates:
-* **GA4 - Item List & Promotion Attribution** (this Variable Template)
+* [**GA4 - Item List & Promotion Attribution**](https://tagmanager.google.com/gallery/#/owners/gtm-templates-knowit-experience/templates/sgtm-ga4-ecom-item-list-promo-attribution) (this Variable Template)
 * [**Firestore Writer with TTL Tag**](https://github.com/gtm-templates-knowit-experience/sgtm-firestore-writer-with-ttl-tag)
     * At the time of writing, this Tag is not vailable in Google Tag Manager Template Gallery.
 * [**sha256 Hasher**](https://tagmanager.google.com/gallery/#/owners/gtm-templates-simo-ahava/templates/sha256-hasher) Variable
