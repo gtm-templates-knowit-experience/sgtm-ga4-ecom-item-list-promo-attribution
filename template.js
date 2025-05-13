@@ -19,6 +19,9 @@ const attributionTime = data.attributionTime ? makeInteger(data.attributionTime)
 const attributionType = data.attributionType;
 const limitItemsNumber = data.limitItemsNumber;
 
+function hasValue(v) { return v !== undefined && v !== null && v !== ''; }
+function isMissing(v) { return v === undefined || v === null || v === ''; }
+
 if(timestampDiff > attributionTime) {
   items2 = [{item_id:"helper_id"}];
   promo2 = undefined;
@@ -26,40 +29,42 @@ if(timestampDiff > attributionTime) {
 }
 
 if(data.variableType === 'attribution') { 
-  let item_list_id = getEventData('item_list_id');
-  let item_list_name = getEventData('item_list_name');
-  let creative_name = getEventData('creative_name');
-  let creative_slot = getEventData('creative_slot');
-  let promotion_id = getEventData('promotion_id');
-  let promotion_name = getEventData('promotion_name');
-  let location_id = getEventData('location_id');
-  let index = getEventData('index');
+  let item_list_id = hasValue(getEventData('item_list_id')) ? getEventData('item_list_id') : undefined;
+  let item_list_name = hasValue(getEventData('item_list_name')) ? getEventData('item_list_name') : undefined;
+  let creative_name = hasValue(getEventData('creative_name')) ? getEventData('creative_name') : undefined;
+  let creative_slot = hasValue(getEventData('creative_slot')) ? getEventData('creative_slot') : undefined;
+  let promotion_id = hasValue(getEventData('promotion_id')) ? getEventData('promotion_id') : undefined;
+  let promotion_name = hasValue(getEventData('promotion_name')) ? getEventData('promotion_name') : undefined;
+  let location_id = hasValue(getEventData('location_id')) ? getEventData('location_id') : undefined;
+  let index = hasValue(getEventData('index')) ? getEventData('index') : undefined;
 
   if (items) {
     const mapItemsData = i => {
       const itemObj = {
         item_id: i.item_id,
-        item_list_id: i.item_list_id || item_list_id,
-        item_list_name: i.item_list_name || item_list_name,
-        creative_name: i.creative_name || creative_name,
-        creative_slot: i.creative_slot || creative_slot,
-        promotion_id: i.promotion_id || promotion_id,
-        promotion_name: i.promotion_name || promotion_name,
-        location_id: i.location_id || location_id,
-        index: i.index || index
+        item_list_id: hasValue(i.item_list_id) ? i.item_list_id : item_list_id,
+        item_list_name: hasValue(i.item_list_name) ? i.item_list_name : item_list_name,
+        creative_name: hasValue(i.creative_name) ? i.creative_name : creative_name,
+        creative_slot: hasValue(i.creative_slot) ? i.creative_slot : creative_slot,
+        promotion_id: hasValue(i.promotion_id) ? i.promotion_id : promotion_id,
+        promotion_name: hasValue(i.promotion_name) ? i.promotion_name : promotion_name,
+        location_id: hasValue(i.location_id) ? i.location_id : location_id,
+        index: hasValue(i.index) ? i.index : index
       };
       return itemObj;
     };
     
     const items1 = items.map(mapItemsData); 
-    const item_id = items1[0].item_id ? items1[0].item_id : undefined;
-    item_list_id = items1[0].item_list_id ? items1[0].item_list_id : undefined;
-    item_list_name = items1[0].item_list_name ? items1[0].item_list_name : undefined;
-    promotion_id = items1[0].promotion_id ? items1[0].promotion_id : promotion_id;
-    promotion_name = items1[0].promotion_name ? items1[0].promotion_name : promotion_name;
-    creative_name = items1[0].creative_name ? items1[0].creative_name : creative_name;
-    creative_slot = items1[0].creative_slot ? items1[0].creative_slot : creative_slot;
-    location_id = items1[0].location_id ? items1[0].location_id : location_id;
+    const first = items1[0] || {};
+   
+    const item_id = first.item_id ? first.item_id : undefined;
+    item_list_id = hasValue(first.item_list_id) ? first.item_list_id : undefined;
+    item_list_name = hasValue(first.item_list_name) ? first.item_list_name : undefined;
+    promotion_id = hasValue(first.promotion_id) ? first.promotion_id : promotion_id;
+    promotion_name = hasValue(first.promotion_name) ? first.promotion_name : promotion_name;
+    creative_name = hasValue(first.creative_name) ? first.creative_name : creative_name;
+    creative_slot = hasValue(first.creative_slot) ? first.creative_slot : creative_slot;
+    location_id = hasValue(first.location_id) ? first.location_id : location_id;
 
   if (items1 && item_id && (item_list_id || item_list_name || promotion_id || promotion_name)) {
     const firstClick = attributionType === 'firstClickAttribution';
@@ -89,27 +94,29 @@ if(data.variableType === 'attribution') {
         tgt = { item_id: id };
       }
 
-      const isListEvent  = rec1.item_list_id !== undefined || rec1.item_list_name !== undefined;
-      const isPromoEvent = rec1.promotion_id !== undefined || rec1.promotion_name  !== undefined;
+      const isListEvent = hasValue(rec1.item_list_id) || hasValue(rec1.item_list_name);
 
       // Item‐List group
       if (isListEvent) {
         if (attributionType === 'firstClickAttribution') {
-          if (tgt.item_list_id   === undefined) tgt.item_list_id   = rec1.item_list_id;
-          if (tgt.item_list_name === undefined) tgt.item_list_name = rec1.item_list_name;
+          if (isMissing(tgt.item_list_id)) tgt.item_list_id = rec1.item_list_id;
+          if (isMissing(tgt.item_list_name)) tgt.item_list_name = rec1.item_list_name;
         } else {
-          tgt.item_list_id   = rec1.item_list_id;
+          // overwrite even if rec1.[…] is null (you may guard if you don’t want to write nulls)
+          tgt.item_list_id = rec1.item_list_id;
           tgt.item_list_name = rec1.item_list_name;
         }
       }
 
-      // Promotion group
+      const isPromoEvent = hasValue(rec1.promotion_id) || hasValue(rec1.promotion_name);
+      
+      // Promotion group   
       if (isPromoEvent) {
         if (attributionType === 'firstClickAttribution') {
-          if (tgt.promotion_id   === undefined) tgt.promotion_id   = rec1.promotion_id;
-          if (tgt.promotion_name === undefined) tgt.promotion_name = rec1.promotion_name;
-          if (tgt.creative_name  === undefined) tgt.creative_name  = rec1.creative_name;
-          if (tgt.creative_slot  === undefined) tgt.creative_slot  = rec1.creative_slot;
+          if (isMissing(tgt.promotion_id))   tgt.promotion_id   = rec1.promotion_id;
+          if (isMissing(tgt.promotion_name)) tgt.promotion_name = rec1.promotion_name;
+          if (isMissing(tgt.creative_name))  tgt.creative_name  = rec1.creative_name;
+          if (isMissing(tgt.creative_slot))  tgt.creative_slot  = rec1.creative_slot;
         } else {
           tgt.promotion_id   = rec1.promotion_id;
           tgt.promotion_name = rec1.promotion_name;
@@ -119,18 +126,13 @@ if(data.variableType === 'attribution') {
       }
 
       // Location & index
-      if (rec1.location_id !== undefined) {
-        if (attributionType === 'firstClickAttribution') {
-          if (tgt.location_id === undefined) tgt.location_id = rec1.location_id;
-        } else {
+      if (hasValue(rec1.location_id)) {
+        if (attributionType === 'firstClickAttribution' ? isMissing(tgt.location_id) : true) {
           tgt.location_id = rec1.location_id;
         }
       }
-      
-      if (rec1.index !== undefined) {
-        if (attributionType === 'firstClickAttribution') {
-          if (tgt.index === undefined) tgt.index = rec1.index;
-          } else {
+      if (hasValue(rec1.index)) {
+        if (attributionType === 'firstClickAttribution' ? isMissing(tgt.index) : true) {
           tgt.index = rec1.index;
         }
       }
@@ -164,8 +166,9 @@ if(data.variableType === 'attribution') {
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
   }
-  const searchTerm = data.siteSearchChecbox && getEventData('search_term') ? getEventData('search_term') : undefined;
+  let searchTerm = data.siteSearchChecbox && hasValue(getEventData('search_term')) ? getEventData('search_term') : undefined;
   if (searchTerm) {
+    searchTerm = data.searchTermLowerCase ? searchTerm.toLowerCase() : searchTerm;
     const siteSearchttribution = attributionType === 'firstClickAttribution' && searchTerm2 ? searchTerm2 : searchTerm;
     let extract = {search_term: siteSearchttribution, items: items2, promotion: promo2, timestamp: timestamp};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
