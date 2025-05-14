@@ -255,20 +255,6 @@ ___TEMPLATE_PARAMETERS___
             "simpleValueType": true,
             "help": "Attribute the \u003cstrong\u003esearch_term\u003c/strong\u003e parameter.",
             "alwaysInSummary": true
-          },
-          {
-            "type": "CHECKBOX",
-            "name": "searchTermLowerCase",
-            "checkboxText": "Lower Case Search Term",
-            "simpleValueType": true,
-            "enablingConditions": [
-              {
-                "paramName": "siteSearchChecbox",
-                "paramValue": true,
-                "type": "EQUALS"
-              }
-            ],
-            "help": "Lower Case \u003cstrong\u003esearch_term\u003c/strong\u003e to avoid duplicates."
           }
         ],
         "enablingConditions": [
@@ -366,8 +352,8 @@ const attributionTime = data.attributionTime ? makeInteger(data.attributionTime)
 const attributionType = data.attributionType;
 const limitItemsNumber = data.limitItemsNumber;
 
-function hasValue(v) { return v !== undefined && v !== null && v !== ''; }
-function isMissing(v) { return v === undefined || v === null || v === ''; }
+function hasValue(v) {return v !== undefined && v !== null && v !== '';}
+function isMissing(v) {return v === undefined || v === null || v === '';}
 
 if(timestampDiff > attributionTime) {
   items2 = [{item_id:"helper_id"}];
@@ -441,9 +427,9 @@ if(data.variableType === 'attribution') {
         tgt = { item_id: id };
       }
 
+      // Item‐List group
       const isListEvent = hasValue(rec1.item_list_id) || hasValue(rec1.item_list_name);
 
-      // Item‐List group
       if (isListEvent) {
         if (attributionType === 'firstClickAttribution') {
           if (isMissing(tgt.item_list_id)) tgt.item_list_id = rec1.item_list_id;
@@ -455,20 +441,20 @@ if(data.variableType === 'attribution') {
         }
       }
 
+      // Promotion group  
       const isPromoEvent = hasValue(rec1.promotion_id) || hasValue(rec1.promotion_name);
-      
-      // Promotion group   
+       
       if (isPromoEvent) {
         if (attributionType === 'firstClickAttribution') {
-          if (isMissing(tgt.promotion_id))   tgt.promotion_id   = rec1.promotion_id;
+          if (isMissing(tgt.promotion_id)) tgt.promotion_id = rec1.promotion_id;
           if (isMissing(tgt.promotion_name)) tgt.promotion_name = rec1.promotion_name;
-          if (isMissing(tgt.creative_name))  tgt.creative_name  = rec1.creative_name;
-          if (isMissing(tgt.creative_slot))  tgt.creative_slot  = rec1.creative_slot;
+          if (isMissing(tgt.creative_name)) tgt.creative_name = rec1.creative_name;
+          if (isMissing(tgt.creative_slot)) tgt.creative_slot = rec1.creative_slot;
         } else {
-          tgt.promotion_id   = rec1.promotion_id;
+          tgt.promotion_id = rec1.promotion_id;
           tgt.promotion_name = rec1.promotion_name;
-          tgt.creative_name  = rec1.creative_name;
-          tgt.creative_slot  = rec1.creative_slot;
+          tgt.creative_name = rec1.creative_name;
+          tgt.creative_slot = rec1.creative_slot;
         }
       }
 
@@ -513,9 +499,8 @@ if(data.variableType === 'attribution') {
       extract = jsonData && extract ? JSON.stringify(extract) : extract;
         return extract;
   }
-  let searchTerm = data.siteSearchChecbox && hasValue(getEventData('search_term')) ? getEventData('search_term') : undefined;
+  const searchTerm = data.siteSearchChecbox && hasValue(getEventData('search_term')) ? getEventData('search_term') : undefined;
   if (searchTerm) {
-    searchTerm = data.searchTermLowerCase ? searchTerm.toLowerCase() : searchTerm;
     const siteSearchttribution = attributionType === 'firstClickAttribution' && searchTerm2 ? searchTerm2 : searchTerm;
     let extract = {search_term: siteSearchttribution, items: items2, promotion: promo2, timestamp: timestamp};
       extract = jsonData && extract ? JSON.stringify(extract) : extract;

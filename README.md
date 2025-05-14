@@ -56,7 +56,7 @@ In Firestore, go to **[Time to live (TTL)](https://console.cloud.google.com/fire
 
 ## Server-side GTM Setup
 
-### Quick setup
+### Quick Setup
 
 1. Create a new **Workspace** in Server-side GTM
 2. Import [**SGTM-container.json**](SGTM-container.json) to this Workspace
@@ -214,7 +214,7 @@ Select the [**Firestore Writer with TTL** Tag](https://github.com/gtm-templates-
 
 ![GA4 - Item List & Promotion Attribution - Firestore TTL](images/GA4-Item-List-and-Promotion-Attribution-Firestore-TTL.png)
 
-* Add **ecom - Attribute Events - Item List & Promotion** as a Trigger to the Tag.
+* Add **ecom - Attribute Events - Item List & Promotion** as a **Trigger** to the Tag.
 
 ## Transformations
 
@@ -234,7 +234,7 @@ Select the [**Firestore Writer with TTL** Tag](https://github.com/gtm-templates-
 
 #### Matching conditions
 
-* **{{Event Name}}** matches RegEx **^(purchase|add_payment_info|add_shipping_info|begin_checkout|view_cart|add_to_cart|remove_from_cart|add_to_wishlist|view_item)$**
+* **{{Event Name}}** _matches RegEx_ ^(purchase|add_payment_info|add_shipping_info|begin_checkout|view_cart|add_to_cart|remove_from_cart|add_to_wishlist|view_item)$
 
 #### Affected tags
 
