@@ -144,7 +144,6 @@ This variable will do both Firestore Read and Write.
   * **Attribution Type:** Select Last or First Click Attribution
 * Site Search
   * **Attribute Site Search:** Tick this box if you want to attribute **search_term**.
-  * **Lower Case Search Term:** Tick this box if you want to _lowercase_ **search_term**.
 * Other Settings
   * **Handle data as string:** This will save attribution data as a string. Not relevant when using Firestore.
   * **Limit Items:** This will limit number of Items stored. Not relevant when using Firestore.
