@@ -1,0 +1,992 @@
+{
+    "exportFormatVersion": 2,
+    "exportTime": "2025-11-17 20:37:17",
+    "containerVersion": {
+        "path": "accounts/123/containers/456/versions/0",
+        "accountId": "123",
+        "containerId": "456",
+        "containerVersionId": "0",
+        "container": {
+            "path": "accounts/123/containers/456",
+            "accountId": "123",
+            "containerId": "456",
+            "name": "SGTM - Stape",
+            "publicId": "GTM-A123",
+            "usageContext": [
+                "SERVER"
+            ],
+            "fingerprint": "1760903572497",
+            "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/123/containers/456/workspaces?apiLink=container",
+            "features": {
+                "supportUserPermissions": true,
+                "supportEnvironments": true,
+                "supportWorkspaces": true,
+                "supportGtagConfigs": false,
+                "supportBuiltInVariables": true,
+                "supportClients": true,
+                "supportFolders": true,
+                "supportTags": true,
+                "supportTemplates": true,
+                "supportTriggers": true,
+                "supportVariables": true,
+                "supportVersions": true,
+                "supportZones": true,
+                "supportTransformations": true
+            },
+            "tagIds": [
+                "GTM-P8G79BL9"
+            ],
+            "taggingServerUrls": [
+                "https://www.domain.com/sgtm"
+            ]
+        },
+        "tag": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "tagId": "113",
+                "name": "GA4",
+                "type": "sgtmgaaw",
+                "parameter": [
+                    {
+                        "type": "BOOLEAN",
+                        "key": "redactVisitorIp",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "epToIncludeDropdown",
+                        "value": "all"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "upToIncludeDropdown",
+                        "value": "all"
+                    }
+                ],
+                "fingerprint": "1763411583558",
+                "firingTriggerId": [
+                    "11"
+                ],
+                "parentFolderId": "8",
+                "tagFiringOption": "ONCE_PER_EVENT",
+                "monitoringMetadata": {
+                    "type": "MAP"
+                },
+                "consentSettings": {
+                    "consentStatus": "NOT_SET"
+                }
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "tagId": "118",
+                "name": "GA4 - Item List & Promotion Attribution - Stape Store Writer",
+                "type": "cvt_P85TJ",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "logType",
+                        "value": "debug"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "useDifferentStapeStore",
+                        "value": "false"
+                    },
+                    {
+                        "type": "LIST",
+                        "key": "customDataList",
+                        "list": [
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "name",
+                                        "value": "id"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "value",
+                                        "value": "{{User ID - Stape - Request Header}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "name",
+                                        "value": "int_attribution"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "value",
+                                        "value": "{{ecom - items - item_list & promotion - extract - CT}}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "addTimestamp",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "documentKey",
+                        "value": "ecommerce/{{User ID - Stape - Request Header}}"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "bigQueryLogType",
+                        "value": "no"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "storeMerge",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "stapeStoreCollectionName",
+                        "value": "ecommerce"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "addEventData",
+                        "value": "false"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "skipNilValues",
+                        "value": "true"
+                    }
+                ],
+                "fingerprint": "1763238993558",
+                "firingTriggerId": [
+                    "117"
+                ],
+                "parentFolderId": "8",
+                "tagFiringOption": "ONCE_PER_EVENT",
+                "monitoringMetadata": {
+                    "type": "MAP"
+                },
+                "consentSettings": {
+                    "consentStatus": "NOT_SET"
+                }
+            }
+        ],
+        "trigger": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "triggerId": "11",
+                "name": "GA4 - Client",
+                "type": "ALWAYS",
+                "filter": [
+                    {
+                        "type": "EQUALS",
+                        "parameter": [
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg0",
+                                "value": "{{Client Name}}"
+                            },
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg1",
+                                "value": "GA4"
+                            }
+                        ]
+                    }
+                ],
+                "fingerprint": "1746558982237",
+                "parentFolderId": "8"
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "triggerId": "117",
+                "name": "GA4 - ecom - Attribute Events - Item List & Promotion",
+                "type": "ALWAYS",
+                "filter": [
+                    {
+                        "type": "EQUALS",
+                        "parameter": [
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg0",
+                                "value": "{{Client Name}}"
+                            },
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg1",
+                                "value": "GA4"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "MATCH_REGEX",
+                        "parameter": [
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg0",
+                                "value": "{{Event Name}}"
+                            },
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg1",
+                                "value": "^(select_item|select_promotion|add_to_cart|view_search_results|purchase)$"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "EQUALS",
+                        "parameter": [
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg0",
+                                "value": "{{ecom - items - item_list & promotion - extract - CT}}"
+                            },
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg1",
+                                "value": "undefined"
+                            },
+                            {
+                                "type": "BOOLEAN",
+                                "key": "negate",
+                                "value": "true"
+                            }
+                        ]
+                    }
+                ],
+                "fingerprint": "1760811299676",
+                "parentFolderId": "8"
+            }
+        ],
+        "variable": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "10",
+                "name": "Client Name",
+                "type": "cn",
+                "fingerprint": "1746558976445",
+                "parentFolderId": "9",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "15",
+                "name": "User ID - Stape - Request Header",
+                "type": "rh",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "headerName",
+                        "value": "x-stape-user-id"
+                    }
+                ],
+                "fingerprint": "1763411662782",
+                "parentFolderId": "9",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "101",
+                "name": "ecom - items - item_list & promotion - Stape Lookup",
+                "type": "cvt_NS4CZ",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "logType",
+                        "value": "debug"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "useDifferentStapeStore",
+                        "value": "false"
+                    },
+                    {
+                        "type": "LIST",
+                        "key": "queryConditions",
+                        "list": [
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "field",
+                                        "value": "id"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "operator",
+                                        "value": "equal"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "value",
+                                        "value": "{{User ID - Stape - Request Header}}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "bigQueryLogType",
+                        "value": "no"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "storeResponse",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "lookupType",
+                        "value": "query"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "stapeStoreCollectionName",
+                        "value": "ecommerce"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "documentPath",
+                        "value": "int_attribution"
+                    }
+                ],
+                "fingerprint": "1763411809915",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "116",
+                "name": "ecom - items - item_list & promotion - extract - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "attribution"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "jsonData",
+                        "value": "false"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "deleteAttribution",
+                        "value": "true"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "attributionType",
+                        "value": "lastClickAttribution"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "siteSearchChecbox",
+                        "value": "true"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "limitItems",
+                        "value": "false"
+                    }
+                ],
+                "fingerprint": "1763411809889",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "119",
+                "name": "ecom - items - item_list & promotion - merge - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "output"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "itemSearchTerm",
+                        "value": "true"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "outputDropDown",
+                        "value": "items"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    }
+                ],
+                "fingerprint": "1763411809916",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "120",
+                "name": "ecom - location_id - merge - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "output"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "outputDropDown",
+                        "value": "location_id"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    }
+                ],
+                "fingerprint": "1763411809916",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "121",
+                "name": "ecom - promo - creative_name - merge - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "output"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "outputDropDown",
+                        "value": "creative_name"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    }
+                ],
+                "fingerprint": "1763411809916",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "122",
+                "name": "ecom - promo - creative_slot - merge - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "output"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "outputDropDown",
+                        "value": "creative_slot"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    }
+                ],
+                "fingerprint": "1763411809916",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "123",
+                "name": "ecom - promo - promotion_id - merge - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "output"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "outputDropDown",
+                        "value": "promotion_id"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    }
+                ],
+                "fingerprint": "1763411809916",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "124",
+                "name": "ecom - promo - promotion_name - merge - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "output"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "outputDropDown",
+                        "value": "promotion_name"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    }
+                ],
+                "fingerprint": "1763411809916",
+                "parentFolderId": "127",
+                "formatValue": {}
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "variableId": "125",
+                "name": "ecom - search_term - merge - CT",
+                "type": "cvt_NGWF9",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "variableType",
+                        "value": "output"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "outputDropDown",
+                        "value": "search_term"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "customAttributionTime",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "secondDataSource",
+                        "value": "{{ecom - items - item_list & promotion - Stape Lookup}}"
+                    }
+                ],
+                "fingerprint": "1763411809917",
+                "parentFolderId": "127",
+                "formatValue": {}
+            }
+        ],
+        "folder": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "folderId": "8",
+                "name": "GA4",
+                "fingerprint": "1746558875168"
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "folderId": "9",
+                "name": "SGTM",
+                "fingerprint": "1746559003503"
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "folderId": "127",
+                "name": "Ecommerce",
+                "fingerprint": "1760811769962"
+            }
+        ],
+        "builtInVariable": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "type": "DEBUG_MODE",
+                "name": "Debug Mode"
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "type": "EVENT_NAME",
+                "name": "Event Name"
+            }
+        ],
+        "fingerprint": "1763411836759",
+        "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/123/containers/456/versions/0?apiLink=version",
+        "customTemplate": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "templateId": "14",
+                "name": "GA4 - Item List & Promotion Attribution",
+                "fingerprint": "1760724257996",
+                "templateData": "___TERMS_OF_SERVICE___\n\nBy creating or modifying this file you agree to Google Tag Manager's Community\nTemplate Gallery Developer Terms of Service available at\nhttps://developers.google.com/tag-manager/gallery-tos (or such other URL as\nGoogle may provide), as modified from time to time.\n\n\n___INFO___\n\n{\n  \"type\": \"MACRO\",\n  \"id\": \"cvt_NGWF9\",\n  \"version\": 1,\n  \"displayName\": \"GA4 - Item List \\u0026 Promotion Attribution\",\n  \"description\": \"Attribute GA4 Item List, Promotion or Search Term to revenue \\u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \\\"helper\\\". Last \\u0026 First Click Attribution supported.\",\n  \"categories\": [\n    \"ANALYTICS\",\n    \"UTILITY\",\n    \"TAG_MANAGEMENT\"\n  ],\n  \"containerContexts\": [\n    \"SERVER\"\n  ],\n  \"brand\": {\n    \"displayName\": \"gtm-templates-knowit-experience\",\n    \"id\": \"github.com_gtm-templates-knowit-experience\"\n  }\n}\n\n\n___TEMPLATE_PARAMETERS___\n\n[\n  {\n    \"type\": \"LABEL\",\n    \"name\": \"introLabel\",\n    \"displayName\": \"Extract \\u0026 Attribute GA4 Item List \\u0026 Promotion data, or merge Item List \\u0026 Promotion Data from Second Data Source.\"\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"variableTypeGroup\",\n    \"displayName\": \"Variable Type\",\n    \"groupStyle\": \"NO_ZIPPY\",\n    \"subParams\": [\n      {\n        \"type\": \"RADIO\",\n        \"name\": \"variableType\",\n        \"displayName\": \"Create Attribution or Return Attributed Output\",\n        \"radioItems\": [\n          {\n            \"value\": \"attribution\",\n            \"displayValue\": \"Extract Item List \\u0026 Promotion for Attribution\",\n            \"help\": \"Choose this setting for extracting Item List \\u0026 Promotion data, create the attribution, and for storing this data in a Second Data Source (ex. Firestore).\"\n          },\n          {\n            \"value\": \"output\",\n            \"displayValue\": \"Return Attributed Output\",\n            \"help\": \"Choose this setting for merging ecommerce data with attributed data from Second Data Source (ex.Firestore).\"\n          }\n        ],\n        \"simpleValueType\": true\n      },\n      {\n        \"type\": \"GROUP\",\n        \"name\": \"outputGroup\",\n        \"displayName\": \"Output\",\n        \"groupStyle\": \"NO_ZIPPY\",\n        \"subParams\": [\n          {\n            \"type\": \"SELECT\",\n            \"name\": \"outputDropDown\",\n            \"displayName\": \"Parameter Output\",\n            \"selectItems\": [\n              {\n                \"value\": \"items\",\n                \"displayValue\": \"Items\"\n              },\n              {\n                \"value\": \"promotion_name\",\n                \"displayValue\": \"Promotion Name\"\n              },\n              {\n                \"value\": \"promotion_id\",\n                \"displayValue\": \"Promotion ID\"\n              },\n              {\n                \"value\": \"creative_name\",\n                \"displayValue\": \"Creative Name\"\n              },\n              {\n                \"value\": \"creative_slot\",\n                \"displayValue\": \"Creative Slot\"\n              },\n              {\n                \"value\": \"location_id\",\n                \"displayValue\": \"Location ID\"\n              },\n              {\n                \"value\": \"search_term\",\n                \"displayValue\": \"Search Term\"\n              }\n            ],\n            \"simpleValueType\": true,\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ],\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"variableType\",\n                \"paramValue\": \"output\",\n                \"type\": \"EQUALS\"\n              }\n            ],\n            \"alwaysInSummary\": true\n          },\n          {\n            \"type\": \"CHECKBOX\",\n            \"name\": \"itemSearchTerm\",\n            \"checkboxText\": \"Add Search Term To Items\",\n            \"simpleValueType\": true,\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"outputDropDown\",\n                \"paramValue\": \"items\",\n                \"type\": \"EQUALS\"\n              }\n            ],\n            \"help\": \"If you tick this checkbox, \\u003cstrong\\u003esearch_term\\u003c/strong\\u003e will be added to \\u003cstrong\\u003eitems\\u003c/strong\\u003e. This makes it easier to report search_term related to items purchased.\\n\\u003cbr /\\u003e\\u003cbr /\\u003e\\n\\u003cstrong\\u003esearch_term\\u003c/strong\\u003e should be added in GA4 as an \\u003cstrong\\u003eitem scoped dimension\\u003c/strong\\u003e.\"\n          }\n        ],\n        \"enablingConditions\": [\n          {\n            \"paramName\": \"variableType\",\n            \"paramValue\": \"output\",\n            \"type\": \"EQUALS\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"secondDataSourceGroup\",\n    \"displayName\": \"Second Data Source\",\n    \"groupStyle\": \"NO_ZIPPY\",\n    \"subParams\": [\n      {\n        \"type\": \"TEXT\",\n        \"name\": \"secondDataSource\",\n        \"displayName\": \"Second Data Source\",\n        \"simpleValueType\": true,\n        \"alwaysInSummary\": true,\n        \"help\": \"Insert  variable with Second Data Source (ex. Firestore) in this field\",\n        \"valueValidators\": [\n          {\n            \"type\": \"NON_EMPTY\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"LABEL\",\n    \"name\": \"attributionLabel\"\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"attributionGroup\",\n    \"displayName\": \"Attribution\",\n    \"groupStyle\": \"NO_ZIPPY\",\n    \"subParams\": [\n      {\n        \"type\": \"CHECKBOX\",\n        \"name\": \"deleteAttribution\",\n        \"checkboxText\": \"Delete Attribution Data after Purchase\",\n        \"simpleValueType\": true,\n        \"alwaysInSummary\": true,\n        \"help\": \"Tick this box if you want attribution data to be deleted/reset after \\u003cstrong\\u003epurchase\\u003c/strong\\u003e.\",\n        \"enablingConditions\": [\n          {\n            \"paramName\": \"variableType\",\n            \"paramValue\": \"attribution\",\n            \"type\": \"EQUALS\"\n          }\n        ]\n      },\n      {\n        \"type\": \"CHECKBOX\",\n        \"name\": \"customAttributionTime\",\n        \"checkboxText\": \"Custom Attribution Time\",\n        \"simpleValueType\": true,\n        \"help\": \"As standard, attribution time is the same as a \\u003cstrong\\u003e\\u003ca href\\u003d\\\"https://support.google.com/analytics/answer/9191807\\\" target\\u003d\\\"_blank\\\"\\u003eGA4 Session\\u003c/a\\u003e\\u003c/strong\\u003e, but you can choose a \\u003cstrong\\u003ecustom attribution time\\u003c/strong\\u003e if that better fits your users behaviour.\",\n        \"alwaysInSummary\": true\n      },\n      {\n        \"type\": \"TEXT\",\n        \"name\": \"attributionTime\",\n        \"displayName\": \"Attribution Time in Minutes\",\n        \"simpleValueType\": true,\n        \"valueUnit\": \"minutes\",\n        \"help\": \"How many minutes should \\u003cstrong\\u003eItem Lists\\u003c/strong\\u003e or \\u003cstrong\\u003ePromotion\\u003c/strong\\u003e being credited to a conversion?\\n\\u003cbr /\\u003e\\u003cbr /\\u003e\\nNote that each \\u003cstrong\\u003eselect_item\\u003c/strong\\u003e, \\u003cstrong\\u003eselect_promotion\\u003c/strong\\u003e or \\u003cstrong\\u003eadd_to_cart\\u003c/strong\\u003e Event will renew the attribution time (if these Events contains Item List or Promotion data).\",\n        \"defaultValue\": 30,\n        \"alwaysInSummary\": true,\n        \"valueValidators\": [\n          {\n            \"type\": \"NON_EMPTY\"\n          },\n          {\n            \"type\": \"POSITIVE_NUMBER\"\n          }\n        ],\n        \"valueHint\": \"30\",\n        \"enablingConditions\": [\n          {\n            \"paramName\": \"customAttributionTime\",\n            \"paramValue\": true,\n            \"type\": \"EQUALS\"\n          }\n        ]\n      },\n      {\n        \"type\": \"RADIO\",\n        \"name\": \"attributionType\",\n        \"displayName\": \"Attribution Type\",\n        \"radioItems\": [\n          {\n            \"value\": \"lastClickAttribution\",\n            \"displayValue\": \"Last Click Attribution\"\n          },\n          {\n            \"value\": \"firstClickAttribution\",\n            \"displayValue\": \"First Click Attribution\"\n          }\n        ],\n        \"simpleValueType\": true,\n        \"help\": \"\\u003cstrong\\u003eLast Click Attribution\\u003c/strong\\u003e \\u003cbr /\\u003e\\nWith Last Click Attribution, the Last Click on an Item List or a Promotion will be attributed.\\n\\u003cbr /\\u003e\\nItem List and Promotion attribution are independent of each other.\\n\\u003cbr /\\u003e\\u003cbr /\\u003e\\nSee \\u003ca href\\u003d\\\"https://github.com/gtm-templates-knowit-experience/sgtm-ga4-item-list-promo-attribution\\\" target\\u003d\\\"_blank\\\"\\u003e\\u003cstrong\\u003ethe documentation\\u003c/strong\\u003e\\u003c/a\\u003e for detailed explanation of attribution.\\n\\u003cbr /\\u003e\\u003cbr /\\u003e\\n\\u003cstrong\\u003eFirst Click Attribution\\u003c/strong\\u003e \\u003cbr /\\u003e\\nWith First Click Attribution, the First Click on an Item List or a Promotion will be attributed.\\n\\u003cbr /\\u003e\\nItem List and Promotion attribution are independent of each other.\",\n        \"enablingConditions\": [\n          {\n            \"paramName\": \"variableType\",\n            \"paramValue\": \"attribution\",\n            \"type\": \"EQUALS\"\n          }\n        ]\n      },\n      {\n        \"type\": \"GROUP\",\n        \"name\": \"siteSearchGroup\",\n        \"displayName\": \"Site Search\",\n        \"groupStyle\": \"NO_ZIPPY\",\n        \"subParams\": [\n          {\n            \"type\": \"CHECKBOX\",\n            \"name\": \"siteSearchChecbox\",\n            \"checkboxText\": \"Attribute Site Search\",\n            \"simpleValueType\": true,\n            \"help\": \"Attribute the \\u003cstrong\\u003esearch_term\\u003c/strong\\u003e parameter.\",\n            \"alwaysInSummary\": true\n          }\n        ],\n        \"enablingConditions\": [\n          {\n            \"paramName\": \"variableType\",\n            \"paramValue\": \"attribution\",\n            \"type\": \"EQUALS\"\n          }\n        ]\n      }\n    ]\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"otherSettingsGroup\",\n    \"displayName\": \"Other Settings\",\n    \"groupStyle\": \"ZIPPY_OPEN_ON_PARAM\",\n    \"subParams\": [\n      {\n        \"type\": \"CHECKBOX\",\n        \"name\": \"jsonData\",\n        \"checkboxText\": \"Handle data as string\",\n        \"simpleValueType\": true,\n        \"help\": \"Tick this box, and data will be saved as a string using \\u003cstrong\\u003eJSON.stringify\\u003c/strong\\u003e, and read will be done using \\u003cstrong\\u003eJSON.parse\\u003c/strong\\u003e. \\n\\u003cbr /\\u003e\\u003cbr /\\u003e\\nChoose this setting if you ex. are storing the data in a cookie.\"\n      },\n      {\n        \"type\": \"GROUP\",\n        \"name\": \"limitItemsGroup\",\n        \"groupStyle\": \"NO_ZIPPY\",\n        \"subParams\": [\n          {\n            \"type\": \"CHECKBOX\",\n            \"name\": \"limitItems\",\n            \"checkboxText\": \"Limit Items\",\n            \"simpleValueType\": true,\n            \"help\": \"Some storages can be limited in size. If you choose to store data in ex. a cookie, you should limit number of items stored.\"\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"limitItemsNumber\",\n            \"displayName\": \"Number of Items\",\n            \"simpleValueType\": true,\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              },\n              {\n                \"type\": \"POSITIVE_NUMBER\"\n              }\n            ],\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"limitItems\",\n                \"paramValue\": true,\n                \"type\": \"EQUALS\"\n              }\n            ],\n            \"valueHint\": \"2\",\n            \"valueUnit\": \"item(s)\"\n          }\n        ]\n      }\n    ],\n    \"enablingConditions\": [\n      {\n        \"paramName\": \"variableType\",\n        \"paramValue\": \"attribution\",\n        \"type\": \"EQUALS\"\n      }\n    ]\n  }\n]\n\n\n___SANDBOXED_JS_FOR_SERVER___\n\nconst getEventData = require('getEventData');\nconst getTimestampMillis = require('getTimestampMillis');\nconst JSON = require('JSON');\nconst makeInteger = require('makeInteger');\nconst Object = require('Object');\n\nconst jsonData = data.jsonData;\nconst secondDataSource = data.secondDataSource && typeof data.secondDataSource === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource || undefined;\nconst event_name = getEventData('event_name');\nconst items = getEventData('items');\nlet items2 = secondDataSource ? secondDataSource.items : [{item_id:\"helper_id\"}];\nlet promo2 = secondDataSource ? secondDataSource.promotion : undefined;\nlet searchTerm2 = secondDataSource ? secondDataSource.search_term : undefined;\n\nconst timestamp = data.attributionTime ? getTimestampMillis() : makeInteger(getEventData('ga_session_id'));\nconst timestamp2 = secondDataSource ? secondDataSource.timestamp : timestamp;\nconst timestampDiff = secondDataSource && data.attributionTime ? timestamp-secondDataSource.timestamp : timestamp;\nconst attributionTime = data.attributionTime ? makeInteger(data.attributionTime)*60000 : timestamp2;\nconst attributionType = data.attributionType;\nconst limitItemsNumber = data.limitItemsNumber;\n\nfunction hasValue(v) {return v !== undefined && v !== null && v !== '';}\nfunction isMissing(v) {return v === undefined || v === null || v === '';}\n\nif(timestampDiff > attributionTime) {\n  items2 = [{item_id:\"helper_id\"}];\n  promo2 = undefined;\n  searchTerm2 = undefined;\n}\n\nif(data.variableType === 'attribution') { \n  let item_list_id = hasValue(getEventData('item_list_id')) ? getEventData('item_list_id') : undefined;\n  let item_list_name = hasValue(getEventData('item_list_name')) ? getEventData('item_list_name') : undefined;\n  let creative_name = hasValue(getEventData('creative_name')) ? getEventData('creative_name') : undefined;\n  let creative_slot = hasValue(getEventData('creative_slot')) ? getEventData('creative_slot') : undefined;\n  let promotion_id = hasValue(getEventData('promotion_id')) ? getEventData('promotion_id') : undefined;\n  let promotion_name = hasValue(getEventData('promotion_name')) ? getEventData('promotion_name') : undefined;\n  let location_id = hasValue(getEventData('location_id')) ? getEventData('location_id') : undefined;\n  let index = hasValue(getEventData('index')) ? getEventData('index') : undefined;\n\n  if (items) {\n    const mapItemsData = i => {\n      const itemObj = {\n        item_id: i.item_id,\n        item_list_id: hasValue(i.item_list_id) ? i.item_list_id : item_list_id,\n        item_list_name: hasValue(i.item_list_name) ? i.item_list_name : item_list_name,\n        creative_name: hasValue(i.creative_name) ? i.creative_name : creative_name,\n        creative_slot: hasValue(i.creative_slot) ? i.creative_slot : creative_slot,\n        promotion_id: hasValue(i.promotion_id) ? i.promotion_id : promotion_id,\n        promotion_name: hasValue(i.promotion_name) ? i.promotion_name : promotion_name,\n        location_id: hasValue(i.location_id) ? i.location_id : location_id,\n        index: hasValue(i.index) ? i.index : index\n      };\n      return itemObj;\n    };\n    \n    const items1 = items.map(mapItemsData); \n    const first = items1[0] || {};\n   \n    const item_id = first.item_id ? first.item_id : undefined;\n    item_list_id = hasValue(first.item_list_id) ? first.item_list_id : undefined;\n    item_list_name = hasValue(first.item_list_name) ? first.item_list_name : undefined;\n    promotion_id = hasValue(first.promotion_id) ? first.promotion_id : promotion_id;\n    promotion_name = hasValue(first.promotion_name) ? first.promotion_name : promotion_name;\n    creative_name = hasValue(first.creative_name) ? first.creative_name : creative_name;\n    creative_slot = hasValue(first.creative_slot) ? first.creative_slot : creative_slot;\n    location_id = hasValue(first.location_id) ? first.location_id : location_id;\n\n  if (items1 && item_id && (item_list_id || item_list_name || promotion_id || promotion_name)) {\n    const firstClick = attributionType === 'firstClickAttribution';\n    const combined = firstClick ? items2.concat(items1) : items1.concat(items2);  // first vs. last click attribution\n\n    const mergedMap = {};\n    for (let i = 0; i < items2.length; i++) {\n      const oldRec = items2[i];\n      // shallow‐clone oldRec into a brand‐new object\n      const clone = {};\n      const flds  = Object.keys(oldRec);\n      for (let j = 0; j < flds.length; j++) {\n        const k = flds[j];\n        clone[k] = oldRec[k];\n      }\n      mergedMap[oldRec.item_id] = clone;\n    }\n\n    // ================\n    // 2) MERGE ONLY the NEW `items1` records\n    // ================\n    items1.forEach(rec1 => {\n      const id = rec1.item_id;\n      let tgt   = mergedMap[id];\n      if (!tgt) {\n        // no seed existed, start fresh\n        tgt = { item_id: id };\n      }\n\n      // Item‐List group\n      const isListEvent = hasValue(rec1.item_list_id) || hasValue(rec1.item_list_name);\n\n      if (isListEvent) {\n        if (attributionType === 'firstClickAttribution') {\n          if (isMissing(tgt.item_list_id)) tgt.item_list_id = rec1.item_list_id;\n          if (isMissing(tgt.item_list_name)) tgt.item_list_name = rec1.item_list_name;\n        } else {\n          // overwrite even if rec1.[…] is null (you may guard if you don’t want to write nulls)\n          tgt.item_list_id = rec1.item_list_id;\n          tgt.item_list_name = rec1.item_list_name;\n        }\n      }\n\n      // Promotion group  \n      const isPromoEvent = hasValue(rec1.promotion_id) || hasValue(rec1.promotion_name);\n       \n      if (isPromoEvent) {\n        if (attributionType === 'firstClickAttribution') {\n          if (isMissing(tgt.promotion_id)) tgt.promotion_id = rec1.promotion_id;\n          if (isMissing(tgt.promotion_name)) tgt.promotion_name = rec1.promotion_name;\n          if (isMissing(tgt.creative_name)) tgt.creative_name = rec1.creative_name;\n          if (isMissing(tgt.creative_slot)) tgt.creative_slot = rec1.creative_slot;\n        } else {\n          tgt.promotion_id = rec1.promotion_id;\n          tgt.promotion_name = rec1.promotion_name;\n          tgt.creative_name = rec1.creative_name;\n          tgt.creative_slot = rec1.creative_slot;\n        }\n      }\n\n      // Location & index\n      if (hasValue(rec1.location_id)) {\n        if (attributionType === 'firstClickAttribution' ? isMissing(tgt.location_id) : true) {\n          tgt.location_id = rec1.location_id;\n        }\n      }\n      if (hasValue(rec1.index)) {\n        if (attributionType === 'firstClickAttribution' ? isMissing(tgt.index) : true) {\n          tgt.index = rec1.index;\n        }\n      }\n      \n     mergedMap[id] = tgt;\n    });\n\n    // ================\n    // 3) EXTRACT & LIMIT\n    // ================\n    let uniqueItems = Object.keys(mergedMap).map(function(k){ return mergedMap[k]; });\n    if (limitItemsNumber) {\n      uniqueItems = uniqueItems.slice(0, makeInteger(limitItemsNumber));\n    }\n\n    const extract = {\n      items: uniqueItems,\n      promotion: promo2,\n      search_term: searchTerm2,\n      timestamp: timestamp\n    };\n    return jsonData ? JSON.stringify(extract) : extract;\n    }\n  }\n  \n  if (promotion_id||promotion_name) {\n    const promo = {creative_name: creative_name, creative_slot: creative_slot, promotion_id: promotion_id, promotion_name: promotion_name, location_id: location_id};\n    \n    const promoAttribution = attributionType === 'firstClickAttribution' && promo2 ? promo2 : promo;\n    let extract = {items: items2, promotion: promoAttribution, search_term: searchTerm2, timestamp: timestamp};\n      extract = jsonData && extract ? JSON.stringify(extract) : extract;\n        return extract;\n  }\n  const searchTerm = data.siteSearchChecbox && hasValue(getEventData('search_term')) ? getEventData('search_term') : undefined;\n  if (searchTerm) {\n    const siteSearchttribution = attributionType === 'firstClickAttribution' && searchTerm2 ? searchTerm2 : searchTerm;\n    let extract = {search_term: siteSearchttribution, items: items2, promotion: promo2, timestamp: timestamp};\n      extract = jsonData && extract ? JSON.stringify(extract) : extract;\n        return extract;\n  }\n}\nelse if (data.variableType === 'output') {\n  let output;\n  const param = data.outputDropDown;\n  if (param === 'promotion_id') {\n    output = promo2 ? promo2.promotion_id : undefined;\n  } else if (param === 'promotion_name') {\n    output = promo2 ? promo2.promotion_name : undefined;\n  } else if (param === 'creative_name') {\n    output = promo2 ? promo2.creative_name : undefined;\n  } else if (param === 'creative_slot') {\n    output = promo2 ? promo2.creative_slot : undefined;\n  } else if (param === 'location_id') {\n    output = promo2 ? promo2.location_id : undefined;\n  } else if (param === 'search_term') {\n    output = searchTerm2 ? searchTerm2 : undefined;\n  } else if (param === 'items' && items) {\n    items.forEach(item => {\n      if(data.itemSearchTerm && searchTerm2 ) {\n        item.search_term = searchTerm2;\n      }\n      items2.forEach(item2 => {\n        if (item.item_id === item2.item_id) {\n          item.item_list_id = item.item_list_id || item2.item_list_id || undefined;\n          item.item_list_name = item.item_list_name || item2.item_list_name || undefined;\n          item.creative_name = item.creative_name || item2.creative_name || undefined;\n          item.creative_slot = item.creative_slot || item2.creative_slot || undefined;\n          item.promotion_id = item.promotion_id || item2.promotion_id || undefined;\n          item.promotion_name = item.promotion_name || item2.promotion_name || undefined;\n          item.location_id = item.location_id || item2.location_id || undefined;\n          item.index = item.index || item2.index || undefined;\n        }\n    });\n  });\n    output = items ? items : undefined;\n  }\n  return output;\n}\n\nif(data.deleteAttribution === true && event_name === 'purchase') {\n  let extract = {search_term: undefined, items:[{item_id:\"helper_id\"}], promotion: undefined, timestamp: timestamp};\n      extract = jsonData && extract ? JSON.stringify(extract) : extract;\n        return extract;\n}\n\n\n___SERVER_PERMISSIONS___\n\n[\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"read_event_data\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"keyPatterns\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 1,\n                \"string\": \"ga_session_id\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"items\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"item_list_id\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"item_list_name\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"creative_name\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"creative_slot\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"promotion_id\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"promotion_name\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"location_id\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"index\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"search_term\"\n              },\n              {\n                \"type\": 1,\n                \"string\": \"event_name\"\n              }\n            ]\n          }\n        },\n        {\n          \"key\": \"eventDataAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"specific\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  }\n]\n\n\n___TESTS___\n\nscenarios: []\n\n\n___NOTES___\n\nCreated on 2/7/2023, 8:20:44 PM\n\n\n",
+                "galleryReference": {
+                    "host": "github.com",
+                    "owner": "gtm-templates-knowit-experience",
+                    "repository": "sgtm-ga4-ecom-item-list-promo-attribution",
+                    "version": "cc249b1b4781705de7a08b7d67a1f061a002eb15",
+                    "signature": "f5717edf7f530a6488749a1bb14e2c41fd87b7badcee038d9343f122d198627c",
+                    "galleryTemplateId": "NGWF9"
+                }
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "templateId": "92",
+                "name": "Stape Store Lookup",
+                "fingerprint": "1760729745480",
+                "templateData": "___TERMS_OF_SERVICE___\n\nBy creating or modifying this file you agree to Google Tag Manager's Community\nTemplate Gallery Developer Terms of Service available at\nhttps://developers.google.com/tag-manager/gallery-tos (or such other URL as\nGoogle may provide), as modified from time to time.\n\n\n___INFO___\n\n{\n  \"type\": \"MACRO\",\n  \"id\": \"cvt_NS4CZ\",\n  \"version\": 1,\n  \"displayName\": \"Stape Store Lookup\",\n  \"categories\": [\n    \"UTILITY\",\n    \"DATA_WAREHOUSING\"\n  ],\n  \"description\": \"Retrieves data from Stape Store. Looks up a specific document by its ID or queries a collection to find a document that matches certain criteria.\",\n  \"containerContexts\": [\n    \"SERVER\"\n  ],\n  \"brand\": {\n    \"displayName\": \"stape-io\",\n    \"id\": \"github.com_stape-io\"\n  }\n}\n\n\n___TEMPLATE_PARAMETERS___\n\n[\n  {\n    \"type\": \"RADIO\",\n    \"name\": \"lookupType\",\n    \"displayName\": \"Lookup Type\",\n    \"radioItems\": [\n      {\n        \"value\": \"document\",\n        \"displayValue\": \"Document ID\",\n        \"help\": \"Look up a document by specifying the Document ID.\"\n      },\n      {\n        \"value\": \"query\",\n        \"displayValue\": \"Query\",\n        \"help\": \"Search the Store for a document matching the specified query criteria.  \\n\\u003cbr/\\u003e\\nIf multiple documents match, only the first result will be used.\"\n      }\n    ],\n    \"simpleValueType\": true,\n    \"defaultValue\": \"document\"\n  },\n  {\n    \"type\": \"TEXT\",\n    \"name\": \"documentId\",\n    \"displayName\": \"Document ID\",\n    \"simpleValueType\": true,\n    \"valueValidators\": [\n      {\n        \"type\": \"NON_EMPTY\"\n      }\n    ],\n    \"enablingConditions\": [\n      {\n        \"paramName\": \"lookupType\",\n        \"paramValue\": \"document\",\n        \"type\": \"EQUALS\"\n      }\n    ]\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"queryGroup\",\n    \"displayName\": \"Query conditions\",\n    \"groupStyle\": \"ZIPPY_OPEN\",\n    \"subParams\": [\n      {\n        \"type\": \"SIMPLE_TABLE\",\n        \"name\": \"queryConditions\",\n        \"simpleTableColumns\": [\n          {\n            \"defaultValue\": \"\",\n            \"displayName\": \"Field\",\n            \"name\": \"field\",\n            \"type\": \"TEXT\",\n            \"isUnique\": true\n          },\n          {\n            \"defaultValue\": \"equal\",\n            \"displayName\": \"Comparison Operator\",\n            \"name\": \"operator\",\n            \"type\": \"SELECT\",\n            \"selectItems\": [\n              {\n                \"value\": \"equal\",\n                \"displayValue\": \"\\u003d\\u003d\"\n              },\n              {\n                \"value\": \"not-equal\",\n                \"displayValue\": \"!\\u003d\"\n              },\n              {\n                \"value\": \"lt\",\n                \"displayValue\": \"Less\"\n              },\n              {\n                \"value\": \"lte\",\n                \"displayValue\": \"Less or equal\"\n              },\n              {\n                \"value\": \"gt\",\n                \"displayValue\": \"Greater\"\n              },\n              {\n                \"value\": \"gte\",\n                \"displayValue\": \"Greater or equal\"\n              },\n              {\n                \"value\": \"contains\",\n                \"displayValue\": \"Contains\"\n              },\n              {\n                \"value\": \"not-contains\",\n                \"displayValue\": \"Not Contains\"\n              }\n            ]\n          },\n          {\n            \"defaultValue\": \"\",\n            \"displayName\": \"Value\",\n            \"name\": \"value\",\n            \"type\": \"TEXT\"\n          }\n        ],\n        \"help\": \"\\u003ca href\\u003d\\\"https://stape.io/helpdesk/documentation/stape-store-feature#query-operators\\\"\\u003eLearn more about the comparison operators\\u003c/a\\u003e.\",\n        \"displayName\": \"Query conditions\"\n      }\n    ],\n    \"enablingConditions\": [\n      {\n        \"paramName\": \"lookupType\",\n        \"paramValue\": \"query\",\n        \"type\": \"EQUALS\"\n      }\n    ]\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"moreSettingsGroup\",\n    \"groupStyle\": \"ZIPPY_OPEN\",\n    \"subParams\": [\n      {\n        \"type\": \"TEXT\",\n        \"name\": \"documentPath\",\n        \"displayName\": \"Key Path\",\n        \"simpleValueType\": true,\n        \"help\": \"The path to the desired field within the specified document. Use dot notation if needed (e.g. \\u003ci\\u003efoo.id\\u003c/i\\u003e, \\u003ci\\u003ebar.0.price\\u003c/i\\u003e).\\n\\u003cbr/\\u003e\\u003cbr/\\u003e\\nFor example, if the specified document is\\n\\u003cbr/\\u003e\\n\\u003ci\\u003e{ key1: \\\"value1\\\" }\\u003c/i\\u003e\\n\\u003cbr/\\u003e\\nthen a Key Path of \\u003ci\\u003ekey1\\u003c/i\\u003e will return \\u003ci\\u003e\\\"value1\\\"\\u003c/i\\u003e.\"\n      },\n      {\n        \"type\": \"CHECKBOX\",\n        \"name\": \"storeResponse\",\n        \"checkboxText\": \"Store the result in cache\",\n        \"simpleValueType\": true,\n        \"help\": \"Store the response in Template Storage.  \\n\\u003cbr/\\u003e\\nIf a request is made with identical parameters, the cached response (if available) will be reused instead of sending a new request.\"\n      }\n    ],\n    \"displayName\": \"More Settings\"\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"stapeStoreSettingsGroup\",\n    \"displayName\": \"Stape Store Settings\",\n    \"groupStyle\": \"ZIPPY_OPEN_ON_PARAM\",\n    \"subParams\": [\n      {\n        \"type\": \"TEXT\",\n        \"name\": \"stapeStoreCollectionName\",\n        \"displayName\": \"Stape Store Collection Name\",\n        \"simpleValueType\": true,\n        \"help\": \"The name of the collection on the Stape Store that contains (or will contain) the document with the data.\\n\\u003cbr/\\u003e\\u003cbr/\\u003e\\nIf not set, the \\u003ci\\u003edefault\\u003c/i\\u003e Collection Name will be used.\",\n        \"defaultValue\": \"default\"\n      },\n      {\n        \"type\": \"SELECT\",\n        \"name\": \"useDifferentStapeStore\",\n        \"displayName\": \"Use the Stape Store database of a different container\",\n        \"macrosInSelect\": true,\n        \"selectItems\": [\n          {\n            \"value\": true,\n            \"displayValue\": \"true\"\n          },\n          {\n            \"value\": false,\n            \"displayValue\": \"false\"\n          }\n        ],\n        \"simpleValueType\": true,\n        \"subParams\": [\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"stapeStoreContainerApiKey\",\n            \"displayName\": \"Stape Store Container API Key\",\n            \"simpleValueType\": true,\n            \"valueHint\": \"euk:kzlfoobar:55ec021d429be49e64e691429cf0f27440a1b789kzlfoobar\",\n            \"help\": \"If you want to interact with the Stape Store of a different container hosted on Stape, specify the \\u003cb\\u003eContainer API Key\\u003c/b\\u003e of this container.\\n\\u003cbr/\\u003e\\u003cbr/\\u003e\\nTo find the \\u003cb\\u003eContainer API Key\\u003c/b\\u003e, go to the \\u003ca href\\u003d\\\"https://app.eu.stape.dev/container\\\"\\u003eStape Admin panel\\u003c/a\\u003e, select the sGTM container which the Stape Store you want to interact with, go to the \\u003ci\\u003eSettings\\u003c/i\\u003e tab and scroll down to the \\u003ci\\u003eContainer settings\\u003c/i\\u003e section.\",\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"useDifferentStapeStore\",\n                \"paramValue\": false,\n                \"type\": \"NOT_EQUALS\"\n              }\n            ],\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ]\n          }\n        ],\n        \"defaultValue\": false\n      }\n    ]\n  },\n  {\n    \"displayName\": \"Logs Settings\",\n    \"name\": \"logsGroup\",\n    \"groupStyle\": \"ZIPPY_CLOSED\",\n    \"type\": \"GROUP\",\n    \"subParams\": [\n      {\n        \"type\": \"RADIO\",\n        \"name\": \"logType\",\n        \"radioItems\": [\n          {\n            \"value\": \"no\",\n            \"displayValue\": \"Do not log\"\n          },\n          {\n            \"value\": \"debug\",\n            \"displayValue\": \"Log to console during debug and preview\"\n          },\n          {\n            \"value\": \"always\",\n            \"displayValue\": \"Always log to console\"\n          }\n        ],\n        \"simpleValueType\": true,\n        \"defaultValue\": \"debug\"\n      }\n    ]\n  },\n  {\n    \"displayName\": \"BigQuery Logs Settings\",\n    \"name\": \"bigQueryLogsGroup\",\n    \"groupStyle\": \"ZIPPY_CLOSED\",\n    \"type\": \"GROUP\",\n    \"subParams\": [\n      {\n        \"type\": \"RADIO\",\n        \"name\": \"bigQueryLogType\",\n        \"radioItems\": [\n          {\n            \"value\": \"no\",\n            \"displayValue\": \"Do not log to BigQuery\"\n          },\n          {\n            \"value\": \"always\",\n            \"displayValue\": \"Log to BigQuery\"\n          }\n        ],\n        \"simpleValueType\": true,\n        \"defaultValue\": \"no\"\n      },\n      {\n        \"type\": \"GROUP\",\n        \"name\": \"logsBigQueryConfigGroup\",\n        \"groupStyle\": \"NO_ZIPPY\",\n        \"subParams\": [\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"logBigQueryProjectId\",\n            \"displayName\": \"BigQuery Project ID\",\n            \"simpleValueType\": true,\n            \"help\": \"Optional.  \\u003cbr/\\u003e\\u003cbr/\\u003e  If omitted, it will be retrieved from the environment variable \\u003cI\\u003eGOOGLE_CLOUD_PROJECT\\u003c/i\\u003e where the server container is running. If the server container is running on Google Cloud, \\u003cI\\u003eGOOGLE_CLOUD_PROJECT\\u003c/i\\u003e will already be set to the Google Cloud project\\u0027s ID.\"\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"logBigQueryDatasetId\",\n            \"displayName\": \"BigQuery Dataset ID\",\n            \"simpleValueType\": true,\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ]\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"logBigQueryTableId\",\n            \"displayName\": \"BigQuery Table ID\",\n            \"simpleValueType\": true,\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ]\n          }\n        ],\n        \"enablingConditions\": [\n          {\n            \"paramName\": \"bigQueryLogType\",\n            \"paramValue\": \"always\",\n            \"type\": \"EQUALS\"\n          }\n        ]\n      }\n    ]\n  }\n]\n\n\n___SANDBOXED_JS_FOR_SERVER___\n\n/// <reference path=\"./server-gtm-sandboxed-apis.d.ts\" />\n\nconst sendHttpRequest = require('sendHttpRequest');\nconst encodeUriComponent = require('encodeUriComponent');\nconst JSON = require('JSON');\nconst templateDataStorage = require('templateDataStorage');\nconst Promise = require('Promise');\nconst sha256Sync = require('sha256Sync');\nconst logToConsole = require('logToConsole');\nconst getRequestHeader = require('getRequestHeader');\nconst getContainerVersion = require('getContainerVersion');\nconst makeString = require('makeString');\nconst getTimestampMillis = require('getTimestampMillis');\nconst getType = require('getType');\nconst BigQuery = require('BigQuery');\n\n/*==============================================================================\n==============================================================================*/\n\nif (data.lookupType === 'document' && !data.documentId) {\n  return null;\n}\n\nreturn lookupInStore(data).then(mapResponse);\n\n/*==============================================================================\n  Vendor related functions\n==============================================================================*/\n\nfunction getStapeStoreBaseUrl(data) {\n  let containerIdentifier;\n  let defaultDomain;\n  let containerApiKey;\n  const collectionPath =\n    'collections/' + enc(data.stapeStoreCollectionName || 'default') + '/documents';\n\n  const shouldUseDifferentStore =\n    isUIFieldTrue(data.useDifferentStapeStore) &&\n    getType(data.stapeStoreContainerApiKey) === 'string';\n  if (shouldUseDifferentStore) {\n    const containerApiKeyParts = data.stapeStoreContainerApiKey.split(':');\n\n    const containerLocation = containerApiKeyParts[0];\n    const containerRegion = containerApiKeyParts[3] || 'io';\n    containerIdentifier = containerApiKeyParts[1];\n    defaultDomain = containerLocation + '.stape.' + containerRegion;\n    containerApiKey = containerApiKeyParts[2];\n  } else {\n    containerIdentifier = getRequestHeader('x-gtm-identifier');\n    defaultDomain = getRequestHeader('x-gtm-default-domain');\n    containerApiKey = getRequestHeader('x-gtm-api-key');\n  }\n\n  return (\n    'https://' +\n    enc(containerIdentifier) +\n    '.' +\n    enc(defaultDomain) +\n    '/stape-api/' +\n    enc(containerApiKey) +\n    '/v2/store/' +\n    collectionPath\n  );\n}\n\nfunction getStapeStoreDocumentUrl(data, documentId) {\n  const storeBaseUrl = getStapeStoreBaseUrl(data);\n  return storeBaseUrl + '/' + enc(documentId);\n}\n\nfunction getOptions(data) {\n  const optionsByLookupType = {\n    document: { method: 'GET' },\n    query: { method: 'POST', headers: { 'Content-Type': 'application/json' } }\n  };\n\n  return optionsByLookupType[data.lookupType];\n}\n\nfunction getLookupByQueryBody(data) {\n  const filterConditions = [];\n\n  if (data.queryConditions) {\n    data.queryConditions.forEach((filterCondition) => {\n      filterConditions.push({\n        field: filterCondition.field,\n        operator: filterCondition.operator,\n        value: filterCondition.value\n      });\n    });\n  }\n\n  return {\n    filter: {\n      operator: 'and',\n      conditions: filterConditions\n    },\n    pagination: {\n      limit: 1\n    }\n  };\n}\n\nfunction lookupInStore(data) {\n  const url =\n    data.lookupType === 'document'\n      ? getStapeStoreDocumentUrl(data, data.documentId)\n      : getStapeStoreBaseUrl(data);\n  const options = getOptions(data);\n  const body = data.lookupType === 'query' ? getLookupByQueryBody(data) : undefined;\n  const bodyStrigified = body ? JSON.stringify(body) : undefined;\n  const cacheKey = data.storeResponse ? sha256Sync(url + bodyStrigified || '') : '';\n\n  if (data.storeResponse) {\n    const cachedValue = templateDataStorage.getItemCopy(cacheKey);\n    if (cachedValue) return Promise.create((resolve) => resolve(cachedValue));\n  }\n\n  log({\n    Name: 'StapeStore',\n    Type: 'Request',\n    EventName: 'StoreRead',\n    RequestMethod: options.method,\n    RequestUrl: url,\n    RequestBody: body\n  });\n\n  return sendHttpRequest(url, options, bodyStrigified).then((response) => {\n    log({\n      Name: 'StapeStore',\n      Type: 'Response',\n      EventName: 'StoreRead',\n      ResponseStatusCode: response.statusCode,\n      ResponseHeaders: response.headers,\n      ResponseBody: response.body\n    });\n\n    if (data.storeResponse) templateDataStorage.setItemCopy(cacheKey, response.body);\n\n    return response.body;\n  });\n}\n\nfunction getDocumentFromResponseBody(body) {\n  if (getType(body) !== 'object' || getType(body.data) !== 'object') return {};\n\n  if (data.lookupType === 'document') {\n    return body.data;\n  } else if (\n    data.lookupType === 'query' &&\n    getType(body.data.items) === 'array' &&\n    getType(body.data.items[0]) === 'object'\n  ) {\n    return body.data.items[0];\n  }\n\n  return {};\n}\n\nfunction mapResponse(bodyString) {\n  const body = JSON.parse(bodyString || '{}');\n  const document = getDocumentFromResponseBody(body);\n  const storedData = document.data || {};\n\n  if (!data.documentPath) return storedData;\n\n  const keys = data.documentPath.trim().split('.');\n  let value = storedData;\n  for (let i = 0; i < keys.length; i++) {\n    const key = keys[i];\n    if (!value || !key) break;\n    value = value[key];\n  }\n  return value;\n}\n\n/*==============================================================================\n  Helpers\n==============================================================================*/\n\nfunction isUIFieldTrue(field) {\n  return [true, 'true', 1, '1'].indexOf(field) !== -1;\n}\n\nfunction enc(data) {\n  return encodeUriComponent(makeString(data || ''));\n}\n\nfunction log(rawDataToLog) {\n  const logDestinationsHandlers = {};\n  if (determinateIsLoggingEnabled()) logDestinationsHandlers.console = logConsole;\n  if (determinateIsLoggingEnabledForBigQuery()) logDestinationsHandlers.bigQuery = logToBigQuery;\n\n  rawDataToLog.TraceId = getRequestHeader('trace-id');\n\n  const keyMappings = {\n    // No transformation for Console is needed.\n    bigQuery: {\n      Name: 'tag_name',\n      Type: 'type',\n      TraceId: 'trace_id',\n      EventName: 'event_name',\n      RequestMethod: 'request_method',\n      RequestUrl: 'request_url',\n      RequestBody: 'request_body',\n      ResponseStatusCode: 'response_status_code',\n      ResponseHeaders: 'response_headers',\n      ResponseBody: 'response_body'\n    }\n  };\n\n  for (const logDestination in logDestinationsHandlers) {\n    const handler = logDestinationsHandlers[logDestination];\n    if (!handler) continue;\n\n    const mapping = keyMappings[logDestination];\n    const dataToLog = mapping ? {} : rawDataToLog;\n\n    if (mapping) {\n      for (const key in rawDataToLog) {\n        const mappedKey = mapping[key] || key;\n        dataToLog[mappedKey] = rawDataToLog[key];\n      }\n    }\n\n    handler(dataToLog);\n  }\n}\n\nfunction logConsole(dataToLog) {\n  logToConsole(JSON.stringify(dataToLog));\n}\n\nfunction logToBigQuery(dataToLog) {\n  const connectionInfo = {\n    projectId: data.logBigQueryProjectId,\n    datasetId: data.logBigQueryDatasetId,\n    tableId: data.logBigQueryTableId\n  };\n\n  dataToLog.timestamp = getTimestampMillis();\n\n  ['request_body', 'response_headers', 'response_body'].forEach((p) => {\n    dataToLog[p] = JSON.stringify(dataToLog[p]);\n  });\n\n  BigQuery.insert(connectionInfo, [dataToLog], { ignoreUnknownValues: true });\n}\n\nfunction determinateIsLoggingEnabled() {\n  const containerVersion = getContainerVersion();\n  const isDebug = !!(\n    containerVersion &&\n    (containerVersion.debugMode || containerVersion.previewMode)\n  );\n\n  if (!data.logType) {\n    return isDebug;\n  }\n\n  if (data.logType === 'no') {\n    return false;\n  }\n\n  if (data.logType === 'debug') {\n    return isDebug;\n  }\n\n  return data.logType === 'always';\n}\n\nfunction determinateIsLoggingEnabledForBigQuery() {\n  if (data.bigQueryLogType === 'no') return false;\n  return data.bigQueryLogType === 'always';\n}\n\n\n___SERVER_PERMISSIONS___\n\n[\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"send_http\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"allowedUrls\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"any\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"access_template_storage\",\n        \"versionId\": \"1\"\n      },\n      \"param\": []\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"read_request\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"headerWhitelist\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"trace-id\"\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"x-gtm-identifier\"\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"x-gtm-default-domain\"\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"x-gtm-api-key\"\n                  }\n                ]\n              }\n            ]\n          }\n        },\n        {\n          \"key\": \"headersAllowed\",\n          \"value\": {\n            \"type\": 8,\n            \"boolean\": true\n          }\n        },\n        {\n          \"key\": \"requestAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"specific\"\n          }\n        },\n        {\n          \"key\": \"headerAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"specific\"\n          }\n        },\n        {\n          \"key\": \"queryParameterAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"any\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"logging\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"environments\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"all\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"read_container_data\",\n        \"versionId\": \"1\"\n      },\n      \"param\": []\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"access_bigquery\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"allowedTables\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"projectId\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"datasetId\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"tableId\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"operation\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"*\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"*\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"*\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ]\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  }\n]\n\n\n___TESTS___\n\nscenarios: []\n\n\n___NOTES___\n\nCreated on 24/01/2024, 14:06:55\n\n\n",
+                "galleryReference": {
+                    "host": "github.com",
+                    "owner": "stape-io",
+                    "repository": "stape-store-lookup-variable",
+                    "version": "67b3fc88d9ada068ff1cebda9cafe62ea63a4570",
+                    "signature": "17cc43dc77ee0125add9c5b5f43d7a4dd70416af48236aaee7b5c53b6c6e09aa",
+                    "galleryTemplateId": "NS4CZ"
+                }
+            },
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "templateId": "93",
+                "name": "Stape Store Writer",
+                "fingerprint": "1760729762967",
+                "templateData": "___TERMS_OF_SERVICE___\n\nBy creating or modifying this file you agree to Google Tag Manager's Community\nTemplate Gallery Developer Terms of Service available at\nhttps://developers.google.com/tag-manager/gallery-tos (or such other URL as\nGoogle may provide), as modified from time to time.\n\n\n___INFO___\n\n{\n  \"type\": \"TAG\",\n  \"id\": \"cvt_P85TJ\",\n  \"version\": 1,\n  \"displayName\": \"Stape Store Writer\",\n  \"categories\": [\n    \"UTILITY\",\n    \"DATA_WAREHOUSING\",\n    \"ATTRIBUTION\"\n  ],\n  \"brand\": {\n    \"id\": \"github.com_stape-io\",\n    \"displayName\": \"stape-io\",\n    \"thumbnail\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAACmsSURBVHgB7d3Nj131nefxz40NpDMDMWmi9ORBOSYz05OMMtjKU29muNZk05oFZjSL7ChvRhopCfZfwPVudthJL1q94daqI40E9iK7SL6EDYG0KCeaENQNPoiYbhojKnYGUm4XNed7z724bFe56j6cc36/7/f9kk6XaehOgITf53wffqenRG19/xtD9XpPCADQst6J3o9fHgqufUIAACAcAgAAAAERAAAACIgAAABAQAQAAAACIgAAABAQAQAAgIAIAAAABEQAAAAgIAIAAAABEQAAAAiIAAAAQEAEAAAAAiIAAAAQEAEAAICACAAAAAREAAAAICACAAAAAREAAAAIiAAAAEBABAAAAAIiAAAAEBABAACAgAgAAAAERAAAACAgAgAAAAERAAAACIgAAABAQAQAAAACIgAAABAQAQAAgIAIAAAABEQAAAAgIAIAAAABEQAAAAiIAAAAQEAEAAAAAiIAAAAQEAEAAICACAAAAAREAAAAICACAAAAAREAAAAIiAAAAEBABAAAAAIiAAAAEBABAACAgAgAAIBbHTgwEtwjAAAAbtrS6d6ZF0vBvYMCAGCsV+rggaEQAhUAAMAUb/+BEAAAALK3/96PXx4KYRAAAABV73/rhBAKMwAAEN7WsPdXfzcSQqECAADRHbjntBAOAQAAImPtLyxaAAAQFmt/kVEBAIC4ePsPjAAAACGx9hcdAQAAImLtLzxmAAAgHNb+QAUAAOJh7Q8iAABALKz9YYIWAABkqLy2ofWNTa29+6F+f/3G+Nfl1Y369129Pv7t9eubN//4ye+rPDV57vh/Ofm5ftvz5uTn2uRnOfmJzBEAACBR40O9OujtkL945YPxIb525cPth/kyFTP8sdNAcFF1IFjTzYCATBAAACAB47f56pC3g37t3Q80uvyHpg76ZThUPf3Js52FgLJ6nq+e0eS3kSgCAAB0YHrgn39jXaPfXRv/2oEjk+f45LetIjCqnvOTn6WQDAIAALTEDvnnL1/TuderQ7/6GYBVCo7rZiCwioBVB4aiOtA5AgAANMgOenvLP1c9CZf02zKtEDypuhpglYEzojLQCQIA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\\u003d\"\n  },\n  \"description\": \"Use this tag for writing data to the Stape Store.\",\n  \"containerContexts\": [\n    \"SERVER\"\n  ]\n}\n\n\n___TEMPLATE_PARAMETERS___\n\n[\n  {\n    \"type\": \"TEXT\",\n    \"name\": \"documentKey\",\n    \"displayName\": \"Document ID\",\n    \"simpleValueType\": true,\n    \"help\": \"The ID of the document. \\n\\u003cbr/\\u003e\\u003cbr/\\u003e\\nIf left empty, a new document will be created with a randomly generated ID.  \\nIf a Document ID is provided but the document does not exist, it will be created.\"\n  },\n  {\n    \"type\": \"CHECKBOX\",\n    \"name\": \"addEventData\",\n    \"checkboxText\": \"Add Event Data\",\n    \"simpleValueType\": true,\n    \"help\": \"Add all Event Data to the document. If Event Data and Custom Data have the same field, the Custom Data value will be used for that field. In other words, you can override Event Data values with Custom Data.\"\n  },\n  {\n    \"type\": \"CHECKBOX\",\n    \"name\": \"storeMerge\",\n    \"checkboxText\": \"Merge document keys\",\n    \"simpleValueType\": true,\n    \"help\": \"If checked then merge the keys from the input into the document, otherwise the method will override the whole document.\"\n  },\n  {\n    \"type\": \"CHECKBOX\",\n    \"name\": \"addTimestamp\",\n    \"checkboxText\": \"Add Timestamp\",\n    \"simpleValueType\": true,\n    \"help\": \"This option will add the millisecond timestamp to the document.\"\n  },\n  {\n    \"type\": \"CHECKBOX\",\n    \"name\": \"skipNilValues\",\n    \"checkboxText\": \"Skip null or undefined values\",\n    \"simpleValueType\": true,\n    \"help\": \"This option allows skipping items from customDataList with undefined or null values.\"\n  },\n  {\n    \"type\": \"TEXT\",\n    \"name\": \"timestampFieldName\",\n    \"displayName\": \"Timestamp field name\",\n    \"simpleValueType\": true,\n    \"enablingConditions\": [\n      {\n        \"paramName\": \"addTimestamp\",\n        \"paramValue\": true,\n        \"type\": \"EQUALS\"\n      }\n    ],\n    \"valueValidators\": [\n      {\n        \"type\": \"NON_EMPTY\"\n      },\n      {\n        \"type\": \"REGEX\",\n        \"args\": [\n          \"^[A-Za-z0-9_]*$\"\n        ],\n        \"errorMessage\": \"Letters, numbers and underscores are allowed\"\n      }\n    ],\n    \"defaultValue\": \"timestamp\"\n  },\n  {\n    \"displayName\": \"Custom Data\",\n    \"name\": \"customDataListGroup\",\n    \"groupStyle\": \"ZIPPY_OPEN\",\n    \"type\": \"GROUP\",\n    \"subParams\": [\n      {\n        \"name\": \"customDataList\",\n        \"simpleTableColumns\": [\n          {\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ],\n            \"defaultValue\": \"\",\n            \"displayName\": \"Field Name\",\n            \"name\": \"name\",\n            \"isUnique\": true,\n            \"type\": \"TEXT\"\n          },\n          {\n            \"defaultValue\": \"\",\n            \"displayName\": \"Field Value\",\n            \"name\": \"value\",\n            \"type\": \"TEXT\"\n          }\n        ],\n        \"type\": \"SIMPLE_TABLE\",\n        \"newRowButtonText\": \"Add property\"\n      }\n    ]\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"stapeStoreSettingsGroup\",\n    \"displayName\": \"Stape Store Settings\",\n    \"groupStyle\": \"ZIPPY_OPEN_ON_PARAM\",\n    \"subParams\": [\n      {\n        \"type\": \"TEXT\",\n        \"name\": \"stapeStoreCollectionName\",\n        \"displayName\": \"Stape Store Collection Name\",\n        \"simpleValueType\": true,\n        \"help\": \"The name of the collection on the Stape Store that contains (or will contain) the document with the data.\\n\\u003cbr/\\u003e\\u003cbr/\\u003e\\nIf not set, the \\u003ci\\u003edefault\\u003c/i\\u003e Collection Name will be used.\",\n        \"defaultValue\": \"default\"\n      },\n      {\n        \"type\": \"SELECT\",\n        \"name\": \"useDifferentStapeStore\",\n        \"displayName\": \"Use the Stape Store database of a different container\",\n        \"macrosInSelect\": true,\n        \"selectItems\": [\n          {\n            \"value\": true,\n            \"displayValue\": \"true\"\n          },\n          {\n            \"value\": false,\n            \"displayValue\": \"false\"\n          }\n        ],\n        \"simpleValueType\": true,\n        \"subParams\": [\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"stapeStoreContainerApiKey\",\n            \"displayName\": \"Stape Store Container API Key\",\n            \"simpleValueType\": true,\n            \"valueHint\": \"euk:kzlfoobar:55ec021d429be49e64e691429cf0f27440a1b789kzlfoobar\",\n            \"help\": \"If you want to interact with the Stape Store of a different container hosted on Stape, specify the \\u003cb\\u003eContainer API Key\\u003c/b\\u003e of this container.\\n\\u003cbr/\\u003e\\u003cbr/\\u003e\\nTo find the \\u003cb\\u003eContainer API Key\\u003c/b\\u003e, go to the \\u003ca href\\u003d\\\"https://app.eu.stape.dev/container\\\"\\u003eStape Admin panel\\u003c/a\\u003e, select the sGTM container which the Stape Store you want to interact with, go to the \\u003ci\\u003eSettings\\u003c/i\\u003e tab and scroll down to the \\u003ci\\u003eContainer settings\\u003c/i\\u003e section.\",\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"useDifferentStapeStore\",\n                \"paramValue\": false,\n                \"type\": \"NOT_EQUALS\"\n              }\n            ],\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ]\n          }\n        ],\n        \"defaultValue\": false\n      }\n    ]\n  },\n  {\n    \"displayName\": \"Logs Settings\",\n    \"name\": \"logsGroup\",\n    \"groupStyle\": \"ZIPPY_CLOSED\",\n    \"type\": \"GROUP\",\n    \"subParams\": [\n      {\n        \"type\": \"RADIO\",\n        \"name\": \"logType\",\n        \"radioItems\": [\n          {\n            \"value\": \"no\",\n            \"displayValue\": \"Do not log\"\n          },\n          {\n            \"value\": \"debug\",\n            \"displayValue\": \"Log to console during debug and preview\"\n          },\n          {\n            \"value\": \"always\",\n            \"displayValue\": \"Always log to console\"\n          }\n        ],\n        \"simpleValueType\": true,\n        \"defaultValue\": \"debug\"\n      }\n    ]\n  },\n  {\n    \"displayName\": \"BigQuery Logs Settings\",\n    \"name\": \"bigQueryLogsGroup\",\n    \"groupStyle\": \"ZIPPY_CLOSED\",\n    \"type\": \"GROUP\",\n    \"subParams\": [\n      {\n        \"type\": \"RADIO\",\n        \"name\": \"bigQueryLogType\",\n        \"radioItems\": [\n          {\n            \"value\": \"no\",\n            \"displayValue\": \"Do not log to BigQuery\"\n          },\n          {\n            \"value\": \"always\",\n            \"displayValue\": \"Log to BigQuery\"\n          }\n        ],\n        \"simpleValueType\": true,\n        \"defaultValue\": \"no\"\n      },\n      {\n        \"type\": \"GROUP\",\n        \"name\": \"logsBigQueryConfigGroup\",\n        \"groupStyle\": \"NO_ZIPPY\",\n        \"subParams\": [\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"logBigQueryProjectId\",\n            \"displayName\": \"BigQuery Project ID\",\n            \"simpleValueType\": true,\n            \"help\": \"Optional.  \\u003cbr/\\u003e\\u003cbr/\\u003e  If omitted, it will be retrieved from the environment variable \\u003cI\\u003eGOOGLE_CLOUD_PROJECT\\u003c/i\\u003e where the server container is running. If the server container is running on Google Cloud, \\u003cI\\u003eGOOGLE_CLOUD_PROJECT\\u003c/i\\u003e will already be set to the Google Cloud project\\u0027s ID.\"\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"logBigQueryDatasetId\",\n            \"displayName\": \"BigQuery Dataset ID\",\n            \"simpleValueType\": true,\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ]\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"logBigQueryTableId\",\n            \"displayName\": \"BigQuery Table ID\",\n            \"simpleValueType\": true,\n            \"valueValidators\": [\n              {\n                \"type\": \"NON_EMPTY\"\n              }\n            ]\n          }\n        ],\n        \"enablingConditions\": [\n          {\n            \"paramName\": \"bigQueryLogType\",\n            \"paramValue\": \"always\",\n            \"type\": \"EQUALS\"\n          }\n        ]\n      }\n    ]\n  }\n]\n\n\n___SANDBOXED_JS_FOR_SERVER___\n\n/// <reference path=\"./server-gtm-sandboxed-apis.d.ts\" />\n\nconst JSON = require('JSON');\nconst getRequestHeader = require('getRequestHeader');\nconst getAllEventData = require('getAllEventData');\nconst getTimestampMillis = require('getTimestampMillis');\nconst logToConsole = require('logToConsole');\nconst getContainerVersion = require('getContainerVersion');\nconst getType = require('getType');\nconst sendHttpRequest = require('sendHttpRequest');\nconst encodeUriComponent = require('encodeUriComponent');\nconst makeString = require('makeString');\nconst generateRandom = require('generateRandom');\nconst BigQuery = require('BigQuery');\n\n/*==============================================================================\n==============================================================================*/\n\nconst eventData = getAllEventData();\n\nconst url = eventData.page_location || getRequestHeader('referer');\nif (url && url.lastIndexOf('https://gtm-msr.appspot.com/', 0) === 0) {\n  return data.gtmOnSuccess();\n}\n\nconst documentId = data.documentKey || generateDocumentId();\nconst documentUrl = getStapeStoreDocumentUrl(data, documentId);\nconst method = data.storeMerge ? 'PATCH' : 'PUT';\nconst input = data.addEventData ? eventData : {};\n\nif (data.addTimestamp) input[data.timestampFieldName] = getTimestampMillis();\nif (data.customDataList) {\n  data.customDataList.forEach((d) => {\n    if (data.skipNilValues) {\n      const dType = getType(d.value);\n      if (dType === 'undefined' || dType === 'null') return;\n    }\n    if (getType(d.name) === 'string' && d.name.indexOf('.') !== -1) {\n      const nameParts = d.name.split('.');\n      let obj = input;\n      for (let i = 0; i < nameParts.length - 1; i++) {\n        const part = nameParts[i];\n        if (!obj[part]) {\n          obj[part] = {};\n        }\n        obj = obj[part];\n      }\n      obj[nameParts[nameParts.length - 1]] = d.value;\n    } else {\n      input[d.name] = d.value;\n    }\n  });\n}\n\nlog({\n  Name: 'StapeStore',\n  Type: 'Request',\n  EventName: 'Store',\n  RequestMethod: method,\n  RequestUrl: documentUrl,\n  RequestBody: input\n});\n\nsendHttpRequest(\n  documentUrl,\n  { method: method, headers: { 'Content-Type': 'application/json' } },\n  JSON.stringify(input)\n).then(\n  (response) => {\n    const responseStatusCode = response.statusCode;\n\n    log({\n      Name: 'StapeStore',\n      Type: 'Response',\n      EventName: 'Store',\n      ResponseStatusCode: responseStatusCode,\n      ResponseHeaders: {},\n      ResponseBody: response.body\n    });\n\n    if (responseStatusCode === 200) data.gtmOnSuccess();\n    else data.gtmOnFailure();\n  },\n  (response) => {\n    log({\n      Name: 'StapeStore',\n      Type: 'Response',\n      EventName: 'Store',\n      ResponseStatusCode: response.statusCode,\n      ResponseHeaders: {},\n      ResponseBody: response.body\n    });\n\n    data.gtmOnFailure();\n  }\n);\n\n/*==============================================================================\n  Vendor related functions\n==============================================================================*/\n\nfunction getStapeStoreBaseUrl(data) {\n  let containerIdentifier;\n  let defaultDomain;\n  let containerApiKey;\n  const collectionPath =\n    'collections/' + enc(data.stapeStoreCollectionName || 'default') + '/documents';\n\n  const shouldUseDifferentStore =\n    isUIFieldTrue(data.useDifferentStapeStore) &&\n    getType(data.stapeStoreContainerApiKey) === 'string';\n  if (shouldUseDifferentStore) {\n    const containerApiKeyParts = data.stapeStoreContainerApiKey.split(':');\n\n    const containerLocation = containerApiKeyParts[0];\n    const containerRegion = containerApiKeyParts[3] || 'io';\n    containerIdentifier = containerApiKeyParts[1];\n    defaultDomain = containerLocation + '.stape.' + containerRegion;\n    containerApiKey = containerApiKeyParts[2];\n  } else {\n    containerIdentifier = getRequestHeader('x-gtm-identifier');\n    defaultDomain = getRequestHeader('x-gtm-default-domain');\n    containerApiKey = getRequestHeader('x-gtm-api-key');\n  }\n\n  return (\n    'https://' +\n    enc(containerIdentifier) +\n    '.' +\n    enc(defaultDomain) +\n    '/stape-api/' +\n    enc(containerApiKey) +\n    '/v2/store/' +\n    collectionPath\n  );\n}\n\nfunction getStapeStoreDocumentUrl(data, documentId) {\n  const storeBaseUrl = getStapeStoreBaseUrl(data);\n  return storeBaseUrl + '/' + enc(documentId);\n}\n\nfunction generateDocumentId() {\n  const rnd = makeString(generateRandom(1000000000, 2147483647));\n\n  return 'store_' + makeString(getTimestampMillis()) + rnd;\n}\n\n/*==============================================================================\n  Helpers\n==============================================================================*/\n\nfunction isUIFieldTrue(field) {\n  return [true, 'true', 1, '1'].indexOf(field) !== -1;\n}\n\nfunction enc(data) {\n  return encodeUriComponent(makeString(data || ''));\n}\n\nfunction log(rawDataToLog) {\n  const logDestinationsHandlers = {};\n  if (determinateIsLoggingEnabled()) logDestinationsHandlers.console = logConsole;\n  if (determinateIsLoggingEnabledForBigQuery()) logDestinationsHandlers.bigQuery = logToBigQuery;\n\n  rawDataToLog.TraceId = getRequestHeader('trace-id');\n\n  const keyMappings = {\n    // No transformation for Console is needed.\n    bigQuery: {\n      Name: 'tag_name',\n      Type: 'type',\n      TraceId: 'trace_id',\n      EventName: 'event_name',\n      RequestMethod: 'request_method',\n      RequestUrl: 'request_url',\n      RequestBody: 'request_body',\n      ResponseStatusCode: 'response_status_code',\n      ResponseHeaders: 'response_headers',\n      ResponseBody: 'response_body'\n    }\n  };\n\n  for (const logDestination in logDestinationsHandlers) {\n    const handler = logDestinationsHandlers[logDestination];\n    if (!handler) continue;\n\n    const mapping = keyMappings[logDestination];\n    const dataToLog = mapping ? {} : rawDataToLog;\n\n    if (mapping) {\n      for (const key in rawDataToLog) {\n        const mappedKey = mapping[key] || key;\n        dataToLog[mappedKey] = rawDataToLog[key];\n      }\n    }\n\n    handler(dataToLog);\n  }\n}\n\nfunction logConsole(dataToLog) {\n  logToConsole(JSON.stringify(dataToLog));\n}\n\nfunction logToBigQuery(dataToLog) {\n  const connectionInfo = {\n    projectId: data.logBigQueryProjectId,\n    datasetId: data.logBigQueryDatasetId,\n    tableId: data.logBigQueryTableId\n  };\n\n  dataToLog.timestamp = getTimestampMillis();\n\n  ['request_body', 'response_headers', 'response_body'].forEach((p) => {\n    dataToLog[p] = JSON.stringify(dataToLog[p]);\n  });\n\n  BigQuery.insert(connectionInfo, [dataToLog], { ignoreUnknownValues: true });\n}\n\nfunction determinateIsLoggingEnabled() {\n  const containerVersion = getContainerVersion();\n  const isDebug = !!(\n    containerVersion &&\n    (containerVersion.debugMode || containerVersion.previewMode)\n  );\n\n  if (!data.logType) {\n    return isDebug;\n  }\n\n  if (data.logType === 'no') {\n    return false;\n  }\n\n  if (data.logType === 'debug') {\n    return isDebug;\n  }\n\n  return data.logType === 'always';\n}\n\nfunction determinateIsLoggingEnabledForBigQuery() {\n  if (data.bigQueryLogType === 'no') return false;\n  return data.bigQueryLogType === 'always';\n}\n\n\n___SERVER_PERMISSIONS___\n\n[\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"read_request\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"headerWhitelist\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"trace-id\"\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"x-gtm-identifier\"\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"x-gtm-default-domain\"\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"x-gtm-api-key\"\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"headerName\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"referer\"\n                  }\n                ]\n              }\n            ]\n          }\n        },\n        {\n          \"key\": \"headersAllowed\",\n          \"value\": {\n            \"type\": 8,\n            \"boolean\": true\n          }\n        },\n        {\n          \"key\": \"requestAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"specific\"\n          }\n        },\n        {\n          \"key\": \"headerAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"specific\"\n          }\n        },\n        {\n          \"key\": \"queryParameterAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"any\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"logging\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"environments\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"all\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"read_container_data\",\n        \"versionId\": \"1\"\n      },\n      \"param\": []\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"read_event_data\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"eventDataAccess\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"any\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"send_http\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"allowedUrls\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"any\"\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"access_bigquery\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"allowedTables\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"projectId\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"datasetId\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"tableId\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"operation\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"*\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"*\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"*\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ]\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  }\n]\n\n\n___TESTS___\n\nscenarios: []\n\n\n___NOTES___\n\nCreated on 23/01/2024, 12:40:30\n\n\n",
+                "galleryReference": {
+                    "host": "github.com",
+                    "owner": "stape-io",
+                    "repository": "stape-store-writer-tag",
+                    "version": "e97ba7b0ae68309decff1a4dcb0256ea86342431",
+                    "signature": "dcf63bfdc8e6950ded3abe76dcc9a67d69f69fe64b6af42cbc096faf8f069d56",
+                    "galleryTemplateId": "P85TJ"
+                }
+            }
+        ],
+        "client": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "clientId": "1",
+                "name": "GA4",
+                "type": "gaaw_client",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "cookieDomain",
+                        "value": "auto"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "cookieMaxAgeInSec",
+                        "value": "63072000"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "activateGtagSupport",
+                        "value": "false"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "activateDefaultPaths",
+                        "value": "true"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "cookiePath",
+                        "value": "/"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "migrateFromJsClientId",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "cookieManagement",
+                        "value": "server"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "cookieName",
+                        "value": "FPID"
+                    }
+                ],
+                "priority": 100,
+                "fingerprint": "1760900446018",
+                "parentFolderId": "8"
+            }
+        ],
+        "transformation": [
+            {
+                "accountId": "123",
+                "containerId": "456",
+                "transformationId": "129",
+                "name": "GA4 - Ecom - Item List & Promotion - Augment",
+                "type": "tf_augment_event",
+                "parameter": [
+                    {
+                        "type": "BOOLEAN",
+                        "key": "matchingConditionsEnabled",
+                        "value": "true"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "allTagsExcept",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "booleanExpressionString"
+                    },
+                    {
+                        "type": "LIST",
+                        "key": "augmentEventTable",
+                        "list": [
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramName",
+                                        "value": "items"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramValue",
+                                        "value": "{{ecom - items - item_list & promotion - merge - CT}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramName",
+                                        "value": "promotion_name"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramValue",
+                                        "value": "{{ecom - promo - promotion_name - merge - CT}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramName",
+                                        "value": "promotion_id"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramValue",
+                                        "value": "{{ecom - promo - promotion_id - merge - CT}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramName",
+                                        "value": "creative_name"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramValue",
+                                        "value": "{{ecom - promo - creative_name - merge - CT}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramName",
+                                        "value": "creative_slot"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramValue",
+                                        "value": "{{ecom - promo - creative_slot - merge - CT}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramName",
+                                        "value": "location_id"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramValue",
+                                        "value": "{{ecom - location_id - merge - CT}}"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramName",
+                                        "value": "search_term"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "paramValue",
+                                        "value": "{{ecom - search_term - merge - CT}}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "LIST",
+                        "key": "affectedTags"
+                    },
+                    {
+                        "type": "LIST",
+                        "key": "affectedTagTypes",
+                        "list": [
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "tagType",
+                                        "value": "sgtmgaaw"
+                                    },
+                                    {
+                                        "type": "LIST",
+                                        "key": "tagTypeExceptions"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "LIST",
+                        "key": "matchingConditionsTable",
+                        "list": [
+                            {
+                                "type": "MAP",
+                                "map": [
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "variableName",
+                                        "value": "Event Name"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "variableReference",
+                                        "value": "{{Event Name}}"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "expressionType",
+                                        "value": "REGEX"
+                                    },
+                                    {
+                                        "type": "TEMPLATE",
+                                        "key": "expressionValue",
+                                        "value": "^(purchase|add_payment_info|add_shipping_info|begin_checkout|view_cart|add_to_cart|remove_from_cart|add_to_wishlist|view_item)$"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "fingerprint": "1760812268778",
+                "parentFolderId": "8"
+            }
+        ]
+    }
+}
