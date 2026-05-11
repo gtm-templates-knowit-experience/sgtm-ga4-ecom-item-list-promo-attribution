@@ -29,24 +29,12 @@ In this documentation we will use Stape User ID.
 
 # Server-side GTM Setup
 
-## Quick Setup
-
-1. Create a new **Workspace** in Server-side GTM
-2. Import [**SGTM-container-Stape.json**](SGTM-container-Stape.json) to this Workspace
-    * **Choose an import option:** Merge
-	    * Rename conflicting clients, tags, transformations, triggers and variables.
-3. Adjust the imported **Clients** to fit your setup
-    * GA4
-4. Adjust the imported **GA4 Tag** to fit your setup
-5. Other adjustments is up to you. You will maybe have to clean up conflicting Tags, Variables and Triggers.
-
-## Manual Setup
 Install the following Server-side GTM Templates:
 * [**GA4 - Item List & Promotion Attribution**](https://tagmanager.google.com/gallery/#/owners/gtm-templates-knowit-experience/templates/sgtm-ga4-ecom-item-list-promo-attribution) (this Variable Template)
 * [**Stape Store Writer**](https://tagmanager.google.com/gallery/#/owners/stape-io/templates/stape-store-writer-tag) (Tag)
 * [**Stape Store Lookup**](https://tagmanager.google.com/gallery/#/owners/stape-io/templates/stape-store-lookup-variable) (Variable)
 
-### Create Variables
+## Create Variables
 We must create some Variables. Suggested Variable names are listed below, and are also used throughout the documentation.
 *	ecom - attribution time - minutes - C
 *	User ID - Stape - Request Header
@@ -55,7 +43,7 @@ We must create some Variables. Suggested Variable names are listed below, and ar
 *	ecom - items - item_list & promotion - merge - CT
 *	++
 
-#### ecom - attribution time - minutes - C
+### ecom - attribution time - minutes - C
 As standard, attribution time is the same as a **[GA4 Session](https://support.google.com/analytics/answer/9191807)**, but you can choose a **Custom Attribution Time** if that better fits your users behaviour.
 
 Create this variable if you are going to use **Custom Attribution Time**.
@@ -67,7 +55,7 @@ How long the custom attribution time should be is up to you. Time is counted fro
 
 * Name the Variable **ecom - attribution time - minutes - C**.
 
-#### Stape User ID
+### Stape User ID
 The Stape User ID is going to be used as an identifier in this setup.
 
 Create an **Request Header** Variable and add **x-stape-user-id** as **Name**.
@@ -98,19 +86,22 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution** Variable (thi
 
 This variable will do both Stape Store Read and Write.
 
-*	**Variable Type:** Extract Item Lists & Promotion for Attribution
-*	**Second Data Source:** {{ecom - items - item_list & promotion - Stape Lookup}}
-* Attribution
+* **Variable Type:** Extract Item Lists & Promotion for Attribution
+* **Second Data Source:** {{ecom - items - item_list & promotion - Stape Lookup}}
+* **Attribution**
   * **Delete Attribution Data after Purchase:** Tick this box to delete/reset attribution data after a purchase has happened.
     * You only need this setting for the Variable that attribute Items. Not necessary for Event-level attribution Variables.
   * **Custom Attribution Time:** Tick this box if you are using **Custom Attribution Time**
     * **Attribution Time in Minutes:** {{ecom - attribution time - minutes - C}}
   * **Attribution Type:** Select Last or First Click Attribution
-* Site Search
+* **Site Search**
   * **Attribute Site Search:** Tick this box if you want to attribute **search_term**.
   * **Lower Case Search Term:** Tick this box if you want to _lowercase_ **search_term**.
-* Other Settings
-  * **Handle data as string:** This will save attribution data as a string. Not relevant when using Stape Store.
+* **Custom Item & Event Parameter Attribution**
+  * Any Item & Event Parameter can be attributed.
+  * Add parameters you want to attribute as shown in the image below.
+* **Other Settings**
+  * **Handle data as string:** This will save attribution data as a string. Recommended.
   * **Limit Items:** This will limit number of Items stored. Not relevant when using Stape Store.
 
 ![ecom - items - item_list & promotion - extract - CT](../images/ecom-item_list-and-promotion-extract-CT.png)
@@ -125,6 +116,7 @@ Select the **GA4 Ecommerce – Item List & Promotion Attribution Variable** (thi
 * **Output:** Items
 * **Add Search Terms To Items:** If you tick this checkbox, **search_term** will be added to **items**. This makes it easier to report search_term related to items. You must create an **Item scoped Dimension** in GA4.
   * This selection is only available for **Items**
+* **Add Custom Event Parameters to Items:** If you tick this checkbox, **custom_event_param** will be added to **items**. You must create an **Item scoped Dimension** in GA4.
 * **Second Data Source:** {{ecom - items - item_list & promotion - Stape Lookup}}
 * Attribution
   * **Custom Attribution Time** Tick this box if you are using **Custom Attribution Time**
@@ -144,6 +136,7 @@ In addition, you must create **Promotion & Search Term Variables** using the sam
 | ecom - promo - promotion_id - merge - CT | Promotion ID |	
 | ecom - promo - promotion_name - merge - CT | Promotion Name |	
 | ecom - search_term - merge - CT | Search Term |	
+| ecom - event_custom_param - merge - CT | Add Custom Event Parameters if relevant |	
 
 ## Trigger
 ### ecom - Attribute Events - Item List & Promotion
@@ -192,6 +185,7 @@ Select the [**Stape Store Writer** Tag](https://tagmanager.google.com/gallery/#/
 | creative_name | {{ecom - promo - creative_name - merge - CT}} |	
 | creative_slot | {{ecom - promo - creative_slot - merge - CT}} |	
 | search_term | {{ecom - search_term - merge - CT}} |	
+| event_custom_param | {{ecom - event_custom_param - merge - CT}} |
 
 #### Matching conditions
 

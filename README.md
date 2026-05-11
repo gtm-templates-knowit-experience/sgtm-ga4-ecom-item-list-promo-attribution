@@ -1,7 +1,10 @@
 # GA4 - Item List & Promotion Attribution - SGTM Variable (Server)
 **Google Analytics 4 (GA4)** has **Item List & Promotion reports**. But - no revenue or conversions are attributed back to Promotion or Item Lists. You have to do this attribution yourself.
 
-This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List**, **Promotion** & **Search Term** to revenue or Ecommerce Events (ex. purchase) & Items:
+This Variable for  **Server-side GTM** makes it possible to attribute **GA4 Item List**, **Promotion** & **Search Term** to revenue or Ecommerce Events (ex. purchase) & Items.
+
+**Update**: Any **Item & Event scoped parameter** can now be attributed.
+
 * Last Click Attribution
 * First Click Attribution
 * Reset/delete Attribution Data after Purchase
@@ -45,6 +48,7 @@ Attribution happens on 2 levels:
 1. Event-level
     - Promotion without Items
     - Search Term
+	- Custom Event Parameters
 2. Item-level
     - Implemented Items data (ex. Item List name) trumps attributed Items data. Ex. if you are adding a Item to cart directly from a Item List, the implemented Item List Name will be used. If you are adding the Item to cart from a product page (where you shouldn't have a Item List implemented), the attributed Item List Name will be used.
 	- Item Scoped Item List & Promotion attribution are independent of each other. 
