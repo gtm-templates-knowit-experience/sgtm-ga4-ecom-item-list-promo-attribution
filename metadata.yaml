@@ -2,9 +2,11 @@ homepage: "https://www.knowit.no"
 documentation: "https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution"
 versions:
   # Latest version
+  - sha: 2b1c2326c97cf93b30b5400143a71122c90edfb5
+    changeNotes: Any Item & Event scoped parameter can now be attributed.
+  # Older versions
   - sha: cc249b1b4781705de7a08b7d67a1f061a002eb15
     changeNotes: Improved handling of empty values. Simplified setup. See documentation.
-  # Older versions
   - sha: a750bf75bb5a474ae316e44deae45335b30a9956
     changeNotes: Improved attribution
   - sha: 7bd466f774966ed828c99438ca20641450e27785
