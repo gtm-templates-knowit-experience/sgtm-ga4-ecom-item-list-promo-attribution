@@ -10,19 +10,19 @@ ___INFO___
 
 {
   "type": "MACRO",
-  "id": "cvt_temp_public_id",
+  "id": "cvt_NGWF9",
   "version": 1,
-  "securityGroups": [],
   "displayName": "GA4 - Item List \u0026 Promotion Attribution",
   "description": "Attribute GA4 Item List, Promotion or Search Term to revenue \u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last \u0026 First Click Attribution supported.",
   "categories": [
-  "ANALYTICS",
-  "UTILITY",
-  "TAG_MANAGEMENT"
+    "ANALYTICS",
+    "UTILITY",
+    "TAG_MANAGEMENT"
   ],
   "containerContexts": [
     "SERVER"
-  ]
+  ],
+  "securityGroups": []
 }
 
 
