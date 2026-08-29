@@ -13,7 +13,7 @@ ___INFO___
   "id": "cvt_temp_public_id",
   "version": 1,
   "displayName": "GA4 - Item List \u0026 Promotion Attribution",
-  "description": "Attribute GA4 Item List, Promotion or Search Term to revenue \u0026 ecommerce Events. This Template makes this possible by using ex. Firestore as a \"helper\". Last \u0026 First Click Attribution supported.",
+  "description": "Attribute GA4 Item Lists, Promotions, Search Terms, and Custom Parameters to ecommerce events and revenue using Firestore/Stape Store. Last \u0026 First Click Attribution supported.",
   "categories": [
     "ANALYTICS",
     "UTILITY",
@@ -162,7 +162,7 @@ ___TEMPLATE_PARAMETERS___
                 "type": "EQUALS"
               }
             ],
-            "help": "If you tick this checkbox, \u003cstrong\u003eCustom Event Parameters\u003c/strong\u003e will be added to \u003cstrong\u003eitems\u003c/strong\u003e.  \u003cbr /\u003e\u003cbr /\u003e \u003cstrong\u003eCustom Event Parameters\u003c/strong\u003e should be added in GA4 as an \u003cstrong\u003eitem scoped dimension\u003c/strong\u003e."
+            "help": "If checked, any Custom Event parameters you stored will be stamped directly onto every product inside the items array during the output phase."
           }
         ],
         "enablingConditions": [
@@ -317,9 +317,18 @@ ___TEMPLATE_PARAMETERS___
                 "defaultValue": "",
                 "displayName": "Parameter Name",
                 "name": "parameterName",
-                "type": "TEXT"
+                "type": "TEXT",
+                "isUnique": true,
+                "valueValidators": [
+                  {
+                    "type": "NON_EMPTY"
+                  }
+                ],
+                "valueHint": "item_color"
               }
-            ]
+            ],
+            "newRowButtonText": "Add Custom Item Parameter",
+            "help": "Add the exact keys of any custom item-scoped parameters present in your incoming ecommerce items array that you want to store and attribute (e.g., \u003cb\u003eitem_variant_id\u003c/b\u003e, \u003cb\u003eitem_color\u003c/b\u003e).\n\u003cbr /\u003e\u003cbr /\u003e\nEnter the parameter key exactly as it appears inside your incoming items array."
           },
           {
             "type": "SIMPLE_TABLE",
@@ -330,9 +339,31 @@ ___TEMPLATE_PARAMETERS___
                 "defaultValue": "",
                 "displayName": "Parameter Name",
                 "name": "parameterName",
-                "type": "TEXT"
+                "type": "TEXT",
+                "valueHint": "search_category",
+                "isUnique": true,
+                "valueValidators": [
+                  {
+                    "type": "NON_EMPTY"
+                  }
+                ]
+              },
+              {
+                "defaultValue": "",
+                "displayName": "Parameter Value",
+                "name": "parameterValue",
+                "type": "SELECT",
+                "selectItems": [],
+                "macrosInSelect": true,
+                "valueValidators": [
+                  {
+                    "type": "NON_EMPTY"
+                  }
+                ]
               }
-            ]
+            ],
+            "help": "Add any custom event-scoped parameters you want to store and attribute (e.g., \u003cb\u003esearch_category\u003c/b\u003e). You must define the parameter name and map its value using a GTM variable.\n\u003cbr /\u003e\u003cbr /\u003e\n\u003cb\u003eParameter Name\u003c/b\u003e\n\u003cbr /\u003e\nEnter the exact name of the parameter as you want it to appear in your final output (e.g., \u003cb\u003esearch_category\u003c/b\u003e).\n\u003cbr /\u003e\u003cbr /\u003e\n\u003cb\u003eParameter Value\u003c/b\u003e\n\u003cbr /\u003e\nSelect the GTM variable from the dropdown that contains this value (e.g., \u003cb\u003e{{search_category - Event Data}}\u003c/b\u003e).",
+            "newRowButtonText": "Add Custom Event Parameter"
           }
         ],
         "enablingConditions": [
@@ -459,17 +490,17 @@ if(data.variableType === 'attribution') {
   let promotion_name = hasValue(getEventData('promotion_name')) ? getEventData('promotion_name') : undefined;
   let location_id = hasValue(getEventData('location_id')) ? getEventData('location_id') : undefined;
   let index = hasValue(getEventData('index')) ? getEventData('index') : undefined;
-
+  
   let currentCustomEvents = {};
-  if (customEventAttributeParameters.length > 0) {
-    customEventAttributeParameters.forEach(row => {
-      const pName = row.parameterName;
-      const pVal = getEventData(pName);
-      if (hasValue(pVal)) {
-        currentCustomEvents[pName] = pVal;
-      }
-    });
-  }
+    if (customEventAttributeParameters.length > 0) {
+      customEventAttributeParameters.forEach(row => {
+        const pName = row.parameterName;
+        const pVal = row.parameterValue;
+        if (hasValue(pVal)) {
+          currentCustomEvents[pName] = pVal;
+        }
+      });
+    }
 
   let mergedCustomEvents = {};
   
@@ -634,6 +665,18 @@ if(data.variableType === 'attribution') {
     extract = jsonData && extract ? JSON.stringify(extract) : extract;
     return extract;
   }
+  
+  const hasNewCustomEvents = Object.keys(currentCustomEvents || {}).length > 0;
+  if (hasNewCustomEvents) {
+    let extract = {
+      items: items2, 
+      promotion: promo2, 
+      search_term: searchTerm2, 
+      custom_events: mergedCustomEvents, 
+      timestamp: timestamp
+    };
+    return jsonData ? JSON.stringify(extract) : extract;
+  }
 }
 else if (data.variableType === 'output') {
   let output;
@@ -663,7 +706,6 @@ else if (data.variableType === 'output') {
       }
       
       if (data.itemCustomEvents) {
-        // Added fallback to empty object just in case
         const ceKeys = Object.keys(customEvents2 || {});
         if (ceKeys.length > 0) {
           ceKeys.forEach(k => {
@@ -671,6 +713,8 @@ else if (data.variableType === 'output') {
           });
         }
       }
+
+      const standardKeys = ['item_id', 'item_list_id', 'item_list_name', 'creative_name', 'creative_slot', 'promotion_id', 'promotion_name', 'location_id', 'index'];
 
       items2.forEach(item2 => {
         if (item.item_id === item2.item_id) {
@@ -683,9 +727,7 @@ else if (data.variableType === 'output') {
           item.location_id = item.location_id || item2.location_id || undefined;
           item.index = item.index || item2.index || undefined;
           
-          // FIX: Added fallback to empty object just in case
           const storedKeys = Object.keys(item2 || {});
-          const standardKeys = ['item_id', 'item_list_id', 'item_list_name', 'creative_name', 'creative_slot', 'promotion_id', 'promotion_name', 'location_id', 'index'];
           
           storedKeys.forEach(k => {
             if (standardKeys.indexOf(k) === -1) {
@@ -712,10 +754,66 @@ ___SERVER_PERMISSIONS___
       },
       "param": [
         {
+          "key": "keyPatterns",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 1,
+                "string": "event_name"
+              },
+              {
+                "type": 1,
+                "string": "items"
+              },
+              {
+                "type": 1,
+                "string": "item_list_id"
+              },
+              {
+                "type": 1,
+                "string": "item_list_name"
+              },
+              {
+                "type": 1,
+                "string": "creative_name"
+              },
+              {
+                "type": 1,
+                "string": "creative_slot"
+              },
+              {
+                "type": 1,
+                "string": "promotion_id"
+              },
+              {
+                "type": 1,
+                "string": "promotion_name"
+              },
+              {
+                "type": 1,
+                "string": "location_id"
+              },
+              {
+                "type": 1,
+                "string": "index"
+              },
+              {
+                "type": 1,
+                "string": "search_term"
+              },
+              {
+                "type": 1,
+                "string": "ga_session_id"
+              }
+            ]
+          }
+        },
+        {
           "key": "eventDataAccess",
           "value": {
             "type": 1,
-            "string": "any"
+            "string": "specific"
           }
         }
       ]

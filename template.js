@@ -48,17 +48,17 @@ if(data.variableType === 'attribution') {
   let promotion_name = hasValue(getEventData('promotion_name')) ? getEventData('promotion_name') : undefined;
   let location_id = hasValue(getEventData('location_id')) ? getEventData('location_id') : undefined;
   let index = hasValue(getEventData('index')) ? getEventData('index') : undefined;
-
+  
   let currentCustomEvents = {};
-  if (customEventAttributeParameters.length > 0) {
-    customEventAttributeParameters.forEach(row => {
-      const pName = row.parameterName;
-      const pVal = getEventData(pName);
-      if (hasValue(pVal)) {
-        currentCustomEvents[pName] = pVal;
-      }
-    });
-  }
+    if (customEventAttributeParameters.length > 0) {
+      customEventAttributeParameters.forEach(row => {
+        const pName = row.parameterName;
+        const pVal = row.parameterValue;
+        if (hasValue(pVal)) {
+          currentCustomEvents[pName] = pVal;
+        }
+      });
+    }
 
   let mergedCustomEvents = {};
   
@@ -223,6 +223,18 @@ if(data.variableType === 'attribution') {
     extract = jsonData && extract ? JSON.stringify(extract) : extract;
     return extract;
   }
+  
+  const hasNewCustomEvents = Object.keys(currentCustomEvents || {}).length > 0;
+  if (hasNewCustomEvents) {
+    let extract = {
+      items: items2, 
+      promotion: promo2, 
+      search_term: searchTerm2, 
+      custom_events: mergedCustomEvents, 
+      timestamp: timestamp
+    };
+    return jsonData ? JSON.stringify(extract) : extract;
+  }
 }
 else if (data.variableType === 'output') {
   let output;
@@ -252,7 +264,6 @@ else if (data.variableType === 'output') {
       }
       
       if (data.itemCustomEvents) {
-        // FIX: Added fallback to empty object just in case
         const ceKeys = Object.keys(customEvents2 || {});
         if (ceKeys.length > 0) {
           ceKeys.forEach(k => {
@@ -260,6 +271,8 @@ else if (data.variableType === 'output') {
           });
         }
       }
+
+      const standardKeys = ['item_id', 'item_list_id', 'item_list_name', 'creative_name', 'creative_slot', 'promotion_id', 'promotion_name', 'location_id', 'index'];
 
       items2.forEach(item2 => {
         if (item.item_id === item2.item_id) {
@@ -272,9 +285,7 @@ else if (data.variableType === 'output') {
           item.location_id = item.location_id || item2.location_id || undefined;
           item.index = item.index || item2.index || undefined;
           
-          // FIX: Added fallback to empty object just in case
           const storedKeys = Object.keys(item2 || {});
-          const standardKeys = ['item_id', 'item_list_id', 'item_list_name', 'creative_name', 'creative_slot', 'promotion_id', 'promotion_name', 'location_id', 'index'];
           
           storedKeys.forEach(k => {
             if (standardKeys.indexOf(k) === -1) {

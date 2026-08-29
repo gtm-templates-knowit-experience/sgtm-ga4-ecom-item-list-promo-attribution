@@ -189,7 +189,9 @@ Select the [**Stape Store Writer** Tag](https://tagmanager.google.com/gallery/#/
 
 #### Matching conditions
 
-* **{{Event Name}}** _matches RegEx_ ^(purchase|add_payment_info|add_shipping_info|begin_checkout|view_cart|add_to_cart|remove_from_cart|add_to_wishlist|view_item)$
+You must minimum add the events below, but you can add the attribution to ex. all the steps in the checkout if you like.
+
+* **{{Event Name}}** _matches RegEx_ ^(purchase|begin_checkout|add_to_cart)$
 
 #### Affected tags
 
