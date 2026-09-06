@@ -138,7 +138,20 @@ In addition, you must create **Promotion & Search Term Variables** using the sam
 | ecom - search_term - merge - CT | Search Term |	
 | ecom - event_custom_param - merge - CT | Add Custom Event Parameters if relevant |	
 
+### ecom - items - item_list & promotion - trigger helper - CT
+
+If you are using Firestore or Stape Store, it is recommended to create a **trigger helper variable**.
+The purpose of this variable is to reduce unnecessary Firestore or Stape Store Reads.
+
+* If you are attributing **Custom Event** or **Custom Item** parameters, add them to the variable as shown below.
+* If you are attributing **Search Term**, tick the **Attribute Site Search** checkbox as shown below.
+
+![ecom - items - item_list & promotion - trigger helper- CT](../images/trigger-helper-variable.png)
+
+*	Name the variable **ecom - items - item_list & promotion - trigger helper - CT**.
+
 ## Trigger
+
 ### ecom - Attribute Events - Item List & Promotion
 
 Create a Custom Trigger Type with the following settings:  
@@ -147,9 +160,9 @@ Create a Custom Trigger Type with the following settings:
 * **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart|purchase)$
   * **purchase** Event in RegEx is only needed if you want to delete/reset attribution data after purchase
   *  If you are going to attribute **search_term** as well, RegEx should be **Event Name** *matches RegEx* ^(select_item|select_promotion|add_to_cart|purchase|view_search_results)$
-* **ecom - items - item_list & promotion - extract - CT** _does not equal_ undefined
+* **ecom - items - item_list & promotion - trigger helper - CT** _equals_ true
 
-![ecom - select_item, select_promotion & add_to_cart](../images/Trigger-ecom-select_item-select_promotion-add_to_cart.png)
+![ecom - select_item, select_promotion & add_to_cart](../images/sgtm-ecom-attribute-events-trigger.png)
 
 *	Name the Trigger **ecom - Attribute Events - Item List & Promotion**.
 
