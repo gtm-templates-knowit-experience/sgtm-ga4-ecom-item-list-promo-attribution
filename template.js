@@ -23,7 +23,10 @@ let promo2 = (secondDataSource && getType(secondDataSource.promotion) === 'objec
 let searchTerm2 = (secondDataSource && hasValue(secondDataSource.search_term)) ? secondDataSource.search_term : null;
 let customEvents2 = (secondDataSource && getType(secondDataSource.custom_events) === 'object') ? secondDataSource.custom_events : {helper_prop: "helper_val"};
 
-const timestamp = data.attributionTime ? getTimestampMillis() : makeInteger(getEventData('ga_session_id'));
+const rawSession = getEventData('session_id') || getEventData('ga_session_id');
+const sessionId = (rawSession && makeInteger(rawSession) !== 0) ? makeInteger(rawSession) : undefined;
+
+const timestamp = data.attributionTime ? getTimestampMillis() : (sessionId || getTimestampMillis());
 const timestamp2 = (secondDataSource && secondDataSource.timestamp) ? secondDataSource.timestamp : timestamp;
 const timestampDiff = (secondDataSource && secondDataSource.timestamp && data.attributionTime) ? (timestamp - secondDataSource.timestamp) : timestamp;
 const attributionTime = data.attributionTime ? (makeInteger(data.attributionTime) * 60000) : timestamp2;
