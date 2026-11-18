@@ -2,9 +2,11 @@ homepage: "https://www.knowit.no"
 documentation: "https://github.com/gtm-templates-knowit-experience/sgtm-ga4-ecom-item-list-promo-attribution"
 versions:
   # Latest version
+  - sha: 1ecdd0aa3afcb66141216523248e5814bcc645a7
+    changeNotes: Proper attribution for app data (sessions). New Location ID Value setting. Delete Attribution Data after Purchase is now only set in the Extract variable. New setting for adding Event-level Promotion to Items. Code cleanup. See documentation.
+  # Older versions
   - sha: 1e67f88213a40fd62153b7b64e050a1e93c8fb2e
     changeNotes: Fixed standard attribution time for apps.
-  # Older versions
   - sha: 9d37917280558f49a0c1bc08c59861d2247533c1
     changeNotes: Code improvements and bug fixes. New trigger helper settings and setup. See Github for trigger documentation.
   - sha: 374c59524153aa87ab4bf9ef8fb77e7d7703a40a
