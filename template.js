@@ -5,39 +5,23 @@ const JSON = require('JSON');
 const makeInteger = require('makeInteger');
 const Object = require('Object');
 
+const variableType = data.variableType;
 const jsonData = data.jsonData;
+const isFirstClick = data.attributionType === 'firstClickAttribution';
 
-// 1. Defensively normalize incoming stored data (handles string, array wrapper, or {id, data} wrapper)
-let parsedSource = getType(data.secondDataSource) === 'string' ? JSON.parse(data.secondDataSource) : data.secondDataSource;
+// Item List & Promotion parameters that carry attribution (event-level and item-level)
+const ATTRIBUTION_KEYS = ['item_list_id', 'item_list_name', 'promotion_id', 'promotion_name',
+                          'creative_name', 'creative_slot', 'location_id', 'index'];
+const PROMOTION_KEYS = ['promotion_id', 'promotion_name', 'creative_name', 'creative_slot', 'location_id'];
+// Parameters that tell that an Item List or Promotion is implemented on the event or item
+const LIST_PROMO_KEYS = ['item_list_id', 'item_list_name', 'promotion_id', 'promotion_name',
+                         'creative_name', 'creative_slot'];
 
-if (getType(parsedSource) === 'array') {
-  parsedSource = parsedSource.length > 0 ? parsedSource[0] : undefined;
-}
-
-const secondDataSource = (parsedSource && getType(parsedSource.data) === 'object')  ? parsedSource.data  : parsedSource;
-
-const event_name = getEventData('event_name');
-const items = getEventData('items');
-let items2 = (secondDataSource && getType(secondDataSource.items) === 'array') ? secondDataSource.items : [{item_id: "helper_id"}];
-let promo2 = (secondDataSource && getType(secondDataSource.promotion) === 'object') ? secondDataSource.promotion : null;
-let searchTerm2 = (secondDataSource && hasValue(secondDataSource.search_term)) ? secondDataSource.search_term : null;
-let customEvents2 = (secondDataSource && getType(secondDataSource.custom_events) === 'object') ? secondDataSource.custom_events : {helper_prop: "helper_val"};
-
-const rawSession = getEventData('session_id') || getEventData('ga_session_id');
-const sessionId = (rawSession && makeInteger(rawSession) !== 0) ? makeInteger(rawSession) : undefined;
-
-const timestamp = data.attributionTime ? getTimestampMillis() : (sessionId || getTimestampMillis());
-const timestamp2 = (secondDataSource && secondDataSource.timestamp) ? secondDataSource.timestamp : timestamp;
-const timestampDiff = (secondDataSource && secondDataSource.timestamp && data.attributionTime) ? (timestamp - secondDataSource.timestamp) : timestamp;
-const attributionTime = data.attributionTime ? (makeInteger(data.attributionTime) * 60000) : timestamp2;
-const attributionType = data.attributionType;
-const limitItemsNumber = data.limitItemsNumber;
-
-const customItemAttributeParameters = data.customItemAttributeParameters || [];
-const customEventAttributeParameters = data.customEventAttributeParameters || [];
-
+// ==========================================
+// HELPERS
+// ==========================================
 function hasValue(v) { return v !== undefined && v !== null && v !== ''; }
-function isMissing(v) { return v === undefined || v === null || v === ''; }
+function isMissing(v) { return !hasValue(v); }
 
 function currentOrStored(current, stored) {
   if (hasValue(current)) return current;
@@ -45,222 +29,313 @@ function currentOrStored(current, stored) {
   return undefined;
 }
 
-// Window expiration: Write explicit nulls so merge writes clear expired values
-if (timestampDiff > attributionTime) {
-  items2 = [{item_id: "helper_id"}];
-  promo2 = null;
-  searchTerm2 = null;
-  customEvents2 = {helper_prop: "helper_val"};
+function parseIfString(v) {
+  return getType(v) === 'string' ? JSON.parse(v) : v;
 }
+
+function positiveInteger(v) {
+  if (isMissing(v)) return undefined;
+  const n = makeInteger(v);
+  return (n && n > 0) ? n : undefined;
+}
+
+// Missing values are always returned as undefined, never as null or an empty string
+function valueOrUndefined(v) {
+  return hasValue(v) ? v : undefined;
+}
+
+function eventValue(key) {
+  return valueOrUndefined(getEventData(key));
+}
+
+function hasAttributionData(obj) {
+  for (let i = 0; i < ATTRIBUTION_KEYS.length; i++) {
+    if (hasValue(obj[ATTRIBUTION_KEYS[i]])) return true;
+  }
+  return false;
+}
+
+function hasListOrPromoData(obj) {
+  for (let i = 0; i < LIST_PROMO_KEYS.length; i++) {
+    if (hasValue(obj[LIST_PROMO_KEYS[i]])) return true;
+  }
+  return false;
+}
+
+// Placeholders stored when there is no data, so the stored structure always has the same shape
+function emptyItems() { return [{item_id: 'helper_id'}]; }
+function emptyCustomEvents() { return {helper_prop: 'helper_val'}; }
+
+const event_name = getEventData('event_name');
+const items = getEventData('items');
+const customItemAttributeParameters = data.customItemAttributeParameters || [];
+const customEventAttributeParameters = data.customEventAttributeParameters || [];
+
+// "Location ID Value": used as location_id where an Item List or Promotion is implemented without
+// a location_id (ex. Page Path for web, screen name for app). Never added to anything else, so
+// ex. add_to_cart from a product page gets no location_id.
+// The field has its own name on the output variables, where it is only shown for Items and Location ID.
+const locationIdValue = valueOrUndefined(variableType === 'output' ? data.locationIdValueOutput : data.locationIdValue);
 
 // ==========================================
 // TRIGGER HELPER
+// Returns true when the event can change the stored attribution data.
+// Runs before any stored data is handled, since it never needs the Second Data Source.
 // ==========================================
-if (data.variableType === 'check_trigger') {
-  let triggerResult = false;
-  
-  if (data.deleteAttribution === true && event_name === 'purchase') {
-    triggerResult = true;
+if (variableType === 'check_trigger') {
+  // purchase always passes, so "Delete Attribution Data after Purchase" only has to be ticked
+  // in the "Extract" variable. The trigger's Event Name condition decides if purchase is included.
+  if (event_name === 'purchase') return true;
+
+  for (let i = 0; i < ATTRIBUTION_KEYS.length; i++) {
+    if (hasValue(getEventData(ATTRIBUTION_KEYS[i]))) return true;
   }
-  else if (hasValue(getEventData('item_list_id')) || hasValue(getEventData('item_list_name')) || 
-           hasValue(getEventData('promotion_id')) || hasValue(getEventData('promotion_name')) ||
-           hasValue(getEventData('creative_name')) || hasValue(getEventData('creative_slot')) ||
-           hasValue(getEventData('location_id')) || hasValue(getEventData('index'))) {
-    triggerResult = true;
+
+  if (data.siteSearchChecbox && hasValue(getEventData('search_term'))) return true;
+
+  for (let i = 0; i < customEventAttributeParameters.length; i++) {
+    if (hasValue(customEventAttributeParameters[i].parameterValue)) return true;
   }
-  else if (data.siteSearchChecbox && hasValue(getEventData('search_term'))) {
-    triggerResult = true;
-  }
-  else if (customEventAttributeParameters.length > 0) {
-    for (let i = 0; i < customEventAttributeParameters.length; i++) {
-      if (hasValue(customEventAttributeParameters[i].parameterValue)) {
-        triggerResult = true;
-        break;
-      }
-    }
-  }
-  
-  if (!triggerResult && items && items.length > 0) {
+
+  if (items && items.length > 0) {
     for (let i = 0; i < items.length; i++) {
-      let itm = items[i];
-      if (hasValue(itm.item_list_id) || hasValue(itm.item_list_name) ||
-          hasValue(itm.promotion_id) || hasValue(itm.promotion_name) ||
-          hasValue(itm.creative_name) || hasValue(itm.creative_slot) ||
-          hasValue(itm.location_id) || hasValue(itm.index)) {
-        triggerResult = true;
-        break;
-      }
-      if (customItemAttributeParameters.length > 0) {
-        for (let j = 0; j < customItemAttributeParameters.length; j++) {
-          let p = customItemAttributeParameters[j].parameterName;
-          if (hasValue(p) && hasValue(itm[p])) {
-            triggerResult = true;
-            break;
-          }
-        }
-        if (triggerResult) break;
+      const itm = items[i];
+      if (hasAttributionData(itm)) return true;
+      for (let j = 0; j < customItemAttributeParameters.length; j++) {
+        const p = customItemAttributeParameters[j].parameterName;
+        if (hasValue(p) && hasValue(itm[p])) return true;
       }
     }
   }
-  
-  return triggerResult;
+
+  return false;
+}
+
+// ==========================================
+// 1. NORMALIZE STORED DATA
+// Handles a JSON string, an array wrapper (Firestore query) or an {id, data} wrapper (Stape Data Store).
+// ==========================================
+// The wrappers can be combined, ex. an array that contains a JSON string.
+function unwrapStored(v, depth) {
+  v = parseIfString(v);
+  if (getType(v) === 'array') {
+    return (depth < 4 && v.length > 0) ? unwrapStored(v[0], depth + 1) : undefined;
+  }
+  if (getType(v) === 'object' && hasValue(v.data) && depth < 4) {
+    const inner = unwrapStored(v.data, depth + 1);
+    if (inner) return inner;
+  }
+  return getType(v) === 'object' ? v : undefined;
+}
+
+const secondDataSource = unwrapStored(data.secondDataSource, 0);
+
+let items2 = (secondDataSource && getType(secondDataSource.items) === 'array') ? secondDataSource.items : emptyItems();
+let promo2 = (secondDataSource && getType(secondDataSource.promotion) === 'object') ? secondDataSource.promotion : null;
+let searchTerm2 = (secondDataSource && hasValue(secondDataSource.search_term)) ? secondDataSource.search_term : null;
+let customEvents2 = (secondDataSource && getType(secondDataSource.custom_events) === 'object') ? secondDataSource.custom_events : emptyCustomEvents();
+
+// ==========================================
+// 2. SESSION ID (Web & App)
+// Web (gtag.js):  ga_session_id is a top-level event parameter.
+// App (Firebase): the session id is sent as a user property, so in sGTM it is found
+//                 inside x-ga-mp2-user_properties (as session_id, ga_session_id or _sid).
+// A user property value can be a plain value or an object like {value: ...}.
+// ==========================================
+function toSessionId(v) {
+  if (getType(v) === 'object') {
+    v = hasValue(v.value) ? v.value :
+        hasValue(v.int_value) ? v.int_value :
+        hasValue(v.string_value) ? v.string_value : undefined;
+  }
+  return positiveInteger(v);
+}
+
+function getSessionId() {
+  let sid = toSessionId(getEventData('ga_session_id'));
+  if (sid) return sid;
+
+  sid = toSessionId(getEventData('session_id'));
+  if (sid) return sid;
+
+  const userProps = getEventData('x-ga-mp2-user_properties');
+  if (getType(userProps) === 'object') {
+    const keys = ['session_id', 'ga_session_id', '_sid'];
+    for (let i = 0; i < keys.length; i++) {
+      sid = toSessionId(userProps[keys[i]]);
+      if (sid) return sid;
+    }
+  }
+  return undefined;
+}
+
+const sessionId = getSessionId();
+
+// ==========================================
+// 3. ATTRIBUTION WINDOW
+// "attribution" uses this variable's own settings.
+// "output" has no attribution settings in the UI, so it follows the settings
+// the attribution variable stored together with the data (attribution_time).
+// ==========================================
+let customMinutes;
+if (variableType === 'output') {
+  customMinutes = secondDataSource ? positiveInteger(secondDataSource.attribution_time) : undefined;
+} else if (data.customAttributionTime !== false) {
+  customMinutes = positiveInteger(data.attributionTime);
+}
+
+const timestamp = getTimestampMillis();
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+// Older versions stored the session id (seconds) as "timestamp". Values below this limit are seconds.
+const LEGACY_SECONDS_LIMIT = 100000000000;
+
+let storedTs;
+let storedSessionId;
+if (secondDataSource) {
+  const rawTs = positiveInteger(secondDataSource.timestamp);
+  if (rawTs) {
+    if (rawTs < LEGACY_SECONDS_LIMIT) {
+      storedSessionId = rawTs;
+      storedTs = rawTs * 1000;
+    } else {
+      storedTs = rawTs;
+    }
+  }
+  const sSid = toSessionId(secondDataSource.session_id);
+  if (sSid) storedSessionId = sSid;
+}
+
+let isExpired = false;
+if (secondDataSource) {
+  if (customMinutes) {
+    // Custom attribution time, counted from the last attribution update
+    if (storedTs && (timestamp - storedTs) > customMinutes * 60000) isExpired = true;
+  } else if (sessionId && storedSessionId) {
+    // GA4 session attribution: expires when the session changes
+    if (sessionId !== storedSessionId) isExpired = true;
+  } else if (storedTs) {
+    // Session id missing on one side: fall back to 30 minutes of inactivity
+    if ((timestamp - storedTs) > SESSION_TIMEOUT_MS) isExpired = true;
+  }
+}
+
+if (isExpired) {
+  items2 = emptyItems();
+  promo2 = null;
+  searchTerm2 = null;
+  customEvents2 = emptyCustomEvents();
 }
 
 // ==========================================
 // ATTRIBUTION
 // ==========================================
-if (data.variableType === 'attribution') { 
-  // 1. Purchase Reset: Explicit nulls guarantee removal under merge: true writes
-  if (data.deleteAttribution === true && event_name === 'purchase') {
-    let resetExtract = {
-      search_term: null, 
-      custom_events: {helper_prop: "helper_val"}, 
-      items: [{item_id: "helper_id"}], 
-      promotion: null, 
-      timestamp: timestamp
+if (variableType === 'attribution') {
+  // Every extract is stored with the same structure and meta fields
+  const buildExtract = (itemsOut, promotionOut, searchTermOut, customEventsOut, timestampOut) => {
+    const extract = {
+      items: itemsOut,
+      promotion: promotionOut,
+      search_term: searchTermOut,
+      custom_events: customEventsOut,
+      timestamp: timestampOut,
+      session_id: sessionId || null,
+      attribution_time: customMinutes || null
     };
-    return jsonData ? JSON.stringify(resetExtract) : resetExtract;
+    return jsonData ? JSON.stringify(extract) : extract;
+  };
+
+  // Last click always takes the new value, first click only fills what is missing
+  const setAttributed = (target, key, value) => {
+    if (hasValue(value) && (!isFirstClick || isMissing(target[key]))) target[key] = value;
+  };
+
+  // 1. Purchase reset
+  if (data.deleteAttribution === true && event_name === 'purchase') {
+    return buildExtract(emptyItems(), null, null, emptyCustomEvents(), timestamp);
   }
 
-  let item_list_id = hasValue(getEventData('item_list_id')) ? getEventData('item_list_id') : undefined;
-  let item_list_name = hasValue(getEventData('item_list_name')) ? getEventData('item_list_name') : undefined;
-  let creative_name = hasValue(getEventData('creative_name')) ? getEventData('creative_name') : undefined;
-  let creative_slot = hasValue(getEventData('creative_slot')) ? getEventData('creative_slot') : undefined;
-  let promotion_id = hasValue(getEventData('promotion_id')) ? getEventData('promotion_id') : undefined;
-  let promotion_name = hasValue(getEventData('promotion_name')) ? getEventData('promotion_name') : undefined;
-  let location_id = hasValue(getEventData('location_id')) ? getEventData('location_id') : undefined;
-  let index = hasValue(getEventData('index')) ? getEventData('index') : undefined;
+  const eventLevel = {};
+  ATTRIBUTION_KEYS.forEach(k => { eventLevel[k] = eventValue(k); });
 
-  let currentCustomEvents = {};
-  if (customEventAttributeParameters.length > 0) {
-    customEventAttributeParameters.forEach(row => {
-      const pName = row.parameterName;
-      const pVal = row.parameterValue;
-      if (hasValue(pName) && hasValue(pVal)) {
-        currentCustomEvents[pName] = pVal;
-      }
-    });
-  }
+  // Custom event parameters: stored values merged with the values on this event
+  const currentCustomEvents = {};
+  customEventAttributeParameters.forEach(row => {
+    if (hasValue(row.parameterName) && hasValue(row.parameterValue)) {
+      currentCustomEvents[row.parameterName] = row.parameterValue;
+    }
+  });
+  const hasNewCustomEvents = Object.keys(currentCustomEvents).length > 0;
 
   let mergedCustomEvents = {};
-  const oldCeKeys = Object.keys(customEvents2 || {});
-  oldCeKeys.forEach(k => { 
-    if (k !== 'helper_prop') {
-      mergedCustomEvents[k] = customEvents2[k];
-    }
+  Object.keys(customEvents2).forEach(k => {
+    if (k !== 'helper_prop') mergedCustomEvents[k] = customEvents2[k];
   });
-  
-  const newCeKeys = Object.keys(currentCustomEvents || {});
-  newCeKeys.forEach(k => {
-    if (attributionType === 'firstClickAttribution') {
-      if (isMissing(mergedCustomEvents[k])) {
-        mergedCustomEvents[k] = currentCustomEvents[k];
-      }
-    } else {
-      mergedCustomEvents[k] = currentCustomEvents[k];
-    }
+  Object.keys(currentCustomEvents).forEach(k => {
+    if (!isFirstClick || isMissing(mergedCustomEvents[k])) mergedCustomEvents[k] = currentCustomEvents[k];
   });
+  if (Object.keys(mergedCustomEvents).length === 0) mergedCustomEvents = emptyCustomEvents();
 
-  if (Object.keys(mergedCustomEvents).length === 0) {
-    mergedCustomEvents = {helper_prop: "helper_val"};
-  }
-
-  let items1 = [];
-
-  // Filter and map incoming items: only items carrying active attribution are retained
+  // Incoming items: only items with attribution data are kept. Item-level values trump event-level values.
+  const items1 = [];
   if (items && items.length > 0) {
     for (let idx = 0; idx < items.length; idx++) {
-      let i = items[idx];
-      let itemObj = {
-        item_id: i.item_id,
-        item_list_id: hasValue(i.item_list_id) ? i.item_list_id : item_list_id,
-        item_list_name: hasValue(i.item_list_name) ? i.item_list_name : item_list_name,
-        creative_name: hasValue(i.creative_name) ? i.creative_name : creative_name,
-        creative_slot: hasValue(i.creative_slot) ? i.creative_slot : creative_slot,
-        promotion_id: hasValue(i.promotion_id) ? i.promotion_id : promotion_id,
-        promotion_name: hasValue(i.promotion_name) ? i.promotion_name : promotion_name,
-        location_id: hasValue(i.location_id) ? i.location_id : location_id,
-        index: hasValue(i.index) ? i.index : index
-      };
-
-      let itemHasAttribution = false;
-      if (hasValue(itemObj.item_id) && (
-          hasValue(itemObj.item_list_id) || hasValue(itemObj.item_list_name) ||
-          hasValue(itemObj.promotion_id) || hasValue(itemObj.promotion_name) ||
-          hasValue(itemObj.creative_name) || hasValue(itemObj.creative_slot) ||
-          hasValue(itemObj.location_id) || hasValue(itemObj.index))) {
-        itemHasAttribution = true;
+      const i = items[idx];
+      const itemObj = {item_id: i.item_id};
+      ATTRIBUTION_KEYS.forEach(k => { itemObj[k] = hasValue(i[k]) ? i[k] : eventLevel[k]; });
+      if (locationIdValue && isMissing(itemObj.location_id) && hasListOrPromoData(itemObj)) {
+        itemObj.location_id = locationIdValue;
       }
 
-      if (customItemAttributeParameters.length > 0) {
-        for (let j = 0; j < customItemAttributeParameters.length; j++) {
-          let p = customItemAttributeParameters[j].parameterName;
-          if (hasValue(p) && hasValue(i[p])) {
-            itemObj[p] = i[p];
-            if (hasValue(itemObj.item_id)) {
-              itemHasAttribution = true;
-            }
-          }
+      let itemHasAttribution = hasValue(itemObj.item_id) && hasAttributionData(itemObj);
+
+      for (let j = 0; j < customItemAttributeParameters.length; j++) {
+        const p = customItemAttributeParameters[j].parameterName;
+        if (hasValue(p) && hasValue(i[p])) {
+          itemObj[p] = i[p];
+          if (hasValue(itemObj.item_id)) itemHasAttribution = true;
         }
       }
 
-      if (itemHasAttribution) {
-        items1.push(itemObj);
-      }
+      if (itemHasAttribution) items1.push(itemObj);
     }
   }
 
-  // 2. Item-level attribution branch (items with item_ids attached)
+  // 2. Item-level attribution branch
   if (items1.length > 0) {
     const mergedMap = {};
     let orderedKeys = [];
-    const seenKeys = {};
 
-    // Deduplicate and import existing stored items
+    // Stored items first, in stored order
     for (let i = 0; i < items2.length; i++) {
       const oldRec = items2[i];
       if (!oldRec || oldRec.item_id === 'helper_id' || !hasValue(oldRec.item_id)) continue;
 
       const idKey = 'item_' + oldRec.item_id;
-      if (!seenKeys[idKey]) {
-        seenKeys[idKey] = true;
-        orderedKeys.push(idKey);
-      }
+      if (!mergedMap[idKey]) orderedKeys.push(idKey);
 
       const clone = {};
-      const flds = Object.keys(oldRec);
-      for (let j = 0; j < flds.length; j++) {
-        const k = flds[j];
-        clone[k] = oldRec[k];
-      }
+      Object.keys(oldRec).forEach(k => { clone[k] = oldRec[k]; });
       mergedMap[idKey] = clone;
     }
 
-    // Merge incoming attributed items
     items1.forEach(rec1 => {
       const id = rec1.item_id;
-      if (!hasValue(id) || id === 'helper_id') return;
+      if (id === 'helper_id') return;
       const idKey = 'item_' + id;
 
       let tgt = mergedMap[idKey];
       if (!tgt) {
-        tgt = { item_id: id };
+        tgt = {item_id: id};
         orderedKeys.push(idKey);
-      } else if (attributionType !== 'firstClickAttribution') {
-        const filteredKeys = [];
-        for (let k = 0; k < orderedKeys.length; k++) {
-          if (orderedKeys[k] !== idKey) {
-            filteredKeys.push(orderedKeys[k]);
-          }
-        }
-        filteredKeys.push(idKey);
-        orderedKeys = filteredKeys;
+      } else if (!isFirstClick) {
+        // Last click: move the item to the end, so the newest items survive "Limit Items"
+        orderedKeys = orderedKeys.filter(k => k !== idKey);
+        orderedKeys.push(idKey);
       }
 
-      // List attribution
-      const isListEvent = hasValue(rec1.item_list_id) || hasValue(rec1.item_list_name);
-      if (isListEvent) {
-        if (attributionType === 'firstClickAttribution') {
+      // Item list id & name are handled as a pair
+      if (hasValue(rec1.item_list_id) || hasValue(rec1.item_list_name)) {
+        if (isFirstClick) {
           if (isMissing(tgt.item_list_id)) tgt.item_list_id = rec1.item_list_id;
           if (isMissing(tgt.item_list_name)) tgt.item_list_name = rec1.item_list_name;
         } else {
@@ -269,201 +344,142 @@ if (data.variableType === 'attribution') {
         }
       }
 
-      // Item-level Promotion Attribution: decoupled so creative-only updates do not wipe identity
-      const hasPromoIdentity = hasValue(rec1.promotion_id) || hasValue(rec1.promotion_name);
-      const hasCreative = hasValue(rec1.creative_name) || hasValue(rec1.creative_slot);
+      // Promotion identity (id & name) is handled as a pair with last click, independent of the creative
+      if (isFirstClick) {
+        setAttributed(tgt, 'promotion_id', rec1.promotion_id);
+        setAttributed(tgt, 'promotion_name', rec1.promotion_name);
+      } else if (hasValue(rec1.promotion_id) || hasValue(rec1.promotion_name)) {
+        tgt.promotion_id = rec1.promotion_id;
+        tgt.promotion_name = rec1.promotion_name;
+      }
+      setAttributed(tgt, 'creative_name', rec1.creative_name);
+      setAttributed(tgt, 'creative_slot', rec1.creative_slot);
+      setAttributed(tgt, 'location_id', rec1.location_id);
+      setAttributed(tgt, 'index', rec1.index);
 
-      if (hasPromoIdentity || hasCreative) {
-        if (attributionType === 'firstClickAttribution') {
-          if (isMissing(tgt.promotion_id) && hasValue(rec1.promotion_id)) tgt.promotion_id = rec1.promotion_id;
-          if (isMissing(tgt.promotion_name) && hasValue(rec1.promotion_name)) tgt.promotion_name = rec1.promotion_name;
-          if (isMissing(tgt.creative_name) && hasValue(rec1.creative_name)) tgt.creative_name = rec1.creative_name;
-          if (isMissing(tgt.creative_slot) && hasValue(rec1.creative_slot)) tgt.creative_slot = rec1.creative_slot;
-        } else {
-          if (hasPromoIdentity) {
-            tgt.promotion_id = rec1.promotion_id;
-            tgt.promotion_name = rec1.promotion_name;
-          }
-          if (hasValue(rec1.creative_name)) tgt.creative_name = rec1.creative_name;
-          if (hasValue(rec1.creative_slot)) tgt.creative_slot = rec1.creative_slot;
-        }
-      }
+      customItemAttributeParameters.forEach(row => {
+        setAttributed(tgt, row.parameterName, rec1[row.parameterName]);
+      });
 
-      if (hasValue(rec1.location_id)) {
-        if (attributionType === 'firstClickAttribution' ? isMissing(tgt.location_id) : true) {
-          tgt.location_id = rec1.location_id;
-        }
-      }
-      if (hasValue(rec1.index)) {
-        if (attributionType === 'firstClickAttribution' ? isMissing(tgt.index) : true) {
-          tgt.index = rec1.index;
-        }
-      }
-      
-      if (customItemAttributeParameters.length > 0) {
-        customItemAttributeParameters.forEach(row => {
-          const p = row.parameterName;
-          if (hasValue(rec1[p])) {
-            if (attributionType === 'firstClickAttribution' ? isMissing(tgt[p]) : true) {
-              tgt[p] = rec1[p];
-            }
-          }
-        });
-      }
-      
       mergedMap[idKey] = tgt;
     });
 
-    if (limitItemsNumber) {
-      const limit = makeInteger(limitItemsNumber);
+    if (data.limitItems !== false && data.limitItemsNumber) {
+      const limit = makeInteger(data.limitItemsNumber);
       if (limit > 0 && orderedKeys.length > limit) {
-        if (attributionType === 'firstClickAttribution') {
-          orderedKeys = orderedKeys.slice(0, limit);
-        } else {
-          orderedKeys = orderedKeys.slice(-limit);
-        }
+        orderedKeys = isFirstClick ? orderedKeys.slice(0, limit) : orderedKeys.slice(-limit);
       }
     }
 
-    let uniqueItems = orderedKeys.map(function(k) { return mergedMap[k]; });
-    if (uniqueItems.length === 0) {
-      uniqueItems = [{item_id: "helper_id"}];
-    }
+    let uniqueItems = orderedKeys.map(k => mergedMap[k]);
+    if (uniqueItems.length === 0) uniqueItems = emptyItems();
 
-    const extract = {
-      items: uniqueItems,
-      promotion: promo2,
-      search_term: searchTerm2,
-      custom_events: mergedCustomEvents,
-      timestamp: timestamp
-    };
-    return jsonData ? JSON.stringify(extract) : extract;
+    return buildExtract(uniqueItems, promo2, searchTerm2, mergedCustomEvents, timestamp);
   }
-  
-  // 3. Event-level Promotion attribution branch:
-  // Usually promotions don't have items. Replaces stored promotion on Last Click; keeps existing on First Click.
-  if (promotion_id || promotion_name || creative_name || creative_slot) {
-    const promo = {
-      creative_name: creative_name, 
-      creative_slot: creative_slot, 
-      promotion_id: promotion_id, 
-      promotion_name: promotion_name, 
-      location_id: location_id
-    };
-    const promoAttribution = (attributionType === 'firstClickAttribution' && promo2) ? promo2 : promo;
-    let extract = {
-      items: items2, 
-      promotion: promoAttribution, 
-      search_term: searchTerm2, 
-      custom_events: mergedCustomEvents, 
-      timestamp: timestamp
-    };
-    return jsonData ? JSON.stringify(extract) : extract;
+
+  // 3. Event-level promotion attribution branch
+  if (eventLevel.promotion_id || eventLevel.promotion_name || eventLevel.creative_name || eventLevel.creative_slot) {
+    const promo = {};
+    PROMOTION_KEYS.forEach(k => { promo[k] = eventLevel[k]; });
+    if (locationIdValue && isMissing(promo.location_id)) promo.location_id = locationIdValue;
+    const promoAttribution = (isFirstClick && promo2) ? promo2 : promo;
+    return buildExtract(items2, promoAttribution, searchTerm2, mergedCustomEvents, timestamp);
   }
-  
+
   // 4. Site search attribution branch
-  const searchTerm = data.siteSearchChecbox && hasValue(getEventData('search_term')) ? getEventData('search_term') : undefined;
+  const searchTerm = data.siteSearchChecbox ? eventValue('search_term') : undefined;
   if (searchTerm) {
-    const siteSearchttribution = (attributionType === 'firstClickAttribution' && searchTerm2) ? searchTerm2 : searchTerm;
-    let extract = {
-      search_term: siteSearchttribution, 
-      items: items2, 
-      promotion: promo2, 
-      custom_events: mergedCustomEvents, 
-      timestamp: timestamp
-    };
-    return jsonData ? JSON.stringify(extract) : extract;
+    const searchTermAttribution = (isFirstClick && searchTerm2) ? searchTerm2 : searchTerm;
+    return buildExtract(items2, promo2, searchTermAttribution, mergedCustomEvents, timestamp);
   }
 
-  // 5. Custom events attribution branch
-  const hasNewCustomEvents = Object.keys(currentCustomEvents || {}).length > 0;
+  // 5. Custom event parameters attribution branch
   if (hasNewCustomEvents) {
-    let extract = {
-      items: items2,
-      promotion: promo2,
-      search_term: searchTerm2,
-      custom_events: mergedCustomEvents,
-      timestamp: timestamp
-    };
-    return jsonData ? JSON.stringify(extract) : extract;
+    return buildExtract(items2, promo2, searchTerm2, mergedCustomEvents, timestamp);
   }
 
-  // Fallback extraction to safeguard against returning undefined
-  let fallbackExtract = {
-    items: items2,
-    promotion: promo2,
-    search_term: searchTerm2,
-    custom_events: mergedCustomEvents,
-    timestamp: timestamp
-  };
-  return jsonData ? JSON.stringify(fallbackExtract) : fallbackExtract;
+  // 6. Nothing new to attribute: keep the previous update time, so the attribution window is not renewed
+  const unchangedTimestamp = (!isExpired && storedTs) ? storedTs : timestamp;
+  return buildExtract(items2, promo2, searchTerm2, mergedCustomEvents, unchangedTimestamp);
 }
 
 // ==========================================
 // OUTPUT
 // ==========================================
-else if (data.variableType === 'output') {
-  let output;
+if (variableType === 'output') {
   const param = data.outputDropDown;
-  if (param === 'promotion_id') {
-    output = promo2 ? promo2.promotion_id : undefined;
-  } else if (param === 'promotion_name') {
-    output = promo2 ? promo2.promotion_name : undefined;
-  } else if (param === 'creative_name') {
-    output = promo2 ? promo2.creative_name : undefined;
-  } else if (param === 'creative_slot') {
-    output = promo2 ? promo2.creative_slot : undefined;
-  } else if (param === 'location_id') {
-    output = promo2 ? promo2.location_id : undefined;
-  } else if (param === 'search_term') {
-    output = searchTerm2 ? searchTerm2 : undefined;
-  } else if (param === 'custom_event') {
-    const requestedKey = data.customEventOutputKey;
-    if (customEvents2 && requestedKey && requestedKey !== 'helper_prop') {
-      output = customEvents2[requestedKey];
-    } else {
-      output = undefined;
+
+  // Is an Item List or Promotion implemented on the event-level of this event?
+  let eventHasListOrPromo = false;
+  if (locationIdValue) {
+    for (let i = 0; i < LIST_PROMO_KEYS.length; i++) {
+      if (hasValue(getEventData(LIST_PROMO_KEYS[i]))) eventHasListOrPromo = true;
     }
-  } else if (param === 'items' && items) {
+  }
+
+  // The location of this event trumps the stored location
+  if (param === 'location_id' && eventHasListOrPromo) return locationIdValue;
+
+  if (PROMOTION_KEYS.indexOf(param) !== -1) {
+    return promo2 ? valueOrUndefined(promo2[param]) : undefined;
+  }
+
+  if (param === 'search_term') {
+    return valueOrUndefined(searchTerm2);
+  }
+
+  if (param === 'custom_event') {
+    const requestedKey = data.customEventOutputKey;
+    return (requestedKey && requestedKey !== 'helper_prop') ? valueOrUndefined(customEvents2[requestedKey]) : undefined;
+  }
+
+  if (param === 'items' && getType(items) === 'array') {
+    const standardKeys = ['item_id'].concat(ATTRIBUTION_KEYS);
+
     items.forEach(item => {
+      // An Item List or Promotion implemented on this event gets the location of this event,
+      // before stored data is merged in.
+      if (locationIdValue && isMissing(item.location_id) && (eventHasListOrPromo || hasListOrPromoData(item))) {
+        item.location_id = locationIdValue;
+      }
+
       if (data.itemSearchTerm && searchTerm2) {
         item.search_term = searchTerm2;
       }
-      
+
       if (data.itemCustomEvents) {
-        const ceKeys = Object.keys(customEvents2 || {});
-        if (ceKeys.length > 0) {
-          ceKeys.forEach(k => {
-            if (k !== 'helper_prop') {
-              item[k] = currentOrStored(item[k], customEvents2[k]);
-            }
-          });
-        }
+        Object.keys(customEvents2).forEach(k => {
+          if (k !== 'helper_prop') item[k] = currentOrStored(item[k], customEvents2[k]);
+        });
       }
 
-      const standardKeys = ['item_id', 'item_list_id', 'item_list_name', 'creative_name', 'creative_slot', 'promotion_id', 'promotion_name', 'location_id', 'index'];
-
+      // Implemented item data trumps stored item data
       items2.forEach(item2 => {
         if (item2 && item2.item_id !== 'helper_id' && ('' + item.item_id === '' + item2.item_id)) {
-          item.item_list_id = currentOrStored(item.item_list_id, item2.item_list_id);
-          item.item_list_name = currentOrStored(item.item_list_name, item2.item_list_name);
-          item.creative_name = currentOrStored(item.creative_name, item2.creative_name);
-          item.creative_slot = currentOrStored(item.creative_slot, item2.creative_slot);
-          item.promotion_id = currentOrStored(item.promotion_id, item2.promotion_id);
-          item.promotion_name = currentOrStored(item.promotion_name, item2.promotion_name);
-          item.location_id = currentOrStored(item.location_id, item2.location_id);
-          item.index = currentOrStored(item.index, item2.index);
-          
-          const storedKeys = Object.keys(item2 || {});
-          storedKeys.forEach(k => {
-            if (standardKeys.indexOf(k) === -1) {
-              item[k] = currentOrStored(item[k], item2[k]);
-            }
+          ATTRIBUTION_KEYS.forEach(k => { item[k] = currentOrStored(item[k], item2[k]); });
+
+          // Custom item parameters
+          Object.keys(item2).forEach(k => {
+            if (standardKeys.indexOf(k) === -1) item[k] = currentOrStored(item[k], item2[k]);
           });
         }
       });
+
+      // Event-level promotion -> items.
+      // GA4 copies event-level promotion_id/name and creative_name/slot to items, but not location_id.
+      // Only items without their own promotion get the stored promotion, so item-level promotions are never mixed.
+      if (data.itemPromotion && promo2) {
+        const itemHasPromo = hasValue(item.promotion_id) || hasValue(item.promotion_name) ||
+                             hasValue(item.creative_name) || hasValue(item.creative_slot);
+        const samePromo = (hasValue(item.promotion_id) && hasValue(promo2.promotion_id) && ('' + item.promotion_id === '' + promo2.promotion_id)) ||
+                          (hasValue(item.promotion_name) && hasValue(promo2.promotion_name) && ('' + item.promotion_name === '' + promo2.promotion_name));
+        if (!itemHasPromo) {
+          PROMOTION_KEYS.forEach(k => { item[k] = currentOrStored(item[k], promo2[k]); });
+        } else if (samePromo) {
+          item.location_id = currentOrStored(item.location_id, promo2.location_id);
+        }
+      }
     });
-    output = items ? items : undefined;
+    return items;
   }
-  return output;
 }
